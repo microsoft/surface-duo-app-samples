@@ -1,0 +1,13 @@
+<!--
+  ~ Copyright (c) Microsoft Corporation. All rights reserved.
+  ~ Licensed under the MIT License.
+  ~
+  -->
+
+<resources>
+    <string name="app_name">HTML Editor</string>
+    <string name="btn_change_preview">Button</string>
+    <string name="btn_switch_to_preview">Switch to Preview</string>
+    <string name="btn_switch_to_code">Switch to Code</string>
+    <string name="txt_code">hint</string>
+</resources>
