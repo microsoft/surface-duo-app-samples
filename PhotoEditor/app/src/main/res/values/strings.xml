@@ -1,0 +1,15 @@
+<!--
+  ~
+  ~  Copyright (c) Microsoft Corporation. All rights reserved.
+  ~  Licensed under the MIT License.
+  ~
+  -->
+
+<resources>
+    <string name="app_name">Photo Editor</string>
+    <string name="rotate">Rotate</string>
+    <string name="brightness">Brightness</string>
+    <string name="saturation">Saturation</string>
+    <string name="save">Save</string>
+    <string name="transparency">Transparency</string>
+</resources>
