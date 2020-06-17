@@ -12,8 +12,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingStart="@dimen/small_padding"
-    android:paddingEnd="@dimen/large_padding"
+    android:paddingHorizontal="@dimen/large_padding"
     tools:ignore="MissingDefaultResource">
 
     <LinearLayout

@@ -11,6 +11,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:paddingTop="@dimen/large_padding"
+    android:paddingHorizontal="@dimen/large_padding"
     tools:ignore="MissingDefaultResource">
 
     <TextView
@@ -21,7 +23,6 @@
         android:textAlignment="center"
         android:textColor="@android:color/white"
         android:textSize="@dimen/text_size" />
-
 
     <SeekBar
         android:id="@+id/saturation"
@@ -70,10 +71,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/small_margin"
-        android:max="255"
+        android:max="100"
         android:maxHeight="@dimen/seek_bar_max_height"
-        android:min="-255"
-        android:progress="0"
+        android:min="0"
+        android:progress="50"
+        android:progressDrawable="@drawable/seek_bar_ruler_dark"
+        android:thumb="@drawable/seek_bar_slider_dark" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/med_padding"
+        android:text="@string/warmth"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/text_size" />
+
+    <SeekBar
+        android:id="@+id/warmth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_margin"
+        android:max="100"
+        android:maxHeight="@dimen/seek_bar_max_height"
+        android:min="0"
+        android:progress="50"
         android:progressDrawable="@drawable/seek_bar_ruler_dark"
         android:thumb="@drawable/seek_bar_slider_dark" />
 

@@ -29,7 +29,7 @@ ext {
 
     //AndroidX versions
     appCompatVersion = "1.1.0"
-    constraintLayoutVersion = "1.1.3"
+    constraintLayoutVersion = "2.0.0-beta7"
     recyclerViewVersion = "1.1.0"
     cardViewVersion = "1.0.0"
     ktxCoreVersion = "1.3.0"

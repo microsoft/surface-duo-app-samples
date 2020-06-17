@@ -12,4 +12,5 @@
     <string name="saturation">Saturation</string>
     <string name="save">Save</string>
     <string name="transparency">Transparency</string>
+    <string name="warmth">Warmth</string>
 </resources>

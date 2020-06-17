@@ -6,22 +6,19 @@
 
 package com.microsoft.example.photo_editor
 
-import android.content.ContentValues
 import android.content.Intent
-import android.graphics.*
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.TransitionDrawable
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.SeekBar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.utils.widget.ImageFilterView
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.drawToBitmap
 import com.microsoft.device.dualscreen.layout.ScreenHelper
 import java.time.LocalDateTime
@@ -29,36 +26,9 @@ import java.time.LocalDateTime
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        //image pick code
+        // image pick code
         private const val IMAGE_PICK_CODE = 1000
-
-        // Float array to track image property changes (represents 4x5 matrix)
-        private var filterArray =
-            floatArrayOf(
-                1f,
-                0f,
-                0f,
-                0f,
-                0f,
-                0f,
-                1f,
-                0f,
-                0f,
-                0f,
-                0f,
-                0f,
-                1f,
-                0f,
-                0f,
-                0f,
-                0f,
-                0f,
-                1f,
-                0f
-            )
     }
-
-    private enum class ImageProperty { SATURATION, TRANSPARENCY, BRIGHTNESS }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,31 +36,33 @@ class MainActivity : AppCompatActivity() {
         setupLayout(savedInstanceState)
 
         if (savedInstanceState != null) {
-            val image = findViewById<ImageView>(R.id.image)
+            val image = findViewById<ImageFilterView>(R.id.image)
 
             // Restore image
             val vm by viewModels<PhotoEditorVM>()
             image.setImageDrawable(vm.getImage().value)
 
-            // Update color filter matrix and apply to ImageView
-            filterArray = savedInstanceState.getFloatArray("filterArray")!!
-            image.colorFilter = ColorMatrixColorFilter(ColorMatrix(filterArray))
+            image.alpha = savedInstanceState.getFloat("alpha")
+            image.brightness = savedInstanceState.getFloat("brightness")
+            image.saturation = savedInstanceState.getFloat("saturation")
+            image.warmth = savedInstanceState.getFloat("warmth")
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        val image = findViewById<ImageFilterView>(R.id.image)
 
         // Common controls
-        outState.putInt("saturation", findViewById<SeekBar>(R.id.saturation).progress)
-        outState.putFloatArray("filterArray", filterArray)
+        outState.putFloat("saturation", image.saturation)
 
         // Dual screen controls - should be saved in both modes to save seek bar position
-        outState.putInt("transparency", 100 - (100 * filterArray[18]).toInt())
-        outState.putInt("brightness", filterArray[4].toInt())
+        outState.putFloat("alpha", image.alpha)
+        outState.putFloat("brightness", image.brightness)
+        outState.putFloat("warmth", image.warmth)
 
         val vm by viewModels<PhotoEditorVM>()
-        vm.updateImage(findViewById<ImageView>(R.id.image).drawable)
+        vm.updateImage(findViewById<ImageFilterView>(R.id.image).drawable)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -99,36 +71,64 @@ class MainActivity : AppCompatActivity() {
         // Select image to edit from photo gallery
         if (requestCode == IMAGE_PICK_CODE && data?.data != null) {
             val uri: Uri = data.data!!
-            val image = findViewById<ImageView>(R.id.image)
+            val image = findViewById<ImageFilterView>(R.id.image)
             image.setImageBitmap(BitmapFactory.decodeStream(contentResolver.openInputStream(uri)))
         }
     }
 
     private fun setupLayout(savedInstanceState: Bundle?) {
-        val image = findViewById<ImageView>(R.id.image)
+        val image = findViewById<ImageFilterView>(R.id.image)
         image.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             startActivityForResult(intent, IMAGE_PICK_CODE)
         }
 
         // Common controls
-        setUpSaturation(image, savedInstanceState?.getInt("saturation"))
+        setUpSaturation(image, savedInstanceState?.getFloat("saturation"))
         setUpRotate(image)
         setUpSave(image)
 
         // Dual screen controls
         if (ScreenHelper.isDualMode(this)) {
-            setUpTransparency(image, savedInstanceState?.getInt("transparency"))
-            setUpBrightness(image, savedInstanceState?.getInt("brightness"))
+            setUpTransparency(image, savedInstanceState?.getFloat("alpha"))
+            setUpBrightness(image, savedInstanceState?.getFloat("brightness"))
+            setUpWarmth(image, savedInstanceState?.getFloat("warmth"))
         }
     }
 
-    private fun setUpBrightness(image: ImageView, progress: Int?) {
+    private fun setUpWarmth(image: ImageFilterView, progress: Float?) {
+        val warmth = findViewById<SeekBar>(R.id.warmth)
+
+        // Restore value
+        if (progress != null) {
+            image.warmth = progress
+            warmth.progress = (progress * 50).toInt()
+        }
+
+        warmth.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(
+                seek: SeekBar,
+                progress: Int, fromUser: Boolean
+            ) {
+                // warmth from 0.5 (cold) to 1 (original) to 2 (warm), progress from 0 to 100
+                image.warmth = progress / 50f
+            }
+
+            override fun onStartTrackingTouch(seek: SeekBar) {}
+
+            override fun onStopTrackingTouch(seek: SeekBar) {}
+        })
+    }
+
+    private fun setUpBrightness(image: ImageFilterView, progress: Float?) {
         val brightness = findViewById<SeekBar>(R.id.brightness)
 
         // Restore value
-        if (progress != null)
-            brightness.progress = progress
+        if (progress != null) {
+            image.brightness = progress
+            brightness.progress = (progress * 50).toInt()
+        }
 
         brightness.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
@@ -136,7 +136,8 @@ class MainActivity : AppCompatActivity() {
                 seek: SeekBar,
                 progress: Int, fromUser: Boolean
             ) {
-                image.colorFilter = updateColorMatrix(progress.toFloat(), ImageProperty.BRIGHTNESS)
+                // brightness from 0 (black) to 1 (original) to 2 (twice as bright), progress from 0 to 100
+                image.brightness = progress / 50f
             }
 
             override fun onStartTrackingTouch(seek: SeekBar) {}
@@ -145,12 +146,14 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun setUpTransparency(image: ImageView, progress: Int?) {
+    private fun setUpTransparency(image: ImageFilterView, progress: Float?) {
         val transparency = findViewById<SeekBar>(R.id.transparency)
 
         // Restore value
-        if (progress != null)
-            transparency.progress = progress
+        if (progress != null) {
+            image.alpha = progress
+            transparency.progress = 100 - (100 * progress).toInt()
+        }
 
         transparency.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
@@ -158,9 +161,8 @@ class MainActivity : AppCompatActivity() {
                 seek: SeekBar,
                 progress: Int, fromUser: Boolean
             ) {
-                // alpha from 0 (opaque) to 1 (transparent), progress from 0 to 100
-                image.colorFilter =
-                    updateColorMatrix((100 - progress) / 100f, ImageProperty.TRANSPARENCY)
+                // alpha from 0 (transparent) to 1 (opaque), progress from 0 to 100
+                image.alpha = (100 - progress) / 100f
             }
 
             override fun onStartTrackingTouch(seek: SeekBar) {}
@@ -169,12 +171,14 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun setUpSaturation(image: ImageView, progress: Int?) {
+    private fun setUpSaturation(image: ImageFilterView, progress: Float?) {
         val saturation = findViewById<SeekBar>(R.id.saturation)
 
         // Restore value
-        if (progress != null)
-            saturation.progress = progress
+        if (progress != null) {
+            image.saturation = progress
+            saturation.progress = (progress * 50).toInt()
+        }
 
         saturation.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
@@ -182,8 +186,8 @@ class MainActivity : AppCompatActivity() {
                 seek: SeekBar,
                 progress: Int, fromUser: Boolean
             ) {
-                // saturation from 0 (grayscale) to 1 (original) to 2 (highly saturated), progress from 0 to 100
-                image.colorFilter = updateColorMatrix(progress / 50f, ImageProperty.SATURATION)
+                // saturation from 0 (grayscale) to 1 (original) to 2 (hyper-saturated), progress from 0 to 100
+                image.saturation = progress / 50f
             }
 
             override fun onStartTrackingTouch(seek: SeekBar) {}
@@ -192,40 +196,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun updateColorMatrix(
-        progress: Float,
-        property: ImageProperty
-    ): ColorMatrixColorFilter {
-        when (property) {
-            ImageProperty.SATURATION -> {
-                // Taken from ColorMatrix method setSaturation
-                val invSat = 1 - progress
-                val r = 0.213f * invSat
-                val g = 0.715f * invSat
-                val b = 0.072f * invSat
-                filterArray[0] = r + progress
-                filterArray[1] = g
-                filterArray[2] = b
-                filterArray[5] = r
-                filterArray[6] = g + progress
-                filterArray[7] = b
-                filterArray[10] = r
-                filterArray[11] = g
-                filterArray[12] = b + progress
-            }
-            ImageProperty.TRANSPARENCY -> {
-                filterArray[18] = progress
-            }
-            ImageProperty.BRIGHTNESS -> {
-                filterArray[4] = progress
-                filterArray[9] = progress
-                filterArray[14] = progress
-            }
-        }
-        return ColorMatrixColorFilter(ColorMatrix(filterArray))
-    }
-
-    private fun setUpRotate(image: ImageView) {
+    private fun setUpRotate(image: ImageFilterView) {
         val left = findViewById<ImageButton>(R.id.rotate_left)
 
         left.setOnClickListener {
@@ -238,7 +209,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun applyRotationMatrix(angle: Float, image: ImageView) {
+    private fun applyRotationMatrix(angle: Float, image: ImageFilterView) {
         val matrix = Matrix()
         matrix.postRotate(angle)
         val curr = image.drawable.toBitmap()
@@ -247,7 +218,7 @@ class MainActivity : AppCompatActivity() {
         image.setImageBitmap(bm)
     }
 
-    private fun setUpSave(image: ImageView) {
+    private fun setUpSave(image: ImageFilterView) {
         val save = findViewById<ImageButton>(R.id.save)
         save.setOnClickListener {
             MediaStore.Images.Media.insertImage(
@@ -258,5 +229,4 @@ class MainActivity : AppCompatActivity() {
             )
         }
     }
-
 }
