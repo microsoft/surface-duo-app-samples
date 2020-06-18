@@ -16,9 +16,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ScrollView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
+import com.microsoft.device.display.samples.sourceeditor.viewmodel.ScrollViewModel
 import com.microsoft.device.display.samples.sourceeditor.viewmodel.WebViewModel
 import com.microsoft.device.dualscreen.layout.ScreenHelper
 import java.io.BufferedReader
@@ -28,9 +31,15 @@ import javax.net.ssl.HttpsURLConnection
 
 
 class CodeFragment : Fragment() {
-    private lateinit var viewModel: WebViewModel
+    private lateinit var webVM: WebViewModel
+    private lateinit var scrollVM: ScrollViewModel
     private lateinit var previewBtn : Button
     private lateinit var textField : TextInputEditText
+    private lateinit var scrollView : ScrollView
+
+    private var scrollRange : Int = 1
+    private var rangeFound : Boolean = false
+    private var scrollingBuffer : Int = 2
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,21 +49,31 @@ class CodeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_item_code, container, false)
 
         activity?.let {
-            viewModel = ViewModelProvider(requireActivity()).get(WebViewModel::class.java)
-            textField = view.findViewById(R.id.textInputField)
+            webVM = ViewModelProvider(requireActivity()).get(WebViewModel::class.java)
+            scrollVM = ViewModelProvider(requireActivity()).get(ScrollViewModel::class.java)
 
-            if (viewModel.getText().value == null) {
-                viewModel.setText(readFile("index.html", context))
+            textField = view.findViewById(R.id.textinput_code)
+            scrollView = view.findViewById(R.id.scrollview_code)
+
+            if (webVM.getText().value == null) {
+                webVM.setText(readFile("index.html", context))
             }
 
-            textField.setText(viewModel.getText().value)
+            textField.setText(webVM.getText().value)
+
+            scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+                Log.d("VMDCODE", "Scrolling")
+                handleScrolling(false, scrollY)
+            }
+
+            scrollVM.getScroll().observe(requireActivity(), Observer { state ->
+                Log.d("VMDCODE", "data received")
+                if(!state.scrollKey.equals("Code")) {
+                    handleScrolling(true, state.scrollPercentage)
+                }
+            })
+
             setOnChangeListenerForTextInput(textField)
-
-            textField.setPaddingRelative(textField.paddingStart, textField.paddingTop,
-                    textField.paddingEnd, textField.paddingBottom + 50
-            )
-
-
             handleSpannedModeSelection(view)
         }
 
@@ -69,21 +88,32 @@ class CodeFragment : Fragment() {
         }
     }
 
-    private fun getTextFromWeb(urlString: String, textField: TextInputEditText, view: View) {
-        Thread(Runnable {
-            try {
-                val url = URL(urlString)
-                val con = url.openConnection() as HttpsURLConnection
-
-                val datas = con.inputStream.bufferedReader().readText()
-                Log.d("VMDCODE HTML content", datas)
-                view.post{viewModel.setText(datas)}
-                view.post{textField.setText(datas)}
-
-            } catch (ex: Exception) {
-                Log.d("Exception", ex.toString())
+    private fun handleScrolling (observing: Boolean, int: Int) {
+        if (!rangeFound) {
+            if (scrollView.scrollY > 100) {
+                scrollRange = scrollView.scrollY
+                rangeFound = true
+            } else {
+                scrollView.fullScroll(View.FOCUS_DOWN)
             }
-        }).start()
+        }
+        else {
+            if (observing) {
+                scrollingBuffer = 0
+
+                val y = (scrollRange * int) / 100
+                scrollView.scrollTo(scrollView.scrollX, y)
+            }
+            else {
+                if (scrollingBuffer >= 2) {
+                    val percentage = (int * 100) / scrollRange
+                    scrollVM.setScroll("Code", percentage)
+                }
+                else {
+                    scrollingBuffer++
+                }
+            }
+        }
     }
 
     private fun setOnClickListenerForCodeView(previewBtn: Button){
@@ -96,13 +126,11 @@ class CodeFragment : Fragment() {
         field.addTextChangedListener(object : TextWatcher {
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                Log.d("VMDCode", "before text hit: " +
-                parentFragmentManager.fragments.toString())
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 Log.d("VMDCode", "textChanged")
-                viewModel.setText(field.text.toString())
+                webVM.setText(field.text.toString())
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -123,7 +151,9 @@ class CodeFragment : Fragment() {
 
     private fun handleSpannedModeSelection(view: View) {
         activity?.let {
+            previewBtn = view.findViewById(R.id.btn_switch_to_preview)
             if (ScreenHelper.isDualMode(it)) {
+                previewBtn.visibility = View.INVISIBLE
                 parentFragmentManager
                         .beginTransaction()
                         .replace(
@@ -133,7 +163,7 @@ class CodeFragment : Fragment() {
                         .commit()
             }
             else {
-                previewBtn = view.findViewById(R.id.btn_switch_to_preview)
+                previewBtn.visibility = View.VISIBLE
                 setOnClickListenerForCodeView(previewBtn)
             }
         }
