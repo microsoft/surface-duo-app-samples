@@ -7,13 +7,9 @@
 
 <resources>
     <dimen name="button_height">40dp</dimen>
-    <dimen name="picture_height">40dp</dimen>
     <dimen name="small_margin">8dp</dimen>
-    <dimen name="small_padding">8dp</dimen>
     <dimen name="seek_bar_max_height">4dp</dimen>
     <dimen name="text_size">12sp</dimen>
-    <dimen name="dropdown_width">16dp</dimen>
-    <dimen name="dropdown_height">16dp</dimen>
     <dimen name="large_padding">16dp</dimen>
     <dimen name="med_padding">10dp</dimen>
 </resources>

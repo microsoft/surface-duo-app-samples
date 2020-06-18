@@ -7,10 +7,10 @@
 package com.microsoft.example.photo_editor
 
 import android.content.Intent
-import android.graphics.RectF
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.graphics.RectF
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -107,19 +107,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         warmth.setOnSeekBarChangeListener(object :
-            SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(
-                seek: SeekBar,
-                progress: Int, fromUser: Boolean
-            ) {
-                // warmth from 0.5 (cold) to 1 (original) to 2 (warm), progress from 0 to 100
-                image.warmth = progress / 50f
-            }
+                SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seek: SeekBar,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
+                    // warmth from 0.5 (cold) to 1 (original) to 2 (warm), progress from 0 to 100
+                    image.warmth = progress / 50f
+                }
 
-            override fun onStartTrackingTouch(seek: SeekBar) {}
+                override fun onStartTrackingTouch(seek: SeekBar) {}
 
-            override fun onStopTrackingTouch(seek: SeekBar) {}
-        })
+                override fun onStopTrackingTouch(seek: SeekBar) {}
+            })
     }
 
     private fun setUpBrightness(image: ImageFilterView, progress: Float?) {
@@ -132,19 +133,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         brightness.setOnSeekBarChangeListener(object :
-            SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(
-                seek: SeekBar,
-                progress: Int, fromUser: Boolean
-            ) {
-                // brightness from 0 (black) to 1 (original) to 2 (twice as bright), progress from 0 to 100
-                image.brightness = progress / 50f
-            }
+                SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seek: SeekBar,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
+                    // brightness from 0 (black) to 1 (original) to 2 (twice as bright), progress from 0 to 100
+                    image.brightness = progress / 50f
+                }
 
-            override fun onStartTrackingTouch(seek: SeekBar) {}
+                override fun onStartTrackingTouch(seek: SeekBar) {}
 
-            override fun onStopTrackingTouch(seek: SeekBar) {}
-        })
+                override fun onStopTrackingTouch(seek: SeekBar) {}
+            })
     }
 
     private fun setUpTransparency(image: ImageFilterView, progress: Float?) {
@@ -157,19 +159,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         transparency.setOnSeekBarChangeListener(object :
-            SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(
-                seek: SeekBar,
-                progress: Int, fromUser: Boolean
-            ) {
-                // alpha from 0 (transparent) to 1 (opaque), progress from 0 to 100
-                image.alpha = (100 - progress) / 100f
-            }
+                SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seek: SeekBar,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
+                    // alpha from 0 (transparent) to 1 (opaque), progress from 0 to 100
+                    image.alpha = (100 - progress) / 100f
+                }
 
-            override fun onStartTrackingTouch(seek: SeekBar) {}
+                override fun onStartTrackingTouch(seek: SeekBar) {}
 
-            override fun onStopTrackingTouch(seek: SeekBar) {}
-        })
+                override fun onStopTrackingTouch(seek: SeekBar) {}
+            })
     }
 
     private fun setUpSaturation(image: ImageFilterView, progress: Float?) {
@@ -182,19 +185,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         saturation.setOnSeekBarChangeListener(object :
-            SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(
-                seek: SeekBar,
-                progress: Int, fromUser: Boolean
-            ) {
-                // saturation from 0 (grayscale) to 1 (original) to 2 (hyper-saturated), progress from 0 to 100
-                image.saturation = progress / 50f
-            }
+                SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seek: SeekBar,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
+                    // saturation from 0 (grayscale) to 1 (original) to 2 (hyper-saturated), progress from 0 to 100
+                    image.saturation = progress / 50f
+                }
 
-            override fun onStartTrackingTouch(seek: SeekBar) {}
+                override fun onStartTrackingTouch(seek: SeekBar) {}
 
-            override fun onStopTrackingTouch(seek: SeekBar) {}
-        })
+                override fun onStopTrackingTouch(seek: SeekBar) {}
+            })
     }
 
     private fun setUpRotate(image: ImageFilterView) {

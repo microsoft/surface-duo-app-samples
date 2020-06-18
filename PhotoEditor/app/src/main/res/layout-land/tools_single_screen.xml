@@ -36,6 +36,7 @@
             android:layout_height="@dimen/button_height"
             android:layout_marginTop="@dimen/small_margin"
             android:layout_weight="1"
+            android:contentDescription="@string/rotate_left"
             android:src="@drawable/ic_rotate_left" />
 
         <ImageButton
@@ -44,6 +45,7 @@
             android:layout_height="@dimen/button_height"
             android:layout_marginTop="@dimen/small_margin"
             android:layout_weight="1"
+            android:contentDescription="@string/rotate_right"
             android:src="@drawable/ic_rotate_right" />
 
         <TextView
@@ -61,9 +63,9 @@
             android:layout_height="@dimen/button_height"
             android:layout_marginTop="@dimen/small_margin"
             android:layout_weight="1"
+            android:contentDescription="@string/save_button"
             android:src="@drawable/ic_save_alt_black_18dp" />
 
     </LinearLayout>
-
 
 </LinearLayout>

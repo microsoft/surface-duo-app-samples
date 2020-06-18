@@ -13,4 +13,7 @@
     <string name="save">Save</string>
     <string name="transparency">Transparency</string>
     <string name="warmth">Warmth</string>
+    <string name="rotate_left">Rotate image 90 degrees counter-clockwise</string>
+    <string name="rotate_right">Rotate image 90 degrees clockwise</string>
+    <string name="save_button">Save image to photo gallery</string>
 </resources>

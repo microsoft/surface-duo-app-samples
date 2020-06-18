@@ -11,8 +11,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingTop="@dimen/large_padding"
     android:paddingHorizontal="@dimen/large_padding"
+    android:paddingTop="@dimen/large_padding"
     tools:ignore="MissingDefaultResource">
 
     <TextView
@@ -134,6 +134,7 @@
                     android:layout_height="@dimen/button_height"
                     android:layout_marginTop="@dimen/small_margin"
                     android:layout_weight="1"
+                    android:contentDescription="@string/rotate_left"
                     android:src="@drawable/ic_rotate_left" />
 
                 <ImageButton
@@ -142,8 +143,11 @@
                     android:layout_height="@dimen/button_height"
                     android:layout_marginTop="@dimen/small_margin"
                     android:layout_weight="1"
+                    android:contentDescription="@string/rotate_right"
                     android:src="@drawable/ic_rotate_right" />
+
             </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
@@ -166,8 +170,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/button_height"
                 android:layout_marginTop="@dimen/small_margin"
+                android:contentDescription="@string/save_button"
                 android:src="@drawable/ic_save_alt_black_18dp" />
 
         </LinearLayout>
+
     </GridLayout>
+
 </LinearLayout>
