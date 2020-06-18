@@ -7,6 +7,7 @@
 package com.microsoft.example.photo_editor
 
 import android.content.Intent
+import android.graphics.RectF
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -26,8 +27,8 @@ import java.time.LocalDateTime
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        // image pick code
-        private const val IMAGE_PICK_CODE = 1000
+        // Request code for image upload activity
+        private const val UPLOAD_IMAGE = 1000
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         // Select image to edit from photo gallery
-        if (requestCode == IMAGE_PICK_CODE && data?.data != null) {
+        if (requestCode == UPLOAD_IMAGE && data?.data != null) {
             val uri: Uri = data.data!!
             val image = findViewById<ImageFilterView>(R.id.image)
             image.setImageBitmap(BitmapFactory.decodeStream(contentResolver.openInputStream(uri)))
@@ -80,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         val image = findViewById<ImageFilterView>(R.id.image)
         image.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            startActivityForResult(intent, IMAGE_PICK_CODE)
+            startActivityForResult(intent, UPLOAD_IMAGE)
         }
 
         // Common controls
@@ -221,9 +222,19 @@ class MainActivity : AppCompatActivity() {
     private fun setUpSave(image: ImageFilterView) {
         val save = findViewById<ImageButton>(R.id.save)
         save.setOnClickListener {
+            // Get current size of drawable so entire ImageView is not saved (which is what drawToBitmap does)
+            val rect = RectF()
+            image.imageMatrix.mapRect(rect, RectF(image.drawable.bounds))
+
             MediaStore.Images.Media.insertImage(
                 contentResolver,
-                image.drawToBitmap(),
+                Bitmap.createBitmap(
+                    image.drawToBitmap(),
+                    rect.left.toInt(),
+                    rect.top.toInt(),
+                    rect.width().toInt(),
+                    rect.height().toInt()
+                ),
                 "Edited photo",
                 "Made with Surface Duo Photo Editor sample on ${LocalDateTime.now()}"
             )
