@@ -26,8 +26,6 @@ import com.microsoft.device.display.samples.sourceeditor.viewmodel.WebViewModel
 import com.microsoft.device.dualscreen.layout.ScreenHelper
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.net.URL
-import javax.net.ssl.HttpsURLConnection
 
 
 class CodeFragment : Fragment() {
@@ -56,7 +54,7 @@ class CodeFragment : Fragment() {
             scrollView = view.findViewById(R.id.scrollview_code)
 
             if (webVM.getText().value == null) {
-                webVM.setText(readFile("index.html", context))
+                webVM.setText(readFile("source.html", context))
             }
 
             textField.setText(webVM.getText().value)
