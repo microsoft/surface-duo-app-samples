@@ -27,18 +27,26 @@ import com.microsoft.device.dualscreen.layout.ScreenHelper
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-
+/* Fragment that defines functionality for source code editor */
 class CodeFragment : Fragment() {
-    private lateinit var webVM: WebViewModel
-    private lateinit var scrollVM: ScrollViewModel
+    // Defines //
+    private val DEFAULT_RANGE = 1
+    private val MIN_RANGE_THRESHOLD = 100
+    private val EMPTY_BUFFER_SIZE = 0
+    private val DEFAULT_BUFFER_SIZE = 2
+
+    // Variables //
     private lateinit var previewBtn : Button
     private lateinit var textField : TextInputEditText
     private lateinit var scrollView : ScrollView
+    private lateinit var scrollVM: ScrollViewModel
+    private lateinit var webVM: WebViewModel
 
-    private var scrollRange : Int = 1
+    private var scrollingBuffer : Int = DEFAULT_BUFFER_SIZE
+    private var scrollRange : Int = DEFAULT_RANGE
     private var rangeFound : Boolean = false
-    private var scrollingBuffer : Int = 2
 
+    // initialize fragment elements when view is created
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,8 +55,9 @@ class CodeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_item_code, container, false)
 
         activity?.let {
-            webVM = ViewModelProvider(requireActivity()).get(WebViewModel::class.java)
+            // initialize ViewModels (find existing or create a new one)
             scrollVM = ViewModelProvider(requireActivity()).get(ScrollViewModel::class.java)
+            webVM = ViewModelProvider(requireActivity()).get(WebViewModel::class.java)
 
             textField = view.findViewById(R.id.textinput_code)
             scrollView = view.findViewById(R.id.scrollview_code)
@@ -59,13 +68,12 @@ class CodeFragment : Fragment() {
 
             textField.setText(webVM.getText().value)
 
+            // set event and data listeners
             scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-                Log.d("VMDCODE", "Scrolling")
                 handleScrolling(false, scrollY)
             }
 
             scrollVM.getScroll().observe(requireActivity(), Observer { state ->
-                Log.d("VMDCODE", "data received")
                 if(!state.scrollKey.equals("Code")) {
                     handleScrolling(true, state.scrollPercentage)
                 }
@@ -78,6 +86,7 @@ class CodeFragment : Fragment() {
         return view
     }
 
+    // read from a base file in the assets folder
     private fun readFile(file : String, context : Context?) : String {
         return BufferedReader(InputStreamReader(context?.assets?.open(file))).useLines { lines ->
             val results = StringBuilder()
@@ -86,27 +95,33 @@ class CodeFragment : Fragment() {
         }
     }
 
+    // mirror scrolling logic
     private fun handleScrolling (observing: Boolean, int: Int) {
+        // scrolling window has not been calibrated yet
         if (!rangeFound) {
-            if (scrollView.scrollY > 100) {
-                scrollRange = scrollView.scrollY
+            if (scrollView.scrollY > MIN_RANGE_THRESHOLD) {
+                scrollRange = scrollView.scrollY  // successfully calibrated
                 rangeFound = true
             } else {
                 scrollView.fullScroll(View.FOCUS_DOWN)
             }
         }
+        // scrolling window has been calibrated
         else {
+            // preview window scrolled, auto scroll to match preview
             if (observing) {
-                scrollingBuffer = 0
+                scrollingBuffer = EMPTY_BUFFER_SIZE
 
                 val y = (scrollRange * int) / 100
                 scrollView.scrollTo(scrollView.scrollX, y)
             }
             else {
-                if (scrollingBuffer >= 2) {
+                // user dragged window to trigger scroll
+                if (scrollingBuffer >= DEFAULT_BUFFER_SIZE) {
                     val percentage = (int * 100) / scrollRange
                     scrollVM.setScroll("Code", percentage)
                 }
+                // filter out scrolling events caused by auto scrolling
                 else {
                     scrollingBuffer++
                 }
@@ -114,12 +129,7 @@ class CodeFragment : Fragment() {
         }
     }
 
-    private fun setOnClickListenerForCodeView(previewBtn: Button){
-        previewBtn.setOnClickListener {
-            startPreviewFragment()
-        }
-    }
-
+    // listener for changes to text in code editor
     private fun setOnChangeListenerForTextInput(field: TextInputEditText) {
         field.addTextChangedListener(object : TextWatcher {
 
@@ -127,7 +137,6 @@ class CodeFragment : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Log.d("VMDCode", "textChanged")
                 webVM.setText(field.text.toString())
             }
 
@@ -137,6 +146,7 @@ class CodeFragment : Fragment() {
         })
     }
 
+    // method that triggers transition to preview fragment
     private fun startPreviewFragment() {
         parentFragmentManager.beginTransaction()
             .replace(
@@ -147,6 +157,7 @@ class CodeFragment : Fragment() {
             .commit()
     }
 
+    // single screen vs. dual screen logic
     private fun handleSpannedModeSelection(view: View) {
         activity?.let {
             previewBtn = view.findViewById(R.id.btn_switch_to_preview)
@@ -162,7 +173,9 @@ class CodeFragment : Fragment() {
             }
             else {
                 previewBtn.visibility = View.VISIBLE
-                setOnClickListenerForCodeView(previewBtn)
+                previewBtn.setOnClickListener {
+                    startPreviewFragment()
+                }
             }
         }
     }
