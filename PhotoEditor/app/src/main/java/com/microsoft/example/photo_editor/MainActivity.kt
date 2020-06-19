@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity() {
             val vm by viewModels<PhotoEditorVM>()
             image.setImageDrawable(vm.getImage().value)
 
-            image.alpha = savedInstanceState.getFloat("alpha")
             image.brightness = savedInstanceState.getFloat("brightness")
             image.saturation = savedInstanceState.getFloat("saturation")
             image.warmth = savedInstanceState.getFloat("warmth")
@@ -58,7 +57,6 @@ class MainActivity : AppCompatActivity() {
         outState.putFloat("saturation", image.saturation)
 
         // Dual screen controls - should be saved in both modes to save seek bar position
-        outState.putFloat("alpha", image.alpha)
         outState.putFloat("brightness", image.brightness)
         outState.putFloat("warmth", image.warmth)
 
@@ -74,6 +72,16 @@ class MainActivity : AppCompatActivity() {
             val uri: Uri = data.data!!
             val image = findViewById<ImageFilterView>(R.id.image)
             image.setImageBitmap(BitmapFactory.decodeStream(contentResolver.openInputStream(uri)))
+
+            // Reset all image controls
+            findViewById<SeekBar>(R.id.saturation).progress = 50
+            image.saturation = 1f
+
+            findViewById<SeekBar>(R.id.brightness)?.progress = 50
+            image.brightness = 1f
+
+            findViewById<SeekBar>(R.id.warmth)?.progress = 50
+            image.warmth = 1f
         }
     }
 
@@ -91,7 +99,6 @@ class MainActivity : AppCompatActivity() {
 
         // Dual screen controls
         if (ScreenHelper.isDualMode(this)) {
-            setUpTransparency(image, savedInstanceState?.getFloat("alpha"))
             setUpBrightness(image, savedInstanceState?.getFloat("brightness"))
             setUpWarmth(image, savedInstanceState?.getFloat("warmth"))
         }
@@ -141,32 +148,6 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     // brightness from 0 (black) to 1 (original) to 2 (twice as bright), progress from 0 to 100
                     image.brightness = progress / 50f
-                }
-
-                override fun onStartTrackingTouch(seek: SeekBar) {}
-
-                override fun onStopTrackingTouch(seek: SeekBar) {}
-            })
-    }
-
-    private fun setUpTransparency(image: ImageFilterView, progress: Float?) {
-        val transparency = findViewById<SeekBar>(R.id.transparency)
-
-        // Restore value
-        if (progress != null) {
-            image.alpha = progress
-            transparency.progress = 100 - (100 * progress).toInt()
-        }
-
-        transparency.setOnSeekBarChangeListener(object :
-                SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seek: SeekBar,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    // alpha from 0 (transparent) to 1 (opaque), progress from 0 to 100
-                    image.alpha = (100 - progress) / 100f
                 }
 
                 override fun onStartTrackingTouch(seek: SeekBar) {}
