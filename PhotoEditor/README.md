@@ -1,22 +1,50 @@
 # Photo Editor
 
-This Kotlin application implements a simple photo editor that lets users select, edit, and save images. It's also a good example of how to use the [Companion Pane](https://docs.microsoft.com/en-us/dual-screen/introduction#dual-screen-app-patterns) pattern.
+This Kotlin application implements a simple photo editor that lets users select, edit, and save images.pattern.
 
-## Getting started
+## Prerequisites
 
-To learn how to load apps on the Surface Duo emulator, see the [documentation](https://docs.microsoft.com/dual-screen/android), and follow [the blog](https://devblogs.microsoft.com/surface-duo).
+* Android Studio
+* Surface Duo emulator
 
-## Features
+### ImageFilterView
 
-- Image selection - click on current image to open photo gallery
+This application uses a beta release of the [Constraint Layout](https://developer.android.com/jetpack/androidx/releases/constraintlayout) package to facilitate image editing with the ImageFilterView class.
 
-    ![Clicking on default image](images/image_click.png) ![Photo gallery opening](images/photo_gallery.png)
+## Running the sample
 
-- Number of available controls for editing the image changes when switching between single and dual screen modes
+* Start Android Studio.
+* Open the PhotoEditor project: **File > Open**, navigate to file location of the  the **PhotoEditor** folder, then click **OK**.
+* Build your project: **Build > Make Project** or **Ctrl+F9**
+* Start the Surface Duo emulator (more instructions on how to use the emulator [here](https://docs.microsoft.com/en-us/dual-screen/android/use-emulator?tabs=java)).
+* Select **"Microosft SurfaceDuoEMulator API 29"** or **"Virtual Device"** from the list of Running Devices.
+* Run the project on the emulator: **Run > Run 'app'**, **Ctrl+F2**, or click the green play button.
 
-## Notes
+## Key concepts
 
-This application uses a beta release of the [Constraint Layout](https://developer.android.com/jetpack/androidx/releases/constraintlayout) package to facilitate image editing. To see the basic functionality of this sample with a stable release, check out [this](https://github.com/microsoft/surface-duo-app-samples/tree/1c3d8e3b3d5b43ba4bd6baf8731e8c9d8fb55695) commit.
+### Companion Pane
+
+This sample shows how the [Companion Pane](https://docs.microsoft.com/en-us/dual-screen/introduction#companion-pane) dual-screen app pattern can be used to make more tools and controls available to users when the app is spanned. When in single-screen mode, the app only offers users three controls: the saturation slider, the rotation buttons, and the save button. This ensures that the chosen image is large enough on the screen to inspect any edits.
+
+When switched to dual-screen mode, however, the entire left screen can be dedicated to image display. This frees up the right screen to display more editing controls. In this sample, two additional controls were added: the brightness slider and the warmth slider.
+
+### Dual screen layout
+
+The SurfaceDuoLayout element of the [DualScreen-Layout](https://docs.microsoft.com/en-us/dual-screen/android/api-reference/dualscreen-layout?tabs=java) package is the key to developing applications on the Surface Duo. This layout provides different attributes for single-screen and dual-screen views, and example usage can be seen in [activity_main.xml](app/src/main/res/layout/activity_main.xml). 
+
+NOTE: When defining landscape and portrait orientations for the dual-screen view, the two screens are treated as one. That means the dual-screen landscape orientation is when the single-screen orientation would be considered portrait (shown below) and vice versa.
+
+![Dual-screen landscape view](screenshots/dual_screen_landscape.png)
+
+### App features
+
+* Select: click on current image to open photo gallery and select a new image
+* Edit: click on buttons and adjust sliders to modify image properties
+  - Buttons: rotate left and right
+  - Sliders: saturation, brightness, warmth
+* Save: click save button to download edited image to device
+
+![PhotoEditor app on left screen with edited image and Gallery app on right screen displaying the same edited image after it was saved](screenshots/save_feature.png)
 
 ## Contributing
 
