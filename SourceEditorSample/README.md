@@ -19,17 +19,17 @@ If more content exists than can be displayed on the screen at once, users can sc
 ### Single Screen Mode
 
 In single screen mode, users are able to view one of two screens at a time: editor or preview. A button appears in the editor window that allows users to view a preview of the source code. In order to go back to the editor from the preview screen, perform Android's "back" gesture or by pressing the back button on your device. In single screen mode, users can reference other sites such as developer forums while using the app.
-![Single screen code editor](screenshots/single_editor.png)
+![Single screen code editor](screenshots/single_editor.PNG)
 
 ### Dual Screen Mode
 
 In dual screen mode, both windows are visible, so no buttons are visible to enable transitions. In this layout, users can scroll on the code side, subsequently scrolling the preview screen, and vice versa. Changes to text in the editor will update the preview in real time using a [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel).
-![Dual screen app view](screenshots/dual_view_horizontal.png)
+![Dual screen app view](screenshots/dual_view_horizontal.PNG)
 
 ### Orientation
 
 This project supports various rotation configurations. In order to enable orientation changes within the application, ensure that rotation is enabled within the Duo emulator/device itself. This can be done by swiping down from the top of the screen and selecting the rotation icon.
-![Enabling rotation](screenshots/duo_enable_rotation.png)
+![Enabling rotation](screenshots/duo_enable_rotation.PNG)
 
 ## Contributing
 
