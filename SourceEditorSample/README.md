@@ -1,8 +1,21 @@
-# Introduction 
-This repo contains the samples for Surface Duo 
+# Introduction
+
+This sample contains a Kotlin application designed for Surface Duo. The application is an HTML
+ editor that enables real-time rendering of formatted source code. Making use of the
+ [Dual View](https://docs.microsoft.com/dual-screen/introduction#dual-view)
+ app pattern, users are able to edit and preview any changes simultaneously without switching
+ windows.
 
 ## Getting Started
-To learn how to load your app on to emulator, and to use it ,see the full documentation here: [https://docs.microsoft.com/dual-screen](https://docs.microsoft.com/dual-screen)
+
+To learn how to load your app on to emulator, and to use it, see the full documentation here: [https://docs.microsoft.com/dual-screen](https://docs.microsoft.com/dual-screen)
+
+## Features
+
+This project uses [Fragments](https://developer.android.com/guide/components/fragments), one to display a code editing window and another to render and display formatted code through a [WebView](https://developer.android.com/reference/android/webkit/WebView). The app starts in single screen mode, but can be spanned to enable dual screen mode. See the Getting Started section above for more information about spanning.
+
+### Single Screen Mode
+
 
 ## Contributing
 
@@ -19,6 +32,7 @@ For more information see the [Code of Conduct FAQ](https://opensource.microsoft.
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## License
+
 Copyright (c) Microsoft Corporation.
 
 MIT License
