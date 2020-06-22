@@ -28,7 +28,7 @@ In dual screen mode, both windows are visible, so no buttons are visible to enab
 
 ### Orientation
 
-This project supports various rotation configurations. In order to enable orientation changes within the application, ensure that rotation is enabled within the Duo emulator/device itself. This can be done by swiping down from the top of the screen and selecting the rotation icon.
+This project supports various rotation configurations. In order to enable orientation changes within the application, ensure that rotation is enabled within the Duo emulator/device itself. This can be done by swiping down from the top of the screen and selecting the rotation icon. Examples of different orientation layouts are available in the screenshots folder.
 ![Enabling rotation](screenshots/duo_enable_rotation.PNG)
 
 ## Contributing
