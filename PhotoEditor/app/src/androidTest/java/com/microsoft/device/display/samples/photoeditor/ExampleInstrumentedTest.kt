@@ -1,4 +1,4 @@
-package com.microsoft.example.photo_editor
+package com.microsoft.device.display.samples.photoeditor
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry

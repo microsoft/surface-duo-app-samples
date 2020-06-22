@@ -1,4 +1,4 @@
-package com.microsoft.example.photo_editor
+package com.microsoft.device.display.samples.photoeditor
 
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.MutableLiveData
