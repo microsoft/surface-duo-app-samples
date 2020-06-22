@@ -38,21 +38,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.65"
+        android:paddingHorizontal="@dimen/large_padding"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/med_padding"
+            android:layout_marginTop="@dimen/large_padding"
             android:text="@string/saturation"
             android:textAlignment="center"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_size" />
 
         <SeekBar
             android:id="@+id/saturation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/small_margin"
+            android:layout_marginTop="@dimen/med_padding"
             android:max="100"
             android:maxHeight="@dimen/seek_bar_max_height"
             android:min="0"
@@ -63,7 +65,7 @@
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/large_padding"
+            android:layout_marginTop="@dimen/xl_padding"
             android:columnCount="2"
             android:rowCount="1">
 
@@ -80,18 +82,20 @@
                     android:layout_height="wrap_content"
                     android:text="@string/rotate"
                     android:textAlignment="center"
-                    android:textColor="@android:color/white" />
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/text_size" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/med_padding"
                     android:orientation="horizontal">
 
                     <ImageButton
                         android:id="@+id/rotate_left"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/button_height"
-                        android:layout_marginTop="@dimen/small_margin"
+                        android:layout_marginEnd="@dimen/xl_padding"
                         android:layout_weight="1"
                         android:contentDescription="@string/rotate_left"
                         android:src="@drawable/ic_rotate_left" />
@@ -100,7 +104,6 @@
                         android:id="@+id/rotate_right"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/button_height"
-                        android:layout_marginTop="@dimen/small_margin"
                         android:layout_weight="1"
                         android:contentDescription="@string/rotate_right"
                         android:src="@drawable/ic_rotate_right" />
@@ -117,17 +120,18 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/save"
                     android:textAlignment="center"
-                    android:textColor="@android:color/white" />
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/text_size" />
 
                 <ImageButton
                     android:id="@+id/save"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="@dimen/button_height"
-                    android:layout_marginTop="@dimen/small_margin"
+                    android:layout_marginTop="@dimen/med_padding"
                     android:contentDescription="@string/save_button"
                     android:src="@drawable/ic_save" />
 

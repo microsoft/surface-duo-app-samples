@@ -43,7 +43,7 @@
         android:id="@+id/saturation_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="@dimen/med_padding"
         android:text="@string/saturation"
         android:textAlignment="center"
         android:textColor="@android:color/white"
@@ -72,7 +72,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.89" />
+        app:layout_constraintGuide_percent="0.86" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -96,7 +96,7 @@
             android:id="@+id/rotate_left"
             android:layout_width="match_parent"
             android:layout_height="@dimen/button_height"
-            android:layout_marginTop="@dimen/small_margin"
+            android:layout_marginTop="@dimen/med_padding"
             android:layout_weight="1"
             android:contentDescription="@string/rotate_left"
             android:src="@drawable/ic_rotate_left" />
@@ -105,7 +105,7 @@
             android:id="@+id/rotate_right"
             android:layout_width="match_parent"
             android:layout_height="@dimen/button_height"
-            android:layout_marginTop="@dimen/small_margin"
+            android:layout_marginTop="@dimen/large_padding"
             android:layout_weight="1"
             android:contentDescription="@string/rotate_right"
             android:src="@drawable/ic_rotate_right" />
@@ -113,7 +113,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/med_padding"
+            android:layout_marginTop="@dimen/xl_padding"
             android:text="@string/save"
             android:textAlignment="center"
             android:textColor="@android:color/white"
@@ -123,7 +123,7 @@
             android:id="@+id/save"
             android:layout_width="match_parent"
             android:layout_height="@dimen/button_height"
-            android:layout_marginTop="@dimen/small_margin"
+            android:layout_marginTop="@dimen/med_padding"
             android:layout_weight="1"
             android:contentDescription="@string/save_button"
             android:src="@drawable/ic_save" />
