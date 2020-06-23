@@ -12,7 +12,7 @@
     android:id="@+id/dual_code"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:showIn="@layout/fragment_item_code" />
+    tools:layout="@layout/fragment_item_code" />
 
 
 
