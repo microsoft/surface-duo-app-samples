@@ -20,21 +20,25 @@ This application also uses a beta release of the [Constraint Layout](https://dev
 
 ## Key concepts
 
+### App features
+
+* Select: click on current image to open photo gallery or drag and drop image file
+* Edit: click on buttons and adjust sliders to modify image properties
+  - Buttons: rotate left and right
+  - Sliders: saturation, brightness, warmth
+* Save: click save button to download edited image to device (see below)
+
+![PhotoEditor app on left screen with edited image and photo gallery on right screen displaying the same edited image after it was saved](screenshots/save_feature.png)
+
 ### Companion Pane
 
 This sample shows how the [Companion Pane](https://docs.microsoft.com/dual-screen/introduction#companion-pane) dual-screen app pattern can be used to make more tools and controls available to users when the app is spanned. When in single-screen mode, the app only offers users three controls: the saturation slider, the rotation buttons, and the save button. This ensures that the chosen image is large enough on the screen to inspect any edits.
 
 When switched to dual-screen mode, however, the entire left screen can be dedicated to image display. This frees up the right screen to display more editing controls. In this sample, two additional controls were added: the brightness slider and the warmth slider.
 
-### App features
+### Drag and drop
 
-* Select: click on current image to open photo gallery and select a new image
-* Edit: click on buttons and adjust sliders to modify image properties
-  - Buttons: rotate left and right
-  - Sliders: saturation, brightness, warmth
-* Save: click save button to download edited image to device (see below)
-
-![PhotoEditor app on left screen with edited image and Gallery app on right screen displaying the same edited image after it was saved](screenshots/save_feature.png)
+This sample also demonstrates how drag and drop features can simplify file transfer across screens and between applications. For more information on drag and drop, check out [this](https://github.com/microsoft/surface-duo-sdk-samples-kotlin/tree/master/draganddrop) sample.
 
 ### Dual screen layout
 
