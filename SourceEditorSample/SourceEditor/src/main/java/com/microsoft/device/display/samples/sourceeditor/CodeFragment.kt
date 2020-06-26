@@ -11,7 +11,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,6 +44,7 @@ class CodeFragment : Fragment() {
     private var scrollingBuffer : Int = DEFAULT_BUFFER_SIZE
     private var scrollRange : Int = DEFAULT_RANGE
     private var rangeFound : Boolean = false
+    private var initText : Boolean = true
 
     // initialize fragment elements when view is created
     override fun onCreateView(
@@ -53,6 +53,7 @@ class CodeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_item_code, container, false)
+        initText = true
 
         activity?.let {
             // initialize ViewModels (find existing or create a new one)
@@ -66,18 +67,13 @@ class CodeFragment : Fragment() {
                 webVM.setText(readFile("source.html", context))
             }
 
-            textField.setText(webVM.getText().value)
-
-            // set event and data listeners
-            scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-                handleScrolling(false, scrollY)
-            }
-
-            scrollVM.getScroll().observe(requireActivity(), Observer { state ->
-                if(!state.scrollKey.equals("Code")) {
-                    handleScrolling(true, state.scrollPercentage)
+            webVM.getText().observe(requireActivity(), Observer { str ->
+                if(str != textField.text.toString()) {
+                    textField.setText(str)
                 }
             })
+
+            textField.setText(webVM.getText().value)
 
             setOnChangeListenerForTextInput(textField)
             handleSpannedModeSelection(view)
@@ -137,7 +133,7 @@ class CodeFragment : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                webVM.setText(field.text.toString())
+                webVM.setText(s.toString())
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -158,18 +154,26 @@ class CodeFragment : Fragment() {
     }
 
     // single screen vs. dual screen logic
-    private fun handleSpannedModeSelection(view: View) {
+   private fun handleSpannedModeSelection(view: View) {
         activity?.let {
             previewBtn = view.findViewById(R.id.btn_switch_to_preview)
             if (ScreenHelper.isDualMode(it)) {
                 previewBtn.visibility = View.INVISIBLE
-                parentFragmentManager
-                        .beginTransaction()
-                        .replace(
-                                R.id.dual_screen_end_container_id,
-                                PreviewFragment(), null
-                        )
-                        .commit()
+
+                scrollingBuffer = DEFAULT_BUFFER_SIZE
+                scrollRange = DEFAULT_RANGE
+                rangeFound = false
+
+                // set event and data listeners
+                scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+                    handleScrolling(false, scrollY)
+                }
+
+                scrollVM.getScroll().observe(requireActivity(), Observer { state ->
+                    if(!state.scrollKey.equals("Code")) {
+                        handleScrolling(true, state.scrollPercentage)
+                    }
+                })
             }
             else {
                 previewBtn.visibility = View.VISIBLE

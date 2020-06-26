@@ -7,15 +7,12 @@
 
 package com.microsoft.device.display.samples.sourceeditor
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
-import android.widget.Button
 import android.widget.ScrollView
 
 
@@ -30,9 +27,9 @@ import com.microsoft.device.dualscreen.layout.ScreenHelper
 class PreviewFragment : Fragment() {
     // Defines //
     private val DEFAULT_RANGE = 1
-    private val MIN_RANGE_THRESHOLD = 100
-    private val EMPTY_BUFFER_SIZE = 0
     private val DEFAULT_BUFFER_SIZE = 2
+    private val EMPTY_BUFFER_SIZE = 0
+    private val MIN_RANGE_THRESHOLD = 100
 
     // Variables //
     private lateinit var scrollView: ScrollView
@@ -63,18 +60,6 @@ class PreviewFragment : Fragment() {
 
             val str : String? = (webVM.getText().value)
             webView.loadData(str, "text/html", "UTF-8")
-
-            // set event and data listeners
-            scrollView = view.findViewById(R.id.scrollview_preview)
-            scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-                handleScrolling(false, scrollY)
-            }
-
-            scrollVM.getScroll().observe(requireActivity(), Observer { state ->
-                if(!state.scrollKey.equals("Preview")) {
-                    handleScrolling(true, state.scrollPercentage)
-                }
-            })
 
             handleSpannedModeSelection(view, webView)
         }
@@ -119,6 +104,22 @@ class PreviewFragment : Fragment() {
     private fun handleSpannedModeSelection(view: View, webView: WebView) {
         activity?.let { activity ->
             if(ScreenHelper.isDualMode(activity)) {
+                scrollingBuffer = DEFAULT_BUFFER_SIZE
+                scrollRange = DEFAULT_RANGE
+                rangeFound = false
+
+                // set event and data listeners
+                scrollView = view.findViewById(R.id.scrollview_preview)
+                scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+                    handleScrolling(false, scrollY)
+                }
+
+                scrollVM.getScroll().observe(requireActivity(), Observer { state ->
+                    if(!state.scrollKey.equals("Preview")) {
+                        handleScrolling(true, state.scrollPercentage)
+                    }
+                })
+
                 // listen for changes made to the editor
                 webVM.getText().observe(requireActivity(), Observer { str ->
                     webView.loadData(str, "text/html", "UTF-8")
