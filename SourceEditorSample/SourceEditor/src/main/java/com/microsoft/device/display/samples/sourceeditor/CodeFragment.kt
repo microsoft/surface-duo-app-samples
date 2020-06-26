@@ -7,6 +7,7 @@
 
 package com.microsoft.device.display.samples.sourceeditor
 
+import Defines
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
@@ -28,12 +29,6 @@ import java.io.InputStreamReader
 
 /* Fragment that defines functionality for source code editor */
 class CodeFragment : Fragment() {
-    // Defines //
-    private val DEFAULT_RANGE = 1
-    private val MIN_RANGE_THRESHOLD = 100
-    private val EMPTY_BUFFER_SIZE = 0
-    private val DEFAULT_BUFFER_SIZE = 2
-
     // Variables //
     private lateinit var previewBtn : Button
     private lateinit var textField : TextInputEditText
@@ -41,8 +36,8 @@ class CodeFragment : Fragment() {
     private lateinit var scrollVM: ScrollViewModel
     private lateinit var webVM: WebViewModel
 
-    private var scrollingBuffer : Int = DEFAULT_BUFFER_SIZE
-    private var scrollRange : Int = DEFAULT_RANGE
+    private var scrollingBuffer : Int = Defines.DEFAULT_BUFFER_SIZE
+    private var scrollRange : Int = Defines.DEFAULT_RANGE
     private var rangeFound : Boolean = false
     private var initText : Boolean = true
 
@@ -64,7 +59,7 @@ class CodeFragment : Fragment() {
             scrollView = view.findViewById(R.id.scrollview_code)
 
             if (webVM.getText().value == null) {
-                webVM.setText(readFile("source.html", context))
+                webVM.setText(readFile(Defines.DEFAULT_SOURCE_PATH, context))
             }
 
             webVM.getText().observe(requireActivity(), Observer { str ->
@@ -95,7 +90,7 @@ class CodeFragment : Fragment() {
     private fun handleScrolling (observing: Boolean, int: Int) {
         // scrolling window has not been calibrated yet
         if (!rangeFound) {
-            if (scrollView.scrollY > MIN_RANGE_THRESHOLD) {
+            if (scrollView.scrollY > Defines.MIN_RANGE_THRESHOLD) {
                 scrollRange = scrollView.scrollY  // successfully calibrated
                 rangeFound = true
             } else {
@@ -106,14 +101,14 @@ class CodeFragment : Fragment() {
         else {
             // preview window scrolled, auto scroll to match preview
             if (observing) {
-                scrollingBuffer = EMPTY_BUFFER_SIZE
+                scrollingBuffer = Defines.EMPTY_BUFFER_SIZE
 
                 val y = (scrollRange * int) / 100
                 scrollView.scrollTo(scrollView.scrollX, y)
             }
             else {
                 // user dragged window to trigger scroll
-                if (scrollingBuffer >= DEFAULT_BUFFER_SIZE) {
+                if (scrollingBuffer >= Defines.DEFAULT_BUFFER_SIZE) {
                     val percentage = (int * 100) / scrollRange
                     scrollVM.setScroll("Code", percentage)
                 }
@@ -160,8 +155,8 @@ class CodeFragment : Fragment() {
             if (ScreenHelper.isDualMode(it)) {
                 previewBtn.visibility = View.INVISIBLE
 
-                scrollingBuffer = DEFAULT_BUFFER_SIZE
-                scrollRange = DEFAULT_RANGE
+                scrollingBuffer = Defines.DEFAULT_BUFFER_SIZE
+                scrollRange = Defines.DEFAULT_RANGE
                 rangeFound = false
 
                 // set event and data listeners

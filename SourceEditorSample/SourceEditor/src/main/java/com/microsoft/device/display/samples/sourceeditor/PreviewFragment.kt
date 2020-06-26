@@ -7,6 +7,7 @@
 
 package com.microsoft.device.display.samples.sourceeditor
 
+import Defines
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,20 +25,15 @@ import com.microsoft.device.display.samples.sourceeditor.viewmodel.WebViewModel
 
 import com.microsoft.device.dualscreen.layout.ScreenHelper
 
+/* Fragment that defines functionality for the source code previewer */
 class PreviewFragment : Fragment() {
-    // Defines //
-    private val DEFAULT_RANGE = 1
-    private val DEFAULT_BUFFER_SIZE = 2
-    private val EMPTY_BUFFER_SIZE = 0
-    private val MIN_RANGE_THRESHOLD = 100
-
     // Variables //
     private lateinit var scrollView: ScrollView
     private lateinit var scrollVM: ScrollViewModel
     private lateinit var webVM: WebViewModel
 
-    private var scrollingBuffer : Int = DEFAULT_BUFFER_SIZE
-    private var scrollRange : Int = DEFAULT_RANGE
+    private var scrollingBuffer : Int = Defines.DEFAULT_BUFFER_SIZE
+    private var scrollRange : Int = Defines.DEFAULT_RANGE
     private var rangeFound : Boolean = false
 
     // initialize fragment elements when view is created
@@ -71,7 +67,7 @@ class PreviewFragment : Fragment() {
     private fun handleScrolling (observing: Boolean, int: Int) {
         // scrolling window has not been calibrated yet
         if (!rangeFound) {
-            if (scrollView.scrollY > MIN_RANGE_THRESHOLD) {
+            if (scrollView.scrollY > Defines.MIN_RANGE_THRESHOLD) {
                 scrollRange = scrollView.scrollY  // successfully calibrated
                 rangeFound = true
             } else {
@@ -82,14 +78,14 @@ class PreviewFragment : Fragment() {
         else {
             // code window scrolled, auto scroll to match editor
             if (observing) {
-                scrollingBuffer = EMPTY_BUFFER_SIZE
+                scrollingBuffer = Defines.EMPTY_BUFFER_SIZE
 
                 val y = (scrollRange * int) / 100
                 scrollView.scrollTo(scrollView.scrollX, y)
             }
             else {
                 // user dragged window to trigger scroll
-                if (scrollingBuffer >= DEFAULT_BUFFER_SIZE) {
+                if (scrollingBuffer >= Defines.DEFAULT_BUFFER_SIZE) {
                     val percentage = (int * 100) / scrollRange
                     scrollVM.setScroll("Preview", percentage)
                 }
@@ -104,8 +100,8 @@ class PreviewFragment : Fragment() {
     private fun handleSpannedModeSelection(view: View, webView: WebView) {
         activity?.let { activity ->
             if(ScreenHelper.isDualMode(activity)) {
-                scrollingBuffer = DEFAULT_BUFFER_SIZE
-                scrollRange = DEFAULT_RANGE
+                scrollingBuffer = Defines.DEFAULT_BUFFER_SIZE
+                scrollRange = Defines.DEFAULT_RANGE
                 rangeFound = false
 
                 // set event and data listeners
