@@ -18,8 +18,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.DragEvent
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.SeekBar
+import android.widget.Spinner
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.utils.widget.ImageFilterView
@@ -54,17 +58,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Saves relevant control information (ex: SeekBar progress) to pass between states when orientation or spanning changes
+     * @param outState: Bundle that contains the information to pass between states
+     */
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         val image = findViewById<ImageFilterView>(R.id.image)
 
-        // Common controls
+        // SeekBar progress data
         outState.putFloat("saturation", image.saturation)
-
-        // Dual screen controls - should be saved in both modes to save seek bar position
         outState.putFloat("brightness", image.brightness)
         outState.putFloat("warmth", image.warmth)
 
+        // Selected control in dropdown (only present in single-screen views)
+        val controls = findViewById<Spinner>(R.id.controls)
+        if (controls != null) {
+            outState.putInt("selectedControl", controls.selectedItemPosition)
+        }
+
+        // Actual edited image - saved in ViewModel
         val vm by viewModels<PhotoEditorVM>()
         vm.updateImage(findViewById<ImageFilterView>(R.id.image).drawable)
     }
@@ -92,6 +105,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupLayout(savedInstanceState: Bundle?) {
         val image = findViewById<ImageFilterView>(R.id.image)
+
         // Set up click handling for importing images from photo gallery
         image.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
@@ -144,22 +158,69 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Set up common controls
+        // Set up all controls
         setUpSaturation(image, savedInstanceState?.getFloat("saturation"))
+        setUpBrightness(image, savedInstanceState?.getFloat("brightness"))
+        setUpWarmth(image, savedInstanceState?.getFloat("warmth"))
         setUpRotate(image)
         setUpSave(image)
 
-        // Set up dual screen controls
-        if (ScreenHelper.isDualMode(this)) {
-            setUpBrightness(image, savedInstanceState?.getFloat("brightness"))
-            setUpWarmth(image, savedInstanceState?.getFloat("warmth"))
+        // Set up single screen control dropdown
+        if (!ScreenHelper.isDualMode(this)) {
+            setUpToggle(savedInstanceState?.getInt("selectedControl"))
+        }
+    }
+
+    private fun setUpToggle(selectedControl: Int?) {
+        // Set up contents of controls dropdown
+        val controls = findViewById<Spinner>(R.id.controls)
+
+        ArrayAdapter.createFromResource(
+            this,
+            R.array.controls_array,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            controls.adapter = adapter
+        }
+
+        // Restore value from previous state if available, otherwise default to first item in list (saturation)
+        controls.setSelection(selectedControl ?: 0)
+
+        // Set up response to changing the selected control
+        val sat = findViewById<SeekBar>(R.id.saturation)
+        val bright = findViewById<SeekBar>(R.id.brightness)
+        val warmth = findViewById<SeekBar>(R.id.warmth)
+
+        controls.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
+                when (parent.getItemAtPosition(pos)) {
+                    getString(R.string.saturation) -> {
+                        sat.visibility = View.VISIBLE
+                        bright.visibility = View.INVISIBLE
+                        warmth.visibility = View.INVISIBLE
+                    }
+                    getString(R.string.brightness) -> {
+                        sat.visibility = View.INVISIBLE
+                        bright.visibility = View.VISIBLE
+                        warmth.visibility = View.INVISIBLE
+                    }
+                    getString(R.string.warmth) -> {
+                        sat.visibility = View.INVISIBLE
+                        bright.visibility = View.INVISIBLE
+                        warmth.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
     }
 
     private fun setUpWarmth(image: ImageFilterView, progress: Float?) {
         val warmth = findViewById<SeekBar>(R.id.warmth)
 
-        // Restore value
+        // Restore value from previous state if available
         if (progress != null) {
             image.warmth = progress
             warmth.progress = (progress * 50).toInt()
@@ -185,7 +246,7 @@ class MainActivity : AppCompatActivity() {
     private fun setUpBrightness(image: ImageFilterView, progress: Float?) {
         val brightness = findViewById<SeekBar>(R.id.brightness)
 
-        // Restore value
+        // Restore value from previous state if available
         if (progress != null) {
             image.brightness = progress
             brightness.progress = (progress * 50).toInt()
@@ -211,7 +272,7 @@ class MainActivity : AppCompatActivity() {
     private fun setUpSaturation(image: ImageFilterView, progress: Float?) {
         val saturation = findViewById<SeekBar>(R.id.saturation)
 
-        // Restore value
+        // Restore value from previous state if available
         if (progress != null) {
             image.saturation = progress
             saturation.progress = (progress * 50).toInt()
@@ -247,19 +308,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Rotates image by specified angle
+     * @param angle: angle to rotate image
+     * @param image: ImageFilterView that contains current image
+     */
     private fun applyRotationMatrix(angle: Float, image: ImageFilterView) {
+        // Create rotation angle with given matrix
         val matrix = Matrix()
         matrix.postRotate(angle)
+
+        // Apply rotation matrix to the image
         val curr = image.drawable.toBitmap()
         val bm = Bitmap.createBitmap(curr, 0, 0, curr.width, curr.height, matrix, true)
 
+        // Update ImageFilterView object with rotated bitmap
         image.setImageBitmap(bm)
     }
 
     private fun setUpSave(image: ImageFilterView) {
         val save = findViewById<ImageButton>(R.id.save)
         save.setOnClickListener {
-            // Get current size of drawable so entire ImageView is not saved (which is what drawToBitmap does)
+            // Get current size of drawable so entire ImageView is not drawn to bitmap
             val rect = RectF()
             image.imageMatrix.mapRect(rect, RectF(image.drawable.bounds))
 
