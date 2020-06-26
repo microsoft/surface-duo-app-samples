@@ -12,6 +12,6 @@
     <corners android:radius="100dp" />
     <solid android:color="@color/gray" />
     <size
-        android:height="20dp"
-        android:width="10dp" />
+        android:height="30dp"
+        android:width="15dp" />
 </shape>

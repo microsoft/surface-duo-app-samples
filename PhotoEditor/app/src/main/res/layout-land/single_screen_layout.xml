@@ -72,19 +72,20 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.86" />
+        app:layout_constraintGuide_percent="0.85" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
+        android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/med_padding"
             android:text="@string/rotate"
@@ -94,8 +95,8 @@
 
         <ImageButton
             android:id="@+id/rotate_left"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
             android:layout_marginTop="@dimen/med_padding"
             android:layout_weight="1"
             android:contentDescription="@string/rotate_left"
@@ -103,15 +104,15 @@
 
         <ImageButton
             android:id="@+id/rotate_right"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
             android:layout_marginTop="@dimen/large_padding"
             android:layout_weight="1"
             android:contentDescription="@string/rotate_right"
             android:src="@drawable/ic_rotate_right" />
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/xl_padding"
             android:text="@string/save"
@@ -121,8 +122,8 @@
 
         <ImageButton
             android:id="@+id/save"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
             android:layout_marginTop="@dimen/med_padding"
             android:layout_weight="1"
             android:contentDescription="@string/save_button"
