@@ -32,9 +32,9 @@ This application also uses a beta release of the [Constraint Layout](https://dev
 
 ### Companion Pane
 
-This sample shows how the [Companion Pane](https://docs.microsoft.com/dual-screen/introduction#companion-pane) dual-screen app pattern can be used to make more tools and controls available to users when the app is spanned. When in single-screen mode, the app only offers users three controls: the saturation slider, the rotation buttons, and the save button. This ensures that the chosen image is large enough on the screen to inspect any edits.
+This sample shows how the [Companion Pane](https://docs.microsoft.com/dual-screen/introduction#companion-pane) dual-screen app pattern can be used to make more tools and controls available to users when the app is spanned. When in single-screen mode, the app only shows users three controls: the slider, the rotation buttons, and the save button. In order to modify all possible properties with the slider, the user must interact with the dropdown menu. This ensures that the chosen image is large enough on the screen to inspect any edits.
 
-When switched to dual-screen mode, however, the entire left screen can be dedicated to image display. This frees up the right screen to display more editing controls. In this sample, two additional controls were added: the brightness slider and the warmth slider.
+When switched to dual-screen mode, however, the entire left screen can be dedicated to image display. This frees up the right screen to display more editing controls. As a result, a dropdown menu is no longer needed and all three slider controls can be displayed.
 
 ### Drag and drop
 
