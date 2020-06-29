@@ -20,4 +20,11 @@
         <item>Brightness</item>
         <item>Warmth</item>
     </string-array>
+    <string name="photo_name">Edited photo</string>
+    <string name="photo_description">Made with Surface Duo Photo Editor sample on</string>
+    <string name="pictures_folder">Pictures</string>
+    <string name="null_uri">Uri is null</string>
+    <string name="null_stream">Output stream is null</string>
+    <string name="bitmap_error">Bitmap could not be compressed</string>
+    <string name="image_save_error">Unable to save image</string>
 </resources>

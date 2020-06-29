@@ -8,6 +8,7 @@ package com.microsoft.device.display.samples.photoeditor
 
 import android.content.ClipData
 import android.content.ContentResolver
+import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -24,6 +25,7 @@ import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.SeekBar
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.utils.widget.ImageFilterView
@@ -31,6 +33,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.drawToBitmap
 import com.microsoft.device.dualscreen.layout.ScreenHelper
+import java.io.IOException
 import java.time.LocalDateTime
 
 class MainActivity : AppCompatActivity() {
@@ -333,19 +336,43 @@ class MainActivity : AppCompatActivity() {
             // Get current size of drawable so entire ImageView is not drawn to bitmap
             val rect = RectF()
             image.imageMatrix.mapRect(rect, RectF(image.drawable.bounds))
-
-            MediaStore.Images.Media.insertImage(
-                contentResolver,
-                Bitmap.createBitmap(
-                    image.drawToBitmap(),
-                    rect.left.toInt(),
-                    rect.top.toInt(),
-                    rect.width().toInt(),
-                    rect.height().toInt()
-                ),
-                "Edited photo",
-                "Made with Surface Duo Photo Editor sample on ${LocalDateTime.now()}"
+            val bm = Bitmap.createBitmap(
+                image.drawToBitmap(),
+                rect.left.toInt(),
+                rect.top.toInt(),
+                rect.width().toInt(),
+                rect.height().toInt()
             )
+
+            // Fill ContentValues with image information
+            val values = ContentValues()
+            values.apply {
+                put(MediaStore.Images.Media.TITLE, getString(R.string.photo_name))
+                put(MediaStore.Images.Media.DISPLAY_NAME, getString(R.string.photo_name))
+                put(MediaStore.Images.Media.DESCRIPTION, "${getString(R.string.photo_description)} ${LocalDateTime.now()}")
+                put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+                put(MediaStore.Images.Media.RELATIVE_PATH, "${getString(R.string.pictures_folder)}/${getString(R.string.app_name)}")
+                put(MediaStore.Images.Media.IS_PENDING, true)
+                put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis() / 1000) // seconds
+                put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis()) // milliseconds
+            }
+
+            // Try to save image to photo gallery
+            try {
+                val uri = this.contentResolver.insert(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    values
+                ) ?: throw IOException("MainActivity: ${getString(R.string.null_uri)}")
+
+                val stream = this.contentResolver.openOutputStream(uri) ?: throw IOException("MainActivity: ${getString(R.string.null_stream)}")
+                if (!bm.compress(Bitmap.CompressFormat.JPEG, 100, stream)) throw IOException("MainActivity: ${getString(R.string.bitmap_error)}")
+                stream.close()
+
+                values.put(MediaStore.Images.Media.IS_PENDING, false)
+                this.contentResolver.update(uri, values, null, null)
+            } catch (e: Exception) {
+                Toast.makeText(this, "${getString(R.string.image_save_error)}\n${e.printStackTrace()}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
