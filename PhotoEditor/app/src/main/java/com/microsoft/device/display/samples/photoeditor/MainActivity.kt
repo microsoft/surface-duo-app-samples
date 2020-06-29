@@ -131,35 +131,13 @@ class MainActivity : AppCompatActivity() {
 
             when (event.action) {
                 DragEvent.ACTION_DRAG_STARTED -> {
-                    // If an image file is being dragged, change appearance of ImageFilterView to show that it's a drop target
-                    if (isImage) {
-                        image.alpha = 0.5f
-                        image.setPadding(20, 20, 20, 20)
-                        image.cropToPadding = true
-                        image.setBackgroundColor(Color.parseColor("grey"))
-                    }
+                    if (isImage) showDropTarget(image)
                 }
                 DragEvent.ACTION_DROP -> {
-                    // If an image file is being dropped, change what the ImageFilterView displays
-                    if (isImage) {
-                        val item: ClipData.Item = event.clipData.getItemAt(0)
-                        val uri = item.uri
-
-                        if (ContentResolver.SCHEME_CONTENT == uri.scheme) {
-                            ActivityCompat.requestDragAndDropPermissions(this, event)
-                            (v as ImageFilterView).setImageURI(uri)
-                        } else {
-                            (v as ImageFilterView).setImageURI(uri)
-                        }
-                        resetControls(image)
-                    }
+                    if (isImage) processDrop(v, event)
                 }
                 DragEvent.ACTION_DRAG_ENDED -> {
-                    // Reset any previous appearance changes
-                    image.alpha = ORIGINAL_STATE
-                    image.setPadding(0, 0, 0, 0)
-                    image.cropToPadding = false
-                    image.setBackgroundColor(Color.TRANSPARENT)
+                    hideDropTarget(image)
                 }
                 else -> {
                     // Ignore other events
@@ -179,6 +157,48 @@ class MainActivity : AppCompatActivity() {
         if (!ScreenHelper.isDualMode(this)) {
             setUpToggle(savedInstanceState?.getInt("selectedControl"))
         }
+    }
+
+    /**
+     * Revert any appearance changes related to drag/drop
+     * @param image: ImageFilterView object that needs to be reset
+     */
+    private fun hideDropTarget(image: ImageFilterView) {
+        image.alpha = ORIGINAL_STATE
+        image.setPadding(0, 0, 0, 0)
+        image.cropToPadding = false
+        image.setBackgroundColor(Color.TRANSPARENT)
+    }
+
+    /**
+     * Set image source of ImageFilterView to dropped data
+     * @param v: View that the data was dropped in (ImageFilterView)
+     * @param event: DragEvent that contains the dropped data
+     */
+    private fun processDrop(v: View, event: DragEvent) {
+        val item: ClipData.Item = event.clipData.getItemAt(0)
+        val uri = item.uri
+        val image = v as ImageFilterView
+
+        if (ContentResolver.SCHEME_CONTENT == uri.scheme) {
+            ActivityCompat.requestDragAndDropPermissions(this, event)
+            image.setImageURI(uri)
+        } else {
+            image.setImageURI(uri)
+        }
+
+        resetControls(image)
+    }
+
+    /**
+     * Changes appearance of ImageFilterView object to show that it's a drop target
+     * @param image: ImageFilterView object/drop target
+     */
+    private fun showDropTarget(image: ImageFilterView) {
+        image.alpha = 0.5f
+        image.setPadding(20, 20, 20, 20)
+        image.cropToPadding = true
+        image.setBackgroundColor(Color.parseColor("grey"))
     }
 
     private fun setUpToggle(selectedControl: Int?) {
