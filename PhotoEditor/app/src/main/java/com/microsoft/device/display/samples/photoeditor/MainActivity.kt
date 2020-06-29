@@ -41,6 +41,12 @@ class MainActivity : AppCompatActivity() {
     companion object {
         // Request code for image select activity
         private const val SELECT_IMAGE = 1000
+
+        // Default progress value for SeekBar controls
+        private const val DEFAULT_PROGRESS = 50
+
+        // Default property value for ImageFilterView attributes (state of original image)
+        private const val ORIGINAL_STATE = 1f
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,14 +105,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun resetControls(image: ImageFilterView) {
-        findViewById<SeekBar>(R.id.saturation).progress = 50
-        image.saturation = 1f
+        findViewById<SeekBar>(R.id.saturation).progress = DEFAULT_PROGRESS
+        image.saturation = ORIGINAL_STATE
 
-        findViewById<SeekBar>(R.id.brightness)?.progress = 50
-        image.brightness = 1f
+        findViewById<SeekBar>(R.id.brightness)?.progress = DEFAULT_PROGRESS
+        image.brightness = ORIGINAL_STATE
 
-        findViewById<SeekBar>(R.id.warmth)?.progress = 50
-        image.warmth = 1f
+        findViewById<SeekBar>(R.id.warmth)?.progress = DEFAULT_PROGRESS
+        image.warmth = ORIGINAL_STATE
     }
 
     private fun setupLayout(savedInstanceState: Bundle?) {
@@ -150,7 +156,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 DragEvent.ACTION_DRAG_ENDED -> {
                     // Reset any previous appearance changes
-                    image.alpha = 1f
+                    image.alpha = ORIGINAL_STATE
                     image.setPadding(0, 0, 0, 0)
                     image.cropToPadding = false
                     image.setBackgroundColor(Color.TRANSPARENT)
@@ -227,7 +233,7 @@ class MainActivity : AppCompatActivity() {
         // Restore value from previous state if available
         progress?.let {
             image.warmth = it
-            warmth.progress = (it * 50).toInt()
+            warmth.progress = (it * DEFAULT_PROGRESS).toInt()
         }
 
         warmth.setOnSeekBarChangeListener(object :
@@ -238,7 +244,7 @@ class MainActivity : AppCompatActivity() {
                     fromUser: Boolean
                 ) {
                     // warmth from 0.5 (cold) to 1 (original) to 2 (warm), progress from 0 to 100
-                    image.warmth = progress / 50f
+                    image.warmth = progress.toFloat() / DEFAULT_PROGRESS
                 }
 
                 override fun onStartTrackingTouch(seek: SeekBar) {}
@@ -253,7 +259,7 @@ class MainActivity : AppCompatActivity() {
         // Restore value from previous state if available
         progress?.let {
             image.brightness = it
-            brightness.progress = (it * 50).toInt()
+            brightness.progress = (it * DEFAULT_PROGRESS).toInt()
         }
 
         brightness.setOnSeekBarChangeListener(object :
@@ -264,7 +270,7 @@ class MainActivity : AppCompatActivity() {
                     fromUser: Boolean
                 ) {
                     // brightness from 0 (black) to 1 (original) to 2 (twice as bright), progress from 0 to 100
-                    image.brightness = progress / 50f
+                    image.brightness = progress.toFloat() / DEFAULT_PROGRESS
                 }
 
                 override fun onStartTrackingTouch(seek: SeekBar) {}
@@ -279,7 +285,7 @@ class MainActivity : AppCompatActivity() {
         // Restore value from previous state if available
         progress?.let {
             image.saturation = it
-            saturation.progress = (it * 50).toInt()
+            saturation.progress = (it * DEFAULT_PROGRESS).toInt()
         }
 
         saturation.setOnSeekBarChangeListener(object :
@@ -290,7 +296,7 @@ class MainActivity : AppCompatActivity() {
                     fromUser: Boolean
                 ) {
                     // saturation from 0 (grayscale) to 1 (original) to 2 (hyper-saturated), progress from 0 to 100
-                    image.saturation = progress / 50f
+                    image.saturation = progress.toFloat() / DEFAULT_PROGRESS
                 }
 
                 override fun onStartTrackingTouch(seek: SeekBar) {}
