@@ -48,16 +48,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setupLayout(savedInstanceState)
 
-        if (savedInstanceState != null) {
+        savedInstanceState?.let {
             val image = findViewById<ImageFilterView>(R.id.image)
 
             // Restore image
             val vm by viewModels<PhotoEditorVM>()
             image.setImageDrawable(vm.getImage().value)
 
-            image.brightness = savedInstanceState.getFloat("brightness")
-            image.saturation = savedInstanceState.getFloat("saturation")
-            image.warmth = savedInstanceState.getFloat("warmth")
+            image.brightness = it.getFloat("brightness")
+            image.saturation = it.getFloat("saturation")
+            image.warmth = it.getFloat("warmth")
         }
     }
 
@@ -76,8 +76,8 @@ class MainActivity : AppCompatActivity() {
 
         // Selected control in dropdown (only present in single-screen views)
         val controls = findViewById<Spinner>(R.id.controls)
-        if (controls != null) {
-            outState.putInt("selectedControl", controls.selectedItemPosition)
+        controls?.let {
+            outState.putInt("selectedControl", it.selectedItemPosition)
         }
 
         // Actual edited image - saved in ViewModel
@@ -225,9 +225,9 @@ class MainActivity : AppCompatActivity() {
         val warmth = findViewById<SeekBar>(R.id.warmth)
 
         // Restore value from previous state if available
-        if (progress != null) {
-            image.warmth = progress
-            warmth.progress = (progress * 50).toInt()
+        progress?.let {
+            image.warmth = it
+            warmth.progress = (it * 50).toInt()
         }
 
         warmth.setOnSeekBarChangeListener(object :
@@ -251,9 +251,9 @@ class MainActivity : AppCompatActivity() {
         val brightness = findViewById<SeekBar>(R.id.brightness)
 
         // Restore value from previous state if available
-        if (progress != null) {
-            image.brightness = progress
-            brightness.progress = (progress * 50).toInt()
+        progress?.let {
+            image.brightness = it
+            brightness.progress = (it * 50).toInt()
         }
 
         brightness.setOnSeekBarChangeListener(object :
@@ -277,9 +277,9 @@ class MainActivity : AppCompatActivity() {
         val saturation = findViewById<SeekBar>(R.id.saturation)
 
         // Restore value from previous state if available
-        if (progress != null) {
-            image.saturation = progress
-            saturation.progress = (progress * 50).toInt()
+        progress?.let {
+            image.saturation = it
+            saturation.progress = (it * 50).toInt()
         }
 
         saturation.setOnSeekBarChangeListener(object :
