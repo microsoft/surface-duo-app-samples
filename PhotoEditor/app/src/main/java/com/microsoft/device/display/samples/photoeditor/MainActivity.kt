@@ -91,16 +91,19 @@ class MainActivity : AppCompatActivity() {
             val image = findViewById<ImageFilterView>(R.id.image)
             image.setImageBitmap(BitmapFactory.decodeStream(contentResolver.openInputStream(uri)))
 
-            // Reset all image controls
-            findViewById<SeekBar>(R.id.saturation).progress = 50
-            image.saturation = 1f
-
-            findViewById<SeekBar>(R.id.brightness)?.progress = 50
-            image.brightness = 1f
-
-            findViewById<SeekBar>(R.id.warmth)?.progress = 50
-            image.warmth = 1f
+            resetControls(image)
         }
+    }
+
+    private fun resetControls(image: ImageFilterView) {
+        findViewById<SeekBar>(R.id.saturation).progress = 50
+        image.saturation = 1f
+
+        findViewById<SeekBar>(R.id.brightness)?.progress = 50
+        image.brightness = 1f
+
+        findViewById<SeekBar>(R.id.warmth)?.progress = 50
+        image.warmth = 1f
     }
 
     private fun setupLayout(savedInstanceState: Bundle?) {
@@ -126,7 +129,6 @@ class MainActivity : AppCompatActivity() {
                         image.cropToPadding = true
                         image.setBackgroundColor(Color.parseColor("grey"))
                     }
-                    true
                 }
                 DragEvent.ACTION_DROP -> {
                     // If an image file is being dropped, change what the ImageFilterView displays
@@ -140,8 +142,8 @@ class MainActivity : AppCompatActivity() {
                         } else {
                             (v as ImageFilterView).setImageURI(uri)
                         }
+                        resetControls(image)
                     }
-                    true
                 }
                 DragEvent.ACTION_DRAG_ENDED -> {
                     // Reset any previous appearance changes
@@ -149,13 +151,12 @@ class MainActivity : AppCompatActivity() {
                     image.setPadding(0, 0, 0, 0)
                     image.cropToPadding = false
                     image.setBackgroundColor(Color.TRANSPARENT)
-                    true
                 }
                 else -> {
                     // Ignore other events
-                    true
                 }
             }
+            true
         }
 
         // Set up all controls
