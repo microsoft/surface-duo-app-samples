@@ -29,15 +29,13 @@
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
         android:layout_weight="0.35"
-        android:src="@drawable/flower"
-        tools:ignore="ContentDescription" />
+        android:contentDescription="@string/image"
+        android:src="@drawable/flower" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
         android:layout_weight="0.65"
         android:orientation="vertical"
         android:padding="@dimen/large_padding">
