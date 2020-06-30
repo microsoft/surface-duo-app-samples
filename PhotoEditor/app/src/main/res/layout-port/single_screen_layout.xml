@@ -45,87 +45,20 @@
             layout="@layout/single_screen_sliders"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/large_padding"
+            app:layout_constraintBottom_toTopOf="@+id/buttons"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <GridLayout
-            android:layout_width="match_parent"
+        <include
+            android:id="@+id/buttons"
+            layout="@layout/buttons"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:columnCount="2"
-            android:rowCount="1"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/single_screen_sliders">
-
-            <LinearLayout
-                android:id="@+id/rotate_layout"
-                android:layout_row="0"
-                android:layout_column="0"
-                android:layout_columnWeight="1"
-                android:layout_gravity="center_horizontal"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/rotate"
-                    android:textAlignment="center"
-                    android:textColor="@android:color/white"
-                    android:textSize="@dimen/text_size" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="@dimen/med_padding"
-                    android:orientation="horizontal">
-
-                    <ImageButton
-                        android:id="@+id/rotate_left"
-                        android:layout_width="@dimen/button_size"
-                        android:layout_height="@dimen/button_size"
-                        android:layout_marginEnd="@dimen/xl_padding"
-                        android:layout_weight="1"
-                        android:contentDescription="@string/rotate_left"
-                        android:src="@drawable/ic_rotate_left" />
-
-                    <ImageButton
-                        android:id="@+id/rotate_right"
-                        android:layout_width="@dimen/button_size"
-                        android:layout_height="@dimen/button_size"
-                        android:layout_weight="1"
-                        android:contentDescription="@string/rotate_right"
-                        android:src="@drawable/ic_rotate_right" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_row="0"
-                android:layout_column="1"
-                android:layout_columnWeight="1"
-                android:layout_gravity="center_horizontal"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/save"
-                    android:textAlignment="center"
-                    android:textColor="@android:color/white"
-                    android:textSize="@dimen/text_size" />
-
-                <ImageButton
-                    android:id="@+id/save"
-                    android:layout_width="@dimen/button_size"
-                    android:layout_height="@dimen/button_size"
-                    android:layout_marginTop="@dimen/med_padding"
-                    android:contentDescription="@string/save_button"
-                    android:src="@drawable/ic_save" />
-
-            </LinearLayout>
-
-        </GridLayout>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

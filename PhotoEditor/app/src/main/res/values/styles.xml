@@ -31,7 +31,10 @@
         <item name="android:paddingHorizontal">@dimen/med_padding</item>
     </style>
 
-    <style name="textStyle">
+    <style name="textViewStyle">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:textAlignment">center</item>
         <item name="android:textSize">@dimen/text_size</item>
         <item name="android:textColor">@android:color/white</item>
@@ -45,6 +48,13 @@
         <item name="android:progress">50</item>
         <item name="android:progressDrawable">@drawable/seek_bar_ruler_dark</item>
         <item name="android:thumb">@drawable/seek_bar_slider_dark</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="buttonStyle">
+        <item name="android:layout_width">@dimen/button_size</item>
+        <item name="android:layout_height">@dimen/button_size</item>
     </style>
 
 </resources>

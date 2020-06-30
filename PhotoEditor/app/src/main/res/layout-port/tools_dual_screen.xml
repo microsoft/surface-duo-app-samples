@@ -12,124 +12,41 @@
     android:layout_height="match_parent"
     android:baselineAligned="false"
     android:orientation="vertical"
-    android:paddingTop="@dimen/large_padding"
     android:paddingHorizontal="@dimen/large_padding"
+    android:paddingTop="@dimen/large_padding"
     tools:ignore="MissingDefaultResource">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/textViewStyle"
         android:layout_marginTop="@dimen/large_padding"
-        android:text="@string/saturation"
-        android:textAlignment="center"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/text_size" />
+        android:text="@string/saturation" />
 
     <SeekBar
         android:id="@+id/saturation"
         style="@style/seekBarStyle" />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/textViewStyle"
         android:layout_marginTop="@dimen/xl_padding"
-        android:text="@string/brightness"
-        android:textAlignment="center"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/text_size" />
+        android:text="@string/brightness" />
 
     <SeekBar
         android:id="@+id/brightness"
         style="@style/seekBarStyle" />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/textViewStyle"
         android:layout_marginTop="@dimen/xl_padding"
-        android:text="@string/warmth"
-        android:textAlignment="center"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/text_size" />
+        android:text="@string/warmth" />
 
     <SeekBar
         android:id="@+id/warmth"
         style="@style/seekBarStyle" />
 
-    <GridLayout
+    <include
+        layout="@layout/buttons"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/xl_padding"
-        android:columnCount="2"
-        android:rowCount="1">
-
-        <LinearLayout
-            android:id="@+id/rotate_layout"
-            android:layout_row="0"
-            android:layout_column="0"
-            android:layout_columnWeight="1"
-            android:layout_gravity="center_horizontal"
-            android:orientation="vertical">
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/rotate"
-                android:textAlignment="center"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/text_size" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/med_padding"
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/rotate_left"
-                    android:layout_width="@dimen/button_size"
-                    android:layout_height="@dimen/button_size"
-                    android:layout_marginEnd="@dimen/xl_padding"
-                    android:layout_weight="1"
-                    android:contentDescription="@string/rotate_left"
-                    android:src="@drawable/ic_rotate_left" />
-
-                <ImageButton
-                    android:id="@+id/rotate_right"
-                    android:layout_width="@dimen/button_size"
-                    android:layout_height="@dimen/button_size"
-                    android:layout_weight="1"
-                    android:contentDescription="@string/rotate_right"
-                    android:src="@drawable/ic_rotate_right" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_row="0"
-            android:layout_column="1"
-            android:layout_columnWeight="1"
-            android:layout_gravity="center_horizontal"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/save"
-                android:textAlignment="center"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/text_size" />
-
-            <ImageButton
-                android:id="@+id/save"
-                android:layout_width="@dimen/button_size"
-                android:layout_height="@dimen/button_size"
-                android:layout_marginTop="@dimen/med_padding"
-                android:contentDescription="@string/save_button"
-                android:src="@drawable/ic_save" />
-        </LinearLayout>
-
-    </GridLayout>
+        android:layout_marginTop="@dimen/xl_padding" />
 
 </LinearLayout>
