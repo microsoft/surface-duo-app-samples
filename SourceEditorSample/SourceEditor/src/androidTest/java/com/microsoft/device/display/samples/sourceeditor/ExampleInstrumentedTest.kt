@@ -22,6 +22,6 @@ class ExampleInstrumentedTest {
     @Test
     fun useAppContext() { // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.microsoft.device.display.samples.contentcontext", appContext.packageName)
+        assertEquals("com.microsoft.device.display.samples.sourceeditor", appContext.packageName)
     }
 }
