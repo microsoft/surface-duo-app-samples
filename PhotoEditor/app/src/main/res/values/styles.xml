@@ -14,15 +14,8 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/dark_grey</item>
-        <item name="android:spinnerItemStyle">@style/spinnerItemStyle</item>
+        <item name="android:spinnerItemStyle">@style/textStyle</item>
         <item name="android:spinnerDropDownItemStyle">@style/spinnerDropDownItemStyle</item>
-
-    </style>
-
-    <style name="spinnerItemStyle">
-        <item name="android:textAlignment">center</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">@dimen/text_size</item>
     </style>
 
     <style name="spinnerDropDownItemStyle">
@@ -30,6 +23,22 @@
         <item name="android:textAlignment">center</item>
         <item name="android:textSize">@dimen/text_size</item>
         <item name="android:paddingHorizontal">@dimen/med_padding</item>
+    </style>
+
+    <style name="textStyle">
+        <item name="android:textAlignment">center</item>
+        <item name="android:textSize">@dimen/text_size</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="seekBarStyle">
+        <item name="android:paddingTop">@dimen/large_padding</item>
+        <item name="android:max">100</item>
+        <item name="android:maxHeight">@dimen/seek_bar_max_height</item>
+        <item name="android:min">0</item>
+        <item name="android:progress">50</item>
+        <item name="android:progressDrawable">@drawable/seek_bar_ruler_dark</item>
+        <item name="android:thumb">@drawable/seek_bar_slider_dark</item>
     </style>
 
 </resources>
