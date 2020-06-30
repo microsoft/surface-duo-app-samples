@@ -17,19 +17,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ScrollView
+
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+
 import com.google.android.material.textfield.TextInputEditText
 import com.microsoft.device.display.samples.sourceeditor.viewmodel.ScrollViewModel
 import com.microsoft.device.display.samples.sourceeditor.viewmodel.WebViewModel
 import com.microsoft.device.dualscreen.layout.ScreenHelper
+
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
 /* Fragment that defines functionality for source code editor */
 class CodeFragment : Fragment() {
-    // Variables //
     private lateinit var previewBtn : Button
     private lateinit var textField : TextInputEditText
     private lateinit var scrollView : ScrollView
@@ -41,7 +43,6 @@ class CodeFragment : Fragment() {
     private var rangeFound : Boolean = false
     private var initText : Boolean = true
 
-    // initialize fragment elements when view is created
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -63,7 +64,7 @@ class CodeFragment : Fragment() {
             }
 
             webVM.getText().observe(requireActivity(), Observer { str ->
-                if(str != textField.text.toString()) {
+                if (str != textField.text.toString()) {
                     textField.setText(str)
                 }
             })
@@ -88,36 +89,66 @@ class CodeFragment : Fragment() {
 
     // mirror scrolling logic
     private fun handleScrolling (observing: Boolean, int: Int) {
-        // scrolling window has not been calibrated yet
         if (!rangeFound) {
-            if (scrollView.scrollY > Defines.MIN_RANGE_THRESHOLD) {
-                scrollRange = scrollView.scrollY  // successfully calibrated
-                rangeFound = true
-            } else {
-                scrollView.fullScroll(View.FOCUS_DOWN)
-            }
-        }
-        // scrolling window has been calibrated
-        else {
-            // preview window scrolled, auto scroll to match preview
+            calibrateScrollView()
+        } else {
             if (observing) {
-                scrollingBuffer = Defines.EMPTY_BUFFER_SIZE
-
-                val y = (scrollRange * int) / 100
-                scrollView.scrollTo(scrollView.scrollX, y)
-            }
-            else {
-                // user dragged window to trigger scroll
-                if (scrollingBuffer >= Defines.DEFAULT_BUFFER_SIZE) {
-                    val percentage = (int * 100) / scrollRange
-                    scrollVM.setScroll("Code", percentage)
-                }
-                // filter out scrolling events caused by auto scrolling
-                else {
-                    scrollingBuffer++
-                }
+                autoScroll(int)
+            } else {
+                updateScrollValues(int, Defines.CODE_KEY)
             }
         }
+    }
+
+    // single screen vs. dual screen logic
+    private fun handleSpannedModeSelection(view: View) {
+        activity?.let {
+            previewBtn = view.findViewById(R.id.btn_switch_to_preview)
+            if (ScreenHelper.isDualMode(it)) {
+                initializeDualScreen()
+            } else {
+                initializeSingleScreen()
+            }
+        }
+    }
+
+    // spanned selection helper
+    private fun initializeSingleScreen() {
+        previewBtn.visibility = View.VISIBLE
+        previewBtn.setOnClickListener {
+            startPreviewFragment()
+        }
+    }
+
+    // spanned selection helper
+    private fun initializeDualScreen() {
+        previewBtn.visibility = View.INVISIBLE
+
+        scrollingBuffer = Defines.DEFAULT_BUFFER_SIZE
+        scrollRange = Defines.DEFAULT_RANGE
+        rangeFound = false
+
+        // set event and data listeners
+        scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            handleScrolling(false, scrollY)
+        }
+
+        scrollVM.getScroll().observe(requireActivity(), Observer { state ->
+            if (!state.scrollKey.equals(Defines.CODE_KEY)) {
+                handleScrolling(true, state.scrollPercentage)
+            }
+        })
+    }
+
+    // method that triggers transition to preview fragment
+    private fun startPreviewFragment() {
+        parentFragmentManager.beginTransaction()
+                .replace(
+                        R.id.single_screen_container_id,
+                        PreviewFragment(),
+                        null
+                ).addToBackStack(null)
+                .commit()
     }
 
     // listener for changes to text in code editor
@@ -137,45 +168,32 @@ class CodeFragment : Fragment() {
         })
     }
 
-    // method that triggers transition to preview fragment
-    private fun startPreviewFragment() {
-        parentFragmentManager.beginTransaction()
-            .replace(
-                    R.id.single_screen_container_id,
-                    PreviewFragment(),
-                    null
-            ).addToBackStack(null)
-            .commit()
+    // get bounds of scroll window
+    private fun calibrateScrollView() {
+        if (scrollView.scrollY > Defines.MIN_RANGE_THRESHOLD) {
+            scrollRange = scrollView.scrollY  // successfully calibrated
+            rangeFound = true
+        } else {
+            scrollView.fullScroll(View.FOCUS_DOWN)
+        }
     }
 
-    // single screen vs. dual screen logic
-   private fun handleSpannedModeSelection(view: View) {
-        activity?.let {
-            previewBtn = view.findViewById(R.id.btn_switch_to_preview)
-            if (ScreenHelper.isDualMode(it)) {
-                previewBtn.visibility = View.INVISIBLE
+    // mirror scrolling events triggered on preview window
+    private fun autoScroll(int: Int) {
+        scrollingBuffer = Defines.EMPTY_BUFFER_SIZE
 
-                scrollingBuffer = Defines.DEFAULT_BUFFER_SIZE
-                scrollRange = Defines.DEFAULT_RANGE
-                rangeFound = false
+        val y = (scrollRange * int) / 100
+        scrollView.scrollTo(scrollView.scrollX, y)
+    }
 
-                // set event and data listeners
-                scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-                    handleScrolling(false, scrollY)
-                }
-
-                scrollVM.getScroll().observe(requireActivity(), Observer { state ->
-                    if(!state.scrollKey.equals("Code")) {
-                        handleScrolling(true, state.scrollPercentage)
-                    }
-                })
-            }
-            else {
-                previewBtn.visibility = View.VISIBLE
-                previewBtn.setOnClickListener {
-                    startPreviewFragment()
-                }
-            }
+    // handle scroll events triggered on editor window
+    private fun updateScrollValues(int: Int, str: String) {
+        if (scrollingBuffer >= Defines.DEFAULT_BUFFER_SIZE) {
+            val percentage = (int * 100) / scrollRange
+            scrollVM.setScroll(str, percentage)
+        } else {
+            // filter out scrolling events caused by auto scrolling
+            scrollingBuffer++
         }
     }
 }

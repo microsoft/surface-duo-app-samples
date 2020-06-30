@@ -13,14 +13,14 @@ import androidx.lifecycle.ViewModel
 
 /* ViewModel used to pass html data to preview fragment in real time */
 class WebViewModel : ViewModel() {
-    private var _webFormState = MutableLiveData<String>()
+    private var webFormState = MutableLiveData<String>()
 
     fun setText(htmlText: String) {
-        _webFormState.value = htmlText
+        webFormState.value = htmlText
     }
 
     fun getText(): LiveData<String> {
-        return _webFormState
+        return webFormState
     }
 }
 

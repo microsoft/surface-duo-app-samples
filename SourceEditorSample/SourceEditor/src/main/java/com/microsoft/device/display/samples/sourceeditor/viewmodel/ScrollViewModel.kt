@@ -13,13 +13,13 @@ import androidx.lifecycle.ViewModel
 
 /* ViewModel used to pass scroll values between fragments in real time */
 class ScrollViewModel : ViewModel() {
-    private var _scrollPercentage = MutableLiveData<ScrollState>()
+    private var scrollPercentage = MutableLiveData<ScrollState>()
 
     fun setScroll(scrollKey: String, scrollVal: Int) {
-        _scrollPercentage.value = ScrollState(scrollKey, scrollVal)
+        scrollPercentage.value = ScrollState(scrollKey, scrollVal)
     }
 
     fun getScroll(): LiveData<ScrollState> {
-        return _scrollPercentage
+        return scrollPercentage
     }
 }
