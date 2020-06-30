@@ -30,6 +30,7 @@ ext {
     //AndroidX versions
     appCompatVersion = "1.1.0"
     constraintLayoutVersion = "1.1.3"
+    lifecycleExtensionsVersion = "2.2.0"
     recyclerViewVersion = "1.1.0"
     cardViewVersion = "1.0.0"
     ktxCoreVersion = "1.2.0"
@@ -39,6 +40,7 @@ ext {
     androidxDependencies = [
             appCompat       : "androidx.appcompat:appcompat:$appCompatVersion",
             constraintLayout: "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion",
+            lifecycle       : "androidx.lifecycle:lifecycle-extensions:$lifecycleExtensionsVersion",
             recyclerView    : "androidx.recyclerview:recyclerview:$recyclerViewVersion",
             cardView        : "androidx.cardview:cardview:$cardViewVersion",
             ktxCore         : "androidx.core:core-ktx:$ktxCoreVersion",
@@ -70,11 +72,15 @@ ext {
     //Android test dependencies version
     junitInstrumentationVersion = "1.1.1"
     espressoCoreVersion = "3.2.0"
+    espressoWebVersion = "3.2.0"
+    testRulesVersion = "1.2.0"
     testRunnerVersion = "1.2.0"
 
     instrumentationTestDependencies = [
             junit       : "androidx.test.ext:junit:$junitInstrumentationVersion",
             espressoCore: "androidx.test.espresso:espresso-core:$espressoCoreVersion",
-            testRunner  : "androidx.test:runner:$testRunnerVersion"
+            espressoWeb : "androidx.test.espresso:espresso-web:$espressoWebVersion",
+            testRunner  : "androidx.test:runner:$testRunnerVersion",
+            testRules   : "androidx.test:rules:$testRulesVersion"
     ]
 }
