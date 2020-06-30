@@ -104,14 +104,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Resets controls and image properties to default/original state
+     * @param image: ImageFilterView object that contains current photo
+     */
     private fun resetControls(image: ImageFilterView) {
-        findViewById<SeekBar>(R.id.saturation).progress = DEFAULT_PROGRESS
+        val sat = findViewById<SeekBar>(R.id.saturation)
+        val bright = findViewById<SeekBar>(R.id.brightness)
+        val warmth = findViewById<SeekBar>(R.id.warmth)
+
+        // Reset SeekBar values
+        sat.progress = DEFAULT_PROGRESS
+        bright.progress = DEFAULT_PROGRESS
+        warmth.progress = DEFAULT_PROGRESS
+
+        // Reset dropdown and SeekBar visibility if single-screen view
+        if (!ScreenHelper.isDualMode(this)) {
+            sat.visibility = View.VISIBLE
+            bright.visibility = View.INVISIBLE
+            warmth.visibility = View.INVISIBLE
+            findViewById<Spinner>(R.id.controls).setSelection(0)
+        }
+
+        // Reset image filters
         image.saturation = ORIGINAL_STATE
-
-        findViewById<SeekBar>(R.id.brightness)?.progress = DEFAULT_PROGRESS
         image.brightness = ORIGINAL_STATE
-
-        findViewById<SeekBar>(R.id.warmth)?.progress = DEFAULT_PROGRESS
         image.warmth = ORIGINAL_STATE
     }
 
