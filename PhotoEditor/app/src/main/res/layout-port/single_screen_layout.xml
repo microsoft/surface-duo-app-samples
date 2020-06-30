@@ -38,62 +38,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:layout_marginTop="@dimen/large_padding"
         android:layout_weight="0.65"
         android:orientation="vertical"
-        android:paddingHorizontal="@dimen/large_padding">
+        android:padding="@dimen/large_padding">
 
-        <Spinner
-            android:id="@+id/controls"
-            android:layout_width="wrap_content"
+        <include
+            android:id="@+id/single_screen_sliders"
+            layout="@layout/single_screen_sliders"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            style="@style/Widget.AppCompat.Spinner"
-            android:entries="@array/controls_array"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <SeekBar
-            android:id="@+id/saturation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/large_padding"
-            android:max="100"
-            android:maxHeight="@dimen/seek_bar_max_height"
-            android:min="0"
-            android:progress="50"
-            android:progressDrawable="@drawable/seek_bar_ruler_dark"
-            android:thumb="@drawable/seek_bar_slider_dark"
-            app:layout_constraintTop_toBottomOf="@id/controls" />
-
-        <SeekBar
-            android:id="@+id/brightness"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/large_padding"
-            android:max="100"
-            android:maxHeight="@dimen/seek_bar_max_height"
-            android:min="0"
-            android:progress="50"
-            android:progressDrawable="@drawable/seek_bar_ruler_dark"
-            android:thumb="@drawable/seek_bar_slider_dark"
-            android:visibility="invisible"
-            app:layout_constraintTop_toBottomOf="@id/controls" />
-
-        <SeekBar
-            android:id="@+id/warmth"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/large_padding"
-            android:max="100"
-            android:maxHeight="@dimen/seek_bar_max_height"
-            android:min="0"
-            android:progress="50"
-            android:progressDrawable="@drawable/seek_bar_ruler_dark"
-            android:thumb="@drawable/seek_bar_slider_dark"
-            android:visibility="invisible"
-            app:layout_constraintTop_toBottomOf="@id/controls" />
 
         <GridLayout
             android:layout_width="match_parent"
@@ -101,7 +57,7 @@
             android:columnCount="2"
             android:rowCount="1"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/saturation">
+            app:layout_constraintTop_toBottomOf="@id/single_screen_sliders">
 
             <LinearLayout
                 android:id="@+id/rotate_layout"

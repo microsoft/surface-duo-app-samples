@@ -26,15 +26,7 @@
 
     <SeekBar
         android:id="@+id/saturation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/large_padding"
-        android:max="100"
-        android:maxHeight="@dimen/seek_bar_max_height"
-        android:min="0"
-        android:progress="50"
-        android:progressDrawable="@drawable/seek_bar_ruler_dark"
-        android:thumb="@drawable/seek_bar_slider_dark" />
+        style="@style/seekBarStyle" />
 
     <TextView
         android:layout_width="match_parent"
@@ -47,15 +39,7 @@
 
     <SeekBar
         android:id="@+id/brightness"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/large_padding"
-        android:max="100"
-        android:maxHeight="@dimen/seek_bar_max_height"
-        android:min="0"
-        android:progress="50"
-        android:progressDrawable="@drawable/seek_bar_ruler_dark"
-        android:thumb="@drawable/seek_bar_slider_dark" />
+        style="@style/seekBarStyle" />
 
     <TextView
         android:layout_width="match_parent"
@@ -68,15 +52,7 @@
 
     <SeekBar
         android:id="@+id/warmth"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/large_padding"
-        android:max="100"
-        android:maxHeight="@dimen/seek_bar_max_height"
-        android:min="0"
-        android:progress="50"
-        android:progressDrawable="@drawable/seek_bar_ruler_dark"
-        android:thumb="@drawable/seek_bar_slider_dark" />
+        style="@style/seekBarStyle" />
 
     <GridLayout
         android:layout_width="match_parent"

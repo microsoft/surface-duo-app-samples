@@ -29,78 +29,20 @@
         android:id="@+id/image"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/flower"
-        app:layout_constraintBottom_toTopOf="@+id/controls"
+        android:layout_marginBottom="@dimen/large_padding"
         app:layout_constraintEnd_toEndOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-    <Spinner
-        android:id="@+id/controls"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/white"
-        app:layout_constraintBottom_toTopOf="@id/saturation"
-        app:layout_constraintEnd_toEndOf="@id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/image" />
-
-    <SeekBar
-        android:id="@+id/saturation"
+    <include
+        android:id="@+id/single_screen_sliders"
+        layout="@layout/single_screen_sliders"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/large_padding"
         android:layout_marginBottom="@dimen/large_padding"
-        android:max="100"
-        android:maxHeight="@dimen/seek_bar_max_height"
-        android:min="0"
-        android:progress="50"
-        android:progressDrawable="@drawable/seek_bar_ruler_dark"
-        android:thumb="@drawable/seek_bar_slider_dark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/controls" />
-
-    <SeekBar
-        android:id="@+id/brightness"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/large_padding"
-        android:layout_marginBottom="@dimen/large_padding"
-        android:max="100"
-        android:maxHeight="@dimen/seek_bar_max_height"
-        android:min="0"
-        android:progress="50"
-        android:progressDrawable="@drawable/seek_bar_ruler_dark"
-        android:thumb="@drawable/seek_bar_slider_dark"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/controls" />
-
-    <SeekBar
-        android:id="@+id/warmth"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/large_padding"
-        android:layout_marginBottom="@dimen/large_padding"
-        android:max="100"
-        android:maxHeight="@dimen/seek_bar_max_height"
-        android:min="0"
-        android:progress="50"
-        android:progressDrawable="@drawable/seek_bar_ruler_dark"
-        android:thumb="@drawable/seek_bar_slider_dark"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/controls" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
