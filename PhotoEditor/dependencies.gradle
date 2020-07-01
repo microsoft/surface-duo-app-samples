@@ -71,10 +71,14 @@ ext {
     junitInstrumentationVersion = "1.1.1"
     espressoCoreVersion = "3.2.0"
     testRunnerVersion = "1.2.0"
+    testRulesVersion = "1.2.0"
+    uiautomatorVersion = "2.2.0"
 
     instrumentationTestDependencies = [
             junit       : "androidx.test.ext:junit:$junitInstrumentationVersion",
             espressoCore: "androidx.test.espresso:espresso-core:$espressoCoreVersion",
-            testRunner  : "androidx.test:runner:$testRunnerVersion"
+            testRunner  : "androidx.test:runner:$testRunnerVersion",
+            testRules   : "androidx.test:rules:$testRulesVersion",
+            uiautomator : "androidx.test.uiautomator:uiautomator:$uiautomatorVersion"
     ]
 }
