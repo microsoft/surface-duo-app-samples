@@ -9,6 +9,7 @@ package com.microsoft.device.display.samples.sourceeditor
 
 import Defines
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -16,6 +17,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.ScrollView
 
 import androidx.fragment.app.Fragment
@@ -32,9 +35,10 @@ import java.io.InputStreamReader
 
 /* Fragment that defines functionality for source code editor */
 class CodeFragment : Fragment() {
-    private lateinit var previewBtn : Button
-    private lateinit var textField : TextInputEditText
-    private lateinit var scrollView : ScrollView
+    private lateinit var previewBtn: Button
+    private lateinit var buttonToolbar: LinearLayout
+    private lateinit var textField: TextInputEditText
+    private lateinit var scrollView: ScrollView
     private lateinit var scrollVM: ScrollViewModel
     private lateinit var webVM: WebViewModel
 
@@ -82,7 +86,7 @@ class CodeFragment : Fragment() {
     private fun readFile(file : String, context : Context?) : String {
         return BufferedReader(InputStreamReader(context?.assets?.open(file))).useLines { lines ->
             val results = StringBuilder()
-            lines.forEach { results.append(it + "\n") }
+            lines.forEach { results.append(it + System.getProperty("line.separator")) }
             results.toString()
         }
     }
@@ -104,6 +108,8 @@ class CodeFragment : Fragment() {
     private fun handleSpannedModeSelection(view: View) {
         activity?.let {
             previewBtn = view.findViewById(R.id.btn_switch_to_preview)
+            buttonToolbar = view.findViewById(R.id.button_toolbar)
+
             if (ScreenHelper.isDualMode(it)) {
                 initializeDualScreen()
             } else {
@@ -114,7 +120,8 @@ class CodeFragment : Fragment() {
 
     // spanned selection helper
     private fun initializeSingleScreen() {
-        previewBtn.visibility = View.VISIBLE
+        buttonToolbar.visibility = View.VISIBLE
+
         previewBtn.setOnClickListener {
             startPreviewFragment()
         }
@@ -122,7 +129,7 @@ class CodeFragment : Fragment() {
 
     // spanned selection helper
     private fun initializeDualScreen() {
-        previewBtn.visibility = View.INVISIBLE
+        buttonToolbar.visibility = View.GONE
 
         scrollingBuffer = Defines.DEFAULT_BUFFER_SIZE
         scrollRange = Defines.DEFAULT_RANGE

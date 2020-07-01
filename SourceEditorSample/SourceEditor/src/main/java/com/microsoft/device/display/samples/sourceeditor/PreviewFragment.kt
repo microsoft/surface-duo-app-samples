@@ -14,6 +14,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.ScrollView
 
 import androidx.fragment.app.Fragment
@@ -26,6 +28,8 @@ import com.microsoft.device.dualscreen.layout.ScreenHelper
 
 /* Fragment that defines functionality for the source code previewer */
 class PreviewFragment : Fragment() {
+    private lateinit var editorBtn: Button
+    private lateinit var buttonToolbar: LinearLayout
     private lateinit var scrollView: ScrollView
     private lateinit var scrollVM: ScrollViewModel
     private lateinit var webVM: WebViewModel
@@ -75,31 +79,64 @@ class PreviewFragment : Fragment() {
         }
     }
 
+    // single screen vs. dual screen logic
     private fun handleSpannedModeSelection(view: View, webView: WebView) {
         activity?.let { activity ->
+            editorBtn = view.findViewById(R.id.btn_switch_to_editor)
+            buttonToolbar = view.findViewById(R.id.button_toolbar)
+
+            // listen for changes made to the editor
+            webVM.getText().observe(requireActivity(), Observer { str ->
+                webView.loadData(str, Defines.HTML_TYPE, Defines.ENCODING)
+            })
+
             if (ScreenHelper.isDualMode(activity)) {
-                scrollingBuffer = Defines.DEFAULT_BUFFER_SIZE
-                scrollRange = Defines.DEFAULT_RANGE
-                rangeFound = false
-
-                // set event and data listeners
-                scrollView = view.findViewById(R.id.scrollview_preview)
-                scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-                    handleScrolling(false, scrollY)
-                }
-
-                scrollVM.getScroll().observe(requireActivity(), Observer { state ->
-                    if (!state.scrollKey.equals(Defines.PREVIEW_KEY)) {
-                        handleScrolling(true, state.scrollPercentage)
-                    }
-                })
-
-                // listen for changes made to the editor
-                webVM.getText().observe(requireActivity(), Observer { str ->
-                    webView.loadData(str, Defines.HTML_TYPE, Defines.ENCODING)
-                })
+                initializeDualScreen(view, webView)
+            }
+            else {
+                initializeSingleScreen()
             }
         }
+    }
+
+    // spanned selection helper
+    private fun initializeSingleScreen() {
+        buttonToolbar.visibility = View.VISIBLE
+        editorBtn.setOnClickListener {
+            startCodeFragment()
+        }
+    }
+
+    // spanned selection helper
+    private fun initializeDualScreen(view: View, webView: WebView) {
+        scrollingBuffer = Defines.DEFAULT_BUFFER_SIZE
+        scrollRange = Defines.DEFAULT_RANGE
+        rangeFound = false
+
+        buttonToolbar.visibility = View.GONE
+
+        // set event and data listeners
+        scrollView = view.findViewById(R.id.scrollview_preview)
+        scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            handleScrolling(false, scrollY)
+        }
+
+        scrollVM.getScroll().observe(requireActivity(), Observer { state ->
+            if (!state.scrollKey.equals(Defines.PREVIEW_KEY)) {
+                handleScrolling(true, state.scrollPercentage)
+            }
+        })
+    }
+
+    // method that triggers transition to code fragment
+    private fun startCodeFragment() {
+        parentFragmentManager.beginTransaction()
+                .replace(
+                        R.id.single_screen_container_id,
+                        CodeFragment(),
+                        null
+                ).addToBackStack(null)
+                .commit()
     }
 
     // get bounds of scroll window
