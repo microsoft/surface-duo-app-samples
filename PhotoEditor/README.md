@@ -1,3 +1,15 @@
+---
+page_type: sample
+title: Surface Duo - PhotoEditor
+name: Surface Duo - PhotoEditor
+languages:
+- java
+products: m365
+description: "Learn how to use Kotlin to implement the Companion Pane dual-screen pattern and drag/drop features in an app for the Surface Duo."
+keywords: dual-screen, surface duo, kotlin
+urlFragment: PhotoEditor
+---
+
 # Photo Editor
 
 This Kotlin application implements a simple photo editor that lets users select, edit, and save images. Screenshots of the application and its behavior are available [here](screenshots/).
@@ -15,7 +27,7 @@ This application also uses a beta release of the [Constraint Layout](https://dev
 * Open the PhotoEditor project: **File > Open**, navigate to file location of the  the **PhotoEditor** folder, then click **OK**.
 * Build your project: **Build > Make Project** or **Ctrl+F9**
 * Start the Surface Duo emulator (more instructions on how to use the emulator [here](https://docs.microsoft.com/dual-screen/android/use-emulator?tabs=java)).
-* Select **"Microosft SurfaceDuoEMulator API 29"** or **"Virtual Device"** from the list of Running Devices.
+* Select **"Microsoft SurfaceDuoEmulator API 29"** or **"Virtual Device"** from the list of Running Devices.
 * Run the project on the emulator: **Run > Run 'app'**, **Ctrl+F2**, or click the green play button.
 
 ## Key concepts
@@ -44,7 +56,7 @@ This sample also demonstrates how drag and drop features can simplify file trans
 
 The SurfaceDuoLayout element of the [DualScreen-Layout](https://docs.microsoft.com/dual-screen/android/api-reference/dualscreen-layout?tabs=java) package is the key to developing applications on the Surface Duo. This layout provides different attributes for single-screen and dual-screen views, and example usage can be seen in [activity_main.xml](app/src/main/res/layout/activity_main.xml).
 
-NOTE: When defining landscape and portrait orientations for the dual-screen view, the two screens are treated as one. That means the dual-screen landscape orientation is when the single-screen orientation would be considered portrait (shown below) and vice versa.
+NOTE: When defining landscape and portrait orientations for the dual-screen view, the two screens are treated as one. That means the dual-screen landscape orientation is when the single-screen orientation would be considered portrait (shown below) and vice versa. For more tips, check out [this](https://devblogs.microsoft.com/surface-duo/introducing-dual-screen-layouts-android/) blog post.
 
 ![Dual-screen landscape view](screenshots/dual_screen_landscape.png)
 
