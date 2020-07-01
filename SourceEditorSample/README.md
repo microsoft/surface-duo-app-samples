@@ -1,3 +1,11 @@
+---
+page_type: sample
+languages:
+- kotlin
+description: "Adapt or build dual-screen apps for the Surface Duo using Kotlin"
+urlFragment: "SourceEditorSample"
+---
+
 # Introduction
 
 This sample contains a Kotlin application designed for Surface Duo. The application is an HTML
