@@ -9,7 +9,6 @@ package com.microsoft.device.display.samples.sourceeditor
 
 import Defines
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -17,7 +16,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 
@@ -26,6 +24,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
 import com.google.android.material.textfield.TextInputEditText
+import com.microsoft.device.display.samples.sourceeditor.includes.DragHandler
 import com.microsoft.device.display.samples.sourceeditor.viewmodel.ScrollViewModel
 import com.microsoft.device.display.samples.sourceeditor.viewmodel.WebViewModel
 import com.microsoft.device.dualscreen.layout.ScreenHelper
@@ -35,17 +34,19 @@ import java.io.InputStreamReader
 
 /* Fragment that defines functionality for source code editor */
 class CodeFragment : Fragment() {
-    private lateinit var previewBtn: Button
     private lateinit var buttonToolbar: LinearLayout
-    private lateinit var textField: TextInputEditText
+    private lateinit var codeLayout: LinearLayout
     private lateinit var scrollView: ScrollView
+
+    private lateinit var previewBtn: Button
+    private lateinit var textField: TextInputEditText
+
     private lateinit var scrollVM: ScrollViewModel
     private lateinit var webVM: WebViewModel
 
     private var scrollingBuffer : Int = Defines.DEFAULT_BUFFER_SIZE
     private var scrollRange : Int = Defines.DEFAULT_RANGE
     private var rangeFound : Boolean = false
-    private var initText : Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,7 +54,6 @@ class CodeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_item_code, container, false)
-        initText = true
 
         activity?.let {
             // initialize ViewModels (find existing or create a new one)
@@ -107,6 +107,7 @@ class CodeFragment : Fragment() {
     // single screen vs. dual screen logic
     private fun handleSpannedModeSelection(view: View) {
         activity?.let {
+            codeLayout = view.findViewById(R.id.code_layout)
             previewBtn = view.findViewById(R.id.btn_switch_to_preview)
             buttonToolbar = view.findViewById(R.id.button_toolbar)
 
@@ -121,6 +122,7 @@ class CodeFragment : Fragment() {
     // spanned selection helper
     private fun initializeSingleScreen() {
         buttonToolbar.visibility = View.VISIBLE
+        initializeDragListener()
 
         previewBtn.setOnClickListener {
             startPreviewFragment()
@@ -162,16 +164,13 @@ class CodeFragment : Fragment() {
     private fun setOnChangeListenerForTextInput(field: TextInputEditText) {
         field.addTextChangedListener(object : TextWatcher {
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 webVM.setText(s.toString())
             }
 
-            override fun afterTextChanged(s: Editable?) {
-
-            }
+            override fun afterTextChanged(s: Editable?) {}
         })
     }
 
@@ -201,6 +200,21 @@ class CodeFragment : Fragment() {
         } else {
             // filter out scrolling events caused by auto scrolling
             scrollingBuffer++
+        }
+    }
+
+    // create drop targets for the editor screen
+    private fun initializeDragListener() {
+        val handler = DragHandler(requireActivity(), webVM, requireActivity().contentResolver)
+
+        // Main target will trigger when textField has content
+        textField.setOnDragListener { v, event ->
+            handler.onDrag(v, event)
+        }
+
+        // Sub target will trigger when textField is empty
+        codeLayout.setOnDragListener { v, event ->
+            handler.onDrag(v, event)
         }
     }
 }

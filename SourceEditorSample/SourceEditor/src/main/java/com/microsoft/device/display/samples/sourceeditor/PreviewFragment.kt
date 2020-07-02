@@ -22,15 +22,19 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
+import com.microsoft.device.display.samples.sourceeditor.includes.DragHandler
 import com.microsoft.device.display.samples.sourceeditor.viewmodel.ScrollViewModel
 import com.microsoft.device.display.samples.sourceeditor.viewmodel.WebViewModel
 import com.microsoft.device.dualscreen.layout.ScreenHelper
 
 /* Fragment that defines functionality for the source code previewer */
 class PreviewFragment : Fragment() {
-    private lateinit var editorBtn: Button
     private lateinit var buttonToolbar: LinearLayout
     private lateinit var scrollView: ScrollView
+
+    private lateinit var editorBtn: Button
+    private lateinit var webView: WebView
+
     private lateinit var scrollVM: ScrollViewModel
     private lateinit var webVM: WebViewModel
 
@@ -45,7 +49,7 @@ class PreviewFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_item_preview, container, false)
 
-        val webView: WebView = view.findViewById(R.id.webview_preview)
+        webView = view.findViewById(R.id.webview_preview)
         webView.settings.domStorageEnabled = true
         webView.settings.javaScriptEnabled = true
         webView.webChromeClient = WebChromeClient()
@@ -102,6 +106,8 @@ class PreviewFragment : Fragment() {
     // spanned selection helper
     private fun initializeSingleScreen() {
         buttonToolbar.visibility = View.VISIBLE
+        initializeDragListener()
+
         editorBtn.setOnClickListener {
             startCodeFragment()
         }
@@ -165,6 +171,16 @@ class PreviewFragment : Fragment() {
         } else {
             // filter out scrolling events caused by auto scrolling
             scrollingBuffer++
+        }
+    }
+
+    // create a drop target for the preview screen
+    private fun initializeDragListener() {
+        val handler = DragHandler(requireActivity(), webVM, requireActivity().contentResolver)
+        val target = webView
+
+        target.setOnDragListener { v, event ->
+            handler.onDrag(v, event)
         }
     }
 }
