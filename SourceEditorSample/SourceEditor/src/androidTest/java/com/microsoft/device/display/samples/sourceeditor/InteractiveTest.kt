@@ -20,8 +20,11 @@ import androidx.test.espresso.web.webdriver.Locator
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
+import androidx.test.uiautomator.UiDevice
+import com.microsoft.device.dualscreen.layout.ScreenHelper
 import org.hamcrest.core.StringContains.containsString
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -49,5 +52,72 @@ class InteractiveTest {
         onWebView()
                 .withElement(findElement(Locator.TAG_NAME, "h1"))
                 .check(webMatches(getText(), containsString("Testing in a browser")))
+    }
+
+    @Test
+    fun configureSpanning() {
+//        resetToLeftScreen()
+        spanFromLeft()
+        assert(isSpanned())
+//        unspanToRight()
+//        assertFalse(isSpanned())
+//        spanFromRight()
+//        assert(isSpanned())
+//        unspanToLeft()
+//        assertFalse(isSpanned())
+//        switchToRight()
+//        switchToLeft()
+    }
+    companion object {
+        // testing device
+        val device: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        /**
+         * X-COORDINATES (pixels)
+         */
+        // middle of left screen
+        const val leftX: Int = 675
+        // middle of right screen
+        const val rightX: Int = 2109
+        // left of hinge area
+        const val leftMiddleX: Int = 1340
+        // right of hinge area
+        const val rightMiddleX: Int = 1434
+        /**
+         * Y-COORDINATES (pixels)
+         */
+        // bottom of screen
+        const val bottomY: Int = 1780
+        // middle of screen
+        const val middleY: Int = 900
+        /**
+         * ANIMATION STEPS
+         */
+        // panning swipe
+        const val spanSteps: Int = 400
+        // unspanning swipe
+        const val unspanSteps: Int = 140
+        // switch from one screen to the other
+        const val switchSteps: Int = 600
+    }
+    private fun spanFromLeft() {
+        device.swipe(leftX, bottomY, leftMiddleX, middleY, spanSteps)
+    }
+    private fun unspanToLeft() {
+        device.swipe(leftMiddleX, bottomY, leftX, middleY, unspanSteps)
+    }
+    private fun spanFromRight() {
+        device.swipe(rightX, bottomY, rightMiddleX, middleY, spanSteps)
+    }
+    private fun unspanToRight() {
+        device.swipe(rightMiddleX, bottomY, rightX, middleY, unspanSteps)
+    }
+    private fun switchToLeft() {
+        device.swipe(rightMiddleX, bottomY, leftX, middleY, switchSteps)
+    }
+    private fun switchToRight() {
+        device.swipe(leftMiddleX, bottomY, rightX, middleY, switchSteps)
+    }
+    private fun isSpanned(): Boolean {
+        return ScreenHelper.isDualMode(activityRule.activity)
     }
 }
