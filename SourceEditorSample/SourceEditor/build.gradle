@@ -42,5 +42,6 @@ dependencies {
     androidTestImplementation instrumentationTestDependencies.espressoWeb
     androidTestImplementation instrumentationTestDependencies.testRunner
     androidTestImplementation instrumentationTestDependencies.testRules
+    androidTestImplementation instrumentationTestDependencies.uiautomator
 }
 
