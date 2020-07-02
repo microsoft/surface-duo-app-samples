@@ -1,0 +1,10 @@
+<!--
+  ~ Copyright (c) Microsoft Corporation. All rights reserved.
+  ~ Licensed under the MIT License.
+  ~
+  -->
+
+<resources>
+    <string name="app_name">Source Editor</string>
+    <string name="btn_switch_to_preview">Switch to Preview</string>
+</resources>
