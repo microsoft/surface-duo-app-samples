@@ -1,5 +1,7 @@
 package com.microsoft.device.display.samples.photoeditor
 
+import android.content.Intent
+import androidx.constraintlayout.utils.widget.ImageFilterView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -8,6 +10,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
@@ -32,7 +35,7 @@ class PhotoEditorUITest {
     @Test
     fun useAppContext() {
         // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        val appContext = getInstrumentation().targetContext
         assertEquals("com.microsoft.device.display.samples.photoeditor", appContext.packageName)
     }
 
@@ -60,9 +63,43 @@ class PhotoEditorUITest {
         onView(withId(R.id.brightness)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         onView(withId(R.id.warmth)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
 
-        unspanToLeft()
         device.unfreezeRotation()
     }
+
+//    /**
+//     * Tests drag and drop capabilities of PhotoEditor
+//     *
+//     * @precondition Files app is open on right screen and is in the PhotoEditor folder, which
+//     * has at least one different photo that can be dragged into the PhotoEditor app
+//     */
+//    @Test
+//    fun testDragAndDrop() {
+//        device.setOrientationNatural()
+//
+//        // emulator apk package name
+//        // val filesPackage = "com.android.documentsui"
+//
+//        // device apk package name
+//        val filesPackage = "com.google.android.documentsui"
+//
+//        // Open Files app
+//        val context = getInstrumentation().context
+//        val intent = context.packageManager.getLaunchIntentForPackage(filesPackage)?.apply {
+//            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+//        }
+//
+//        context.startActivity(intent)
+//        device.wait(Until.hasObject(By.pkg(filesPackage).depth(0)), 3000) // timeout at 3 seconds
+//
+//        val prev = activityRule.activity.findViewById<ImageFilterView>(R.id.image).drawable
+//
+//        device.click(1550, 1230)
+//        device.swipe(1550, 1230, 1200, 1100, 600)
+//
+//        check(prev != activityRule.activity.findViewById<ImageFilterView>(R.id.image).drawable)
+//
+//        device.unfreezeRotation()
+//    }
 
 
     /**
@@ -81,8 +118,6 @@ class PhotoEditorUITest {
 
 //    @Test
 //    fun configureSpanning() {
-//        resetToLeftScreen()
-//
 //        spanFromLeft()
 //        require(isSpanned())
 //
@@ -101,7 +136,7 @@ class PhotoEditorUITest {
 
     companion object {
         // testing device
-        val device: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        val device: UiDevice = UiDevice.getInstance(getInstrumentation())
 
         /**
          * X-COORDINATES (pixels)
@@ -133,7 +168,7 @@ class PhotoEditorUITest {
         /**
          * ANIMATION STEPS
          */
-        // panning swipe
+        // spanning swipe
         const val spanSteps: Int = 400
 
         // unspanning swipe
@@ -145,7 +180,6 @@ class PhotoEditorUITest {
 
     private fun spanFromLeft() {
         device.swipe(leftX, bottomY, middleX, middleY, spanSteps)
-        device.wait(Until.gone(By.clazz("SeekBar")), 3000)
     }
 
     private fun unspanToLeft() {
