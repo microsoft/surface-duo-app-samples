@@ -18,4 +18,9 @@ object Defines {
     const val DEFAULT_SOURCE_PATH = "source.html"
     const val HTML_TYPE = "text/html"
     const val ENCODING = "UTF-8"
+
+    // Handler references //
+    const val DEFAULT_FILE_NAME = "code"
+    const val TEXT_PREFIX = "text/"
+    const val PLAIN_TEXT = "text/plain"
 }

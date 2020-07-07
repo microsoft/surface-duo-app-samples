@@ -6,12 +6,9 @@
 
 package com.microsoft.device.display.samples.sourceeditor
 
-import android.util.Log
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.espresso.web.assertion.WebViewAssertions.webMatches
 import androidx.test.espresso.web.sugar.Web.onWebView
 import androidx.test.espresso.web.webdriver.DriverAtoms.findElement
@@ -28,7 +25,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -52,21 +48,32 @@ class InteractiveTest {
         onWebView()
                 .withElement(findElement(Locator.TAG_NAME, "h1"))
                 .check(webMatches(getText(), containsString("Testing in a browser")))
+        Thread.sleep(1000)
+    }
+
+    @Test
+    fun textPreservedOnSpanTest() {
+        onView(withId(R.id.textinput_code)).perform(replaceText("<h1>" + testString +  "</h1>"))
+        spanFromLeft()
+        assert(isSpanned())
+        Thread.sleep(2000)
+        onWebView()
+                .withElement(findElement(Locator.TAG_NAME, "h1"))
+                .check(webMatches(getText(), containsString(testString)))
     }
 
     @Test
     fun configureSpanning() {
-//        resetToLeftScreen()
         spanFromLeft()
         assert(isSpanned())
-//        unspanToRight()
-//        assertFalse(isSpanned())
-//        spanFromRight()
-//        assert(isSpanned())
-//        unspanToLeft()
-//        assertFalse(isSpanned())
-//        switchToRight()
-//        switchToLeft()
+        unspanToRight()
+        assertFalse(isSpanned())
+        spanFromRight()
+        assert(isSpanned())
+        unspanToLeft()
+        assertFalse(isSpanned())
+        switchToRight()
+        switchToLeft()
     }
     companion object {
         // testing device
@@ -82,6 +89,7 @@ class InteractiveTest {
         const val leftMiddleX: Int = 1340
         // right of hinge area
         const val rightMiddleX: Int = 1434
+
         /**
          * Y-COORDINATES (pixels)
          */
@@ -89,33 +97,34 @@ class InteractiveTest {
         const val bottomY: Int = 1780
         // middle of screen
         const val middleY: Int = 900
+
         /**
          * ANIMATION STEPS
          */
-        // panning swipe
+        // spanning/unspanning swipe
         const val spanSteps: Int = 400
-        // unspanning swipe
-        const val unspanSteps: Int = 140
         // switch from one screen to the other
         const val switchSteps: Int = 600
+
+        const val testString = "Testing in a different browser"
     }
     private fun spanFromLeft() {
         device.swipe(leftX, bottomY, leftMiddleX, middleY, spanSteps)
     }
     private fun unspanToLeft() {
-        device.swipe(leftMiddleX, bottomY, leftX, middleY, unspanSteps)
+        device.swipe(rightX, bottomY, leftX, middleY, spanSteps)
     }
     private fun spanFromRight() {
         device.swipe(rightX, bottomY, rightMiddleX, middleY, spanSteps)
     }
     private fun unspanToRight() {
-        device.swipe(rightMiddleX, bottomY, rightX, middleY, unspanSteps)
+        device.swipe(leftX, bottomY, rightX, middleY, spanSteps)
     }
     private fun switchToLeft() {
-        device.swipe(rightMiddleX, bottomY, leftX, middleY, switchSteps)
+        device.swipe(rightX, bottomY, leftX, middleY, switchSteps)
     }
     private fun switchToRight() {
-        device.swipe(leftMiddleX, bottomY, rightX, middleY, switchSteps)
+        device.swipe(leftX, bottomY, rightX, middleY, switchSteps)
     }
     private fun isSpanned(): Boolean {
         return ScreenHelper.isDualMode(activityRule.activity)
