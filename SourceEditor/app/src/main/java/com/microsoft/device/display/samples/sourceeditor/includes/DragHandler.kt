@@ -24,7 +24,7 @@ class DragHandler (val activity: Activity,
     fun onDrag(v: View, event: DragEvent): Boolean {
         val action = event.action
         val isText = event.clipDescription?.getMimeType(0)
-                        .toString().startsWith("text/")
+                        .toString().startsWith(Defines.TEXT_PREFIX)
 
         when (action) {
             DragEvent.ACTION_DRAG_STARTED -> {

@@ -4,5 +4,5 @@
  *
  */
 
-include ':SourceEditor'
-rootProject.name = 'SourceEditorSample'
+include ':app'
+rootProject.name = 'SourceEditor'
