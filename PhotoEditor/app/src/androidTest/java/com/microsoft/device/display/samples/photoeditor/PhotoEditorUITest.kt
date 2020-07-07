@@ -9,14 +9,12 @@ import androidx.test.espresso.matcher.ViewMatchers.Visibility
 import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import com.microsoft.device.dualscreen.layout.ScreenHelper
-import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,21 +30,14 @@ class PhotoEditorUITest {
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
 
-    @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = getInstrumentation().targetContext
-        assertEquals("com.microsoft.device.display.samples.photoeditor", appContext.packageName)
-    }
-
     /**
      * Tests visibility of controls when app spanned vs. unspanned
      *
-     * @precondition no other applications are open
+     * @precondition no other applications are open (so app by default opens on left screen)
      */
     @Test
     fun testControlVisibility() {
-        // Lock orientation for entire test so spanning/unspanning work as expected
+        // Lock in portrait mode
         device.setOrientationNatural()
 
         // App opens in single-screen mode, so dropdown and saturation slider should be visible while brightness and warmth sliders are hidden
@@ -56,6 +47,7 @@ class PhotoEditorUITest {
         onView(withId(R.id.warmth)).check(matches(withEffectiveVisibility(Visibility.INVISIBLE)))
 
         spanFromLeft()
+        require(isSpanned())
 
         // Switched to dual-screen mode, so dropdown should not exist and all sliders should be visible
         onView(withId(R.id.controls)).check(doesNotExist())
@@ -63,41 +55,50 @@ class PhotoEditorUITest {
         onView(withId(R.id.brightness)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         onView(withId(R.id.warmth)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
 
+        // Unlock rotation
         device.unfreezeRotation()
     }
 
-//    /**
-//     * Tests drag and drop capabilities of PhotoEditor
-//     *
-//     * @precondition Files app is open on right screen and is in the PhotoEditor folder, which
-//     * has at least one different photo that can be dragged into the PhotoEditor app
-//     */
+    /**
+     * Tests drag and drop capabilities of PhotoEditor
+     *
+     * @precondition most recently saved file in the Files app is an image that's different
+     * from the current image being edited
+     */
 //    @Test
 //    fun testDragAndDrop() {
+//        // Lock in portrait mode
 //        device.setOrientationNatural()
 //
 //        // emulator apk package name
-//        // val filesPackage = "com.android.documentsui"
+//        val filesPackage = "com.android.documentsui"
 //
 //        // device apk package name
-//        val filesPackage = "com.google.android.documentsui"
+//        // val filesPackage = "com.google.android.documentsui"
 //
 //        // Open Files app
 //        val context = getInstrumentation().context
 //        val intent = context.packageManager.getLaunchIntentForPackage(filesPackage)?.apply {
 //            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
 //        }
-//
 //        context.startActivity(intent)
 //        device.wait(Until.hasObject(By.pkg(filesPackage).depth(0)), 3000) // timeout at 3 seconds
 //
 //        val prev = activityRule.activity.findViewById<ImageFilterView>(R.id.image).drawable
 //
-//        device.click(1550, 1230)
+//        // Hardcoded to select most recently saved file in Files app
+//        device.swipe(1550, 1230, 1550, 1230, 100)
+//
+//        // Slowly drag selected image file to other screen for import
 //        device.swipe(1550, 1230, 1200, 1100, 600)
 //
+//        // Wait for import to finish
+//        Thread.sleep(1000)
+//
+//        // Check that drawable has been updated
 //        check(prev != activityRule.activity.findViewById<ImageFilterView>(R.id.image).drawable)
 //
+//        // Unlock rotation
 //        device.unfreezeRotation()
 //    }
 
@@ -112,20 +113,23 @@ class PhotoEditorUITest {
      * If the test fails, modify the swipe parameters as needed- usually either an increase in the
      * "steps" parameter or a slight shift in the "endX" parameter.
      *
-     * See the link below for Surface Duo pixel information:
-     * https://devblogs.microsoft.com/surface-duo/resource-configuration-for-microsoft-surface-duo/
      */
-
 //    @Test
 //    fun configureSpanning() {
 //        spanFromLeft()
 //        require(isSpanned())
+//
+//        // Uncomment if unspan command runs before app is fully spanned
+//        // Thread.sleep(2000)
 //
 //        unspanToRight()
 //        require(!isSpanned())
 //
 //        spanFromRight()
 //        require(isSpanned())
+//
+//        // Uncomment if unspan command runs before app is fully spanned
+//        // Thread.sleep(2000)
 //
 //        unspanToLeft()
 //        require(!isSpanned())
@@ -150,12 +154,6 @@ class PhotoEditorUITest {
         // hinge area
         const val middleX: Int = 1350
 
-        // left of hinge area
-        const val leftMiddleX: Int = 1200
-
-        // right of hinge area
-        const val rightMiddleX: Int = 1500
-
         /**
          * Y-COORDINATES (pixels)
          */
@@ -172,10 +170,10 @@ class PhotoEditorUITest {
         const val spanSteps: Int = 400
 
         // unspanning swipe
-        const val unspanSteps: Int = 140
+        const val unspanSteps: Int = 200
 
         // switch from one screen to the other
-        const val switchSteps: Int = 50
+        const val switchSteps: Int = 100
     }
 
     private fun spanFromLeft() {
@@ -183,7 +181,7 @@ class PhotoEditorUITest {
     }
 
     private fun unspanToLeft() {
-        device.swipe(rightMiddleX, bottomY, leftX, middleY, unspanSteps)
+        device.swipe(rightX, bottomY, leftX, middleY, unspanSteps)
     }
 
     private fun spanFromRight() {
@@ -191,7 +189,7 @@ class PhotoEditorUITest {
     }
 
     private fun unspanToRight() {
-        device.swipe(leftMiddleX, bottomY, rightX, middleY, unspanSteps)
+        device.swipe(leftX, bottomY, rightX, middleY, unspanSteps)
     }
 
     private fun switchToLeft() {
