@@ -19,14 +19,14 @@ This Kotlin application implements a simple photo editor that lets users select,
 * Android Studio
 * Surface Duo emulator
 
-This application also uses a beta release of the [Constraint Layout](https://developer.android.com/jetpack/androidx/releases/constraintlayout) package to facilitate image editing with the ImageFilterView class, and all button icons were downloaded from [here](https://material.io/resources/icons/?style=baseline).
+This application also uses a beta release of the [Constraint Layout](https://developer.android.com/jetpack/androidx/releases/constraintlayout) package to facilitate image editing with the ImageFilterView class, and all button icons were downloaded from the [Android Material Design](https://material.io/resources/icons/?style=baseline) website.
 
 ## Running the sample
 
 * Start Android Studio.
 * Open the PhotoEditor project: **File > Open**, navigate to file location of the  the **PhotoEditor** folder, then click **OK**.
 * Build your project: **Build > Make Project** or **Ctrl+F9**
-* Start the Surface Duo emulator (more instructions on how to use the emulator [here](https://docs.microsoft.com/dual-screen/android/use-emulator?tabs=java)).
+* Start the Surface Duo emulator
 * Select **"Microsoft SurfaceDuoEmulator API 29"** or **"Virtual Device"** from the list of Running Devices.
 * Run the project on the emulator: **Run > Run 'app'**, **Ctrl+F2**, or click the green play button.
 
@@ -50,13 +50,14 @@ When switched to dual-screen mode, however, the entire left screen can be dedica
 
 ### Drag and drop
 
-This sample also demonstrates how drag and drop features can simplify file transfer across screens and between applications. For more information on drag and drop, check out [this](https://github.com/microsoft/surface-duo-sdk-samples-kotlin/tree/master/draganddrop) sample.
+This sample also demonstrates how drag and drop features can simplify file transfer across screens and between applications. For more information on drag and drop, check out [this sample](https://github.com/microsoft/surface-duo-sdk-samples-kotlin/tree/master/draganddrop).
 
 ### Dual screen layout
 
 The SurfaceDuoLayout element of the [DualScreen-Layout](https://docs.microsoft.com/dual-screen/android/api-reference/dualscreen-layout?tabs=java) package is the key to developing applications on the Surface Duo. This layout provides different attributes for single-screen and dual-screen views, and example usage can be seen in [activity_main.xml](app/src/main/res/layout/activity_main.xml).
 
-NOTE: When defining landscape and portrait orientations for the dual-screen view, the two screens are treated as one. That means the dual-screen landscape orientation is when the single-screen orientation would be considered portrait (shown below) and vice versa. For more tips, check out [this](https://devblogs.microsoft.com/surface-duo/introducing-dual-screen-layouts-android/) blog post.
+> [!NOTE]
+> When defining landscape and portrait orientations for the dual-screen view, the two screens are treated as one. That means the dual-screen landscape orientation is when the single-screen orientation would be considered portrait (shown below) and vice versa. For more tips, check out [this blog post](https://devblogs.microsoft.com/surface-duo/introducing-dual-screen-layouts-android/).
 
 ![Dual-screen landscape view](screenshots/dual_screen_landscape.png)
 
