@@ -46,9 +46,8 @@ class InteractiveTest {
     fun textTransferTest() {
         onView(withId(R.id.btn_switch_to_preview)).perform(click())
         onWebView()
-                .withElement(findElement(Locator.TAG_NAME, "h1"))
-                .check(webMatches(getText(), containsString("Testing in a browser")))
-        Thread.sleep(1000)
+            .withElement(findElement(Locator.TAG_NAME, "h1"))
+            .check(webMatches(getText(), containsString("Testing in a browser")))
     }
 
     @Test
@@ -56,10 +55,9 @@ class InteractiveTest {
         onView(withId(R.id.textinput_code)).perform(replaceText("<h1>" + testString +  "</h1>"))
         spanFromLeft()
         assert(isSpanned())
-        Thread.sleep(2000)
         onWebView()
-                .withElement(findElement(Locator.TAG_NAME, "h1"))
-                .check(webMatches(getText(), containsString(testString)))
+            .withElement(findElement(Locator.TAG_NAME, "h1"))
+            .check(webMatches(getText(), containsString(testString)))
     }
 
     @Test
