@@ -78,33 +78,15 @@ class InteractiveTest {
     companion object {
         // testing device
         val device: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-        /**
-         * X-COORDINATES (pixels)
-         */
-        // middle of left screen
-        const val leftX: Int = 675
-        // middle of right screen
-        const val rightX: Int = 2109
-        // left of hinge area
-        const val leftMiddleX: Int = 1340
-        // right of hinge area
-        const val rightMiddleX: Int = 1434
 
-        /**
-         * Y-COORDINATES (pixels)
-         */
-        // bottom of screen
-        const val bottomY: Int = 1780
-        // middle of screen
-        const val middleY: Int = 900
-
-        /**
-         * ANIMATION STEPS
-         */
-        // spanning/unspanning swipe
-        const val spanSteps: Int = 400
-        // switch from one screen to the other
-        const val switchSteps: Int = 600
+        const val leftX: Int = 675          // middle of left screen
+        const val rightX: Int = 2109        // middle of right screen
+        const val leftMiddleX: Int = 1340   // left of hinge area
+        const val rightMiddleX: Int = 1434  // right of hinge area
+        const val bottomY: Int = 1780       // bottom of screen
+        const val middleY: Int = 900        // middle of screen
+        const val spanSteps: Int = 400      // spanning/unspanning swipe
+        const val switchSteps: Int = 600    // switch from one screen to the other
 
         const val testString = "Testing in a different browser"
     }

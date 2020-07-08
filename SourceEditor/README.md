@@ -1,10 +1,13 @@
 ---
 page_type: sample
+title: Surface Duo - SourceEditor
+name: Surface Duo - SourceEditor
 languages:
-- kotlin
-description: "Adapt or build dual-screen apps for the Surface Duo using Kotlin"
+- java
+products: m365
+description: "Learn to develop with Kotlin, using the Dual View layout pattern and external storage capabilities in an app for the Surface Duo."
 keywords: dual-screen, surface duo, kotlin
-urlFragment: "SourceEditorSample"
+urlFragment: SourceEditor
 ---
 
 # Introduction
