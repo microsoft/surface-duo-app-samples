@@ -119,7 +119,7 @@ class PhotoEditorUITest {
 //        spanFromLeft()
 //        require(isSpanned())
 //
-//        // Uncomment if unspan command runs before app is fully spanned
+//        // May need to uncomment if running on emulator
 //        // Thread.sleep(2000)
 //
 //        unspanToRight()
@@ -128,7 +128,7 @@ class PhotoEditorUITest {
 //        spanFromRight()
 //        require(isSpanned())
 //
-//        // Uncomment if unspan command runs before app is fully spanned
+//        // May need to uncomment if running on emulatord
 //        // Thread.sleep(2000)
 //
 //        unspanToLeft()
@@ -142,38 +142,15 @@ class PhotoEditorUITest {
         // testing device
         val device: UiDevice = UiDevice.getInstance(getInstrumentation())
 
-        /**
-         * X-COORDINATES (pixels)
-         */
-        // middle of left screen
-        const val leftX: Int = 675
-
-        // middle of right screen
-        const val rightX: Int = 2109
-
-        // hinge area
-        const val middleX: Int = 1350
-
-        /**
-         * Y-COORDINATES (pixels)
-         */
-        // bottom of screen
-        const val bottomY: Int = 1780
-
-        // middle of screen
-        const val middleY: Int = 900
-
-        /**
-         * ANIMATION STEPS
-         */
-        // spanning swipe
-        const val spanSteps: Int = 400
-
-        // unspanning swipe
-        const val unspanSteps: Int = 200
-
-        // switch from one screen to the other
-        const val switchSteps: Int = 100
+        // Swipe constants
+        const val leftX: Int = 675          // middle of left screen
+        const val rightX: Int = 2109        // middle of right screen
+        const val middleX: Int = 1350       // hinge area
+        const val bottomY: Int = 1780       // bottom of screen
+        const val middleY: Int = 900        // middle of screen
+        const val spanSteps: Int = 400      // spanning swipe
+        const val unspanSteps: Int = 200    // unspanning swipe
+        const val switchSteps: Int = 100    // switch from one screen to the other
     }
 
     private fun spanFromLeft() {
