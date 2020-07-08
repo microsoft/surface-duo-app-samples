@@ -4,7 +4,8 @@ title: Surface Duo - SourceEditor
 name: Surface Duo - SourceEditor
 languages:
 - java
-products: m365
+products:
+- m365
 description: "Learn to develop with Kotlin, using the Dual View layout pattern and external storage capabilities in an app for the Surface Duo."
 keywords: dual-screen, surface duo, kotlin
 urlFragment: SourceEditor
