@@ -26,19 +26,12 @@ class DragHandler (val activity: Activity,
         val isText = event.clipDescription?.getMimeType(0)
                         .toString().startsWith(Defines.TEXT_PREFIX)
 
-        when (action) {
-            DragEvent.ACTION_DRAG_STARTED -> {
-                if (isText) {
-                    return true
-                }
-                return false
-            }
+        return when (action) {
+            DragEvent.ACTION_DRAG_STARTED -> isText
 
             DragEvent.ACTION_DROP -> {
-                if (isText) {
-                    handleTextDrop(event)
-                }
-                return true
+                handleTextDrop(event)
+                isText
             }
 
             DragEvent.ACTION_DRAG_ENTERED, DragEvent.ACTION_DRAG_LOCATION,
@@ -46,10 +39,8 @@ class DragHandler (val activity: Activity,
                 // Ignore events
                 return true
 
-            else -> {
-            }
+            else -> false
         }
-        return false
     }
 
     // process the file that was dropped

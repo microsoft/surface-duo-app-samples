@@ -61,7 +61,7 @@ class InteractiveTest {
     }
 
     @Test
-    fun configureSpanning() {
+    fun testSpanning() {
         spanFromLeft()
         assert(isSpanned())
         unspanToRight()
@@ -73,6 +73,7 @@ class InteractiveTest {
         switchToRight()
         switchToLeft()
     }
+
     companion object {
         // testing device
         val device: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
