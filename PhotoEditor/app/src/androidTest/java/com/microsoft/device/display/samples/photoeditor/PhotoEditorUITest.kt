@@ -1,8 +1,11 @@
 package com.microsoft.device.display.samples.photoeditor
 
 import android.content.Intent
+import android.os.Build
 import androidx.constraintlayout.utils.widget.ImageFilterView
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.IdlingResource
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.Visibility
@@ -19,7 +22,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
 /**
  * Instrumented test, which will execute on an Android device.
  *
@@ -29,6 +31,7 @@ import org.junit.runner.RunWith
 class PhotoEditorUITest {
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
+    private var spanningIdlingResource: IdlingResource? = null
 
     /**
      * Tests visibility of controls when app spanned vs. unspanned
@@ -65,43 +68,47 @@ class PhotoEditorUITest {
      * @precondition most recently saved file in the Files app is an image that's different
      * from the current image being edited
      */
-//    @Test
-//    fun testDragAndDrop() {
-//        // Lock in portrait mode
-//        device.setOrientationNatural()
-//
-//        // emulator apk package name
-//        val filesPackage = "com.android.documentsui"
-//
-//        // device apk package name
-//        // val filesPackage = "com.google.android.documentsui"
-//
-//        // Open Files app
-//        val context = getInstrumentation().context
-//        val intent = context.packageManager.getLaunchIntentForPackage(filesPackage)?.apply {
-//            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-//        }
-//        context.startActivity(intent)
-//        device.wait(Until.hasObject(By.pkg(filesPackage).depth(0)), 3000) // timeout at 3 seconds
-//
-//        val prev = activityRule.activity.findViewById<ImageFilterView>(R.id.image).drawable
-//
-//        // Hardcoded to select most recently saved file in Files app
-//        device.swipe(1550, 1230, 1550, 1230, 100)
-//
-//        // Slowly drag selected image file to other screen for import
-//        device.swipe(1550, 1230, 1200, 1100, 600)
-//
-//        // Wait for import to finish
-//        Thread.sleep(1000)
-//
-//        // Check that drawable has been updated
-//        check(prev != activityRule.activity.findViewById<ImageFilterView>(R.id.image).drawable)
-//
-//        // Unlock rotation
-//        device.unfreezeRotation()
-//    }
+    @Test
+    fun testDragAndDrop() {
+        // Lock in portrait mode
+        device.setOrientationNatural()
 
+        val filesPackage =
+            if (Build.MODEL.contains("Emulator")) {
+                "com.android.documentsui" // emulator apk package name
+            } else {
+                "com.google.android.documentsui" // device apk package name
+            }
+
+        // Open Files app
+        val context = getInstrumentation().context
+        val intent = context.packageManager.getLaunchIntentForPackage(filesPackage)?.apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
+        context.startActivity(intent)
+        device.wait(Until.hasObject(By.pkg(filesPackage).depth(0)), 3000) // timeout at 3 seconds
+
+        val prev = activityRule.activity.findViewById<ImageFilterView>(R.id.image).drawable
+
+        // Hardcoded to select most recently saved file in Files app - must be an image file
+        device.swipe(1550, 1230, 1550, 1230, 100)
+
+        // Slowly drag selected image file to other screen for import
+        device.swipe(1550, 1230, 1200, 1100, 600)
+
+        // Register drag/drop idling resource
+        val dragDropIdlingResource = activityRule.activity.getDragDropIdlingResource()
+        IdlingRegistry.getInstance().register(dragDropIdlingResource)
+
+        // REVISIT: need to use espresso to check that drawable has been updated
+        check(prev != activityRule.activity.findViewById<ImageFilterView>(R.id.image).drawable)
+
+        // Unregister drag/drop idling resource
+        IdlingRegistry.getInstance().unregister(dragDropIdlingResource)
+
+        // Unlock rotation
+        device.unfreezeRotation()
+    }
 
     /**
      * HELPER FUNCTIONS FOR DUAL-SCREEN BEHAVIOR
@@ -114,29 +121,27 @@ class PhotoEditorUITest {
      * "steps" parameter or a slight shift in the "endX" parameter.
      *
      */
-//    @Test
-//    fun configureSpanning() {
-//        spanFromLeft()
-//        require(isSpanned())
-//
-//        // May need to uncomment if running on emulator
-//        // Thread.sleep(2000)
-//
-//        unspanToRight()
-//        require(!isSpanned())
-//
-//        spanFromRight()
-//        require(isSpanned())
-//
-//        // May need to uncomment if running on emulatord
-//        // Thread.sleep(2000)
-//
-//        unspanToLeft()
-//        require(!isSpanned())
-//
-//        switchToRight()
-//        switchToLeft()
-//    }
+    @Test
+    fun configureSpanning() {
+        spanFromLeft()
+        checkIfSpanned()
+        // require(isSpanned())
+
+        unspanToRight()
+        checkIfNotSpanned()
+        // require(!isSpanned())
+
+        spanFromRight()
+        checkIfSpanned()
+        // require(isSpanned())
+
+        unspanToLeft()
+        checkIfNotSpanned()
+        // require(!isSpanned())
+
+        switchToRight()
+        switchToLeft()
+    }
 
     companion object {
         // testing device
@@ -179,5 +184,28 @@ class PhotoEditorUITest {
 
     private fun isSpanned(): Boolean {
         return ScreenHelper.isDualMode(activityRule.activity)
+    }
+
+    private fun registerSpanningIdlingResource(toSpan: Boolean) {
+        spanningIdlingResource = activityRule.activity.getSpanningIdlingResource(toSpan)
+        IdlingRegistry.getInstance().register(spanningIdlingResource)
+    }
+
+    private fun unregisterSpanningIdlingResource() {
+        spanningIdlingResource?.let {
+            IdlingRegistry.getInstance().unregister(spanningIdlingResource)
+        }
+    }
+
+    private fun checkIfNotSpanned() {
+        registerSpanningIdlingResource(false)
+        onView(withId(R.id.controls)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+        unregisterSpanningIdlingResource()
+    }
+
+    private fun checkIfSpanned() {
+        registerSpanningIdlingResource(true)
+        onView(withId(R.id.controls)).check(doesNotExist())
+        unregisterSpanningIdlingResource()
     }
 }

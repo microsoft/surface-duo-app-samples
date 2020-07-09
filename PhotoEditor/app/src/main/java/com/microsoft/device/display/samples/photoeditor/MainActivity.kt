@@ -6,6 +6,7 @@
 
 package com.microsoft.device.display.samples.photoeditor
 
+import android.app.Activity
 import android.content.ClipData
 import android.content.ContentResolver
 import android.content.ContentValues
@@ -27,16 +28,21 @@ import android.widget.SeekBar
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.NonNull
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.utils.widget.ImageFilterView
 import androidx.core.app.ActivityCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.drawToBitmap
+import androidx.test.espresso.IdlingResource
 import com.microsoft.device.dualscreen.layout.ScreenHelper
 import java.io.IOException
 import java.time.LocalDateTime
 
 class MainActivity : AppCompatActivity() {
+    private var spanningIdlingResource: SpanningIdlingResource? = null
+    private var dragDropIdlingResource: DragDropIdlingResource? = null
 
     companion object {
         // Request code for image select activity
@@ -47,6 +53,24 @@ class MainActivity : AppCompatActivity() {
 
         // Default property value for ImageFilterView attributes (state of original image)
         private const val ORIGINAL_STATE = 1f
+    }
+
+    @VisibleForTesting
+    @NonNull
+    fun getSpanningIdlingResource(toSpan: Boolean): IdlingResource {
+        if (spanningIdlingResource == null) {
+            spanningIdlingResource = SpanningIdlingResource(this, toSpan)
+        }
+        return spanningIdlingResource!!
+    }
+
+    @VisibleForTesting
+    @NonNull
+    fun getDragDropIdlingResource(): IdlingResource {
+        if (dragDropIdlingResource == null) {
+            dragDropIdlingResource = DragDropIdlingResource()
+        }
+        return dragDropIdlingResource!!
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -205,6 +229,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         resetControls(image)
+        dragDropIdlingResource?.setProcessed(true)
     }
 
     /**
@@ -400,9 +425,15 @@ class MainActivity : AppCompatActivity() {
         return ContentValues().apply {
             put(MediaStore.Images.Media.TITLE, getString(R.string.photo_name))
             put(MediaStore.Images.Media.DISPLAY_NAME, getString(R.string.photo_name))
-            put(MediaStore.Images.Media.DESCRIPTION, "${getString(R.string.photo_description)} ${LocalDateTime.now()}")
+            put(
+                MediaStore.Images.Media.DESCRIPTION,
+                "${getString(R.string.photo_description)} ${LocalDateTime.now()}"
+            )
             put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-            put(MediaStore.Images.Media.RELATIVE_PATH, "${getString(R.string.pictures_folder)}/${getString(R.string.app_name)}")
+            put(
+                MediaStore.Images.Media.RELATIVE_PATH,
+                "${getString(R.string.pictures_folder)}/${getString(R.string.app_name)}"
+            )
             put(MediaStore.Images.Media.IS_PENDING, true)
             put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis() / 1000) // seconds
             put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis()) // milliseconds
@@ -421,14 +452,78 @@ class MainActivity : AppCompatActivity() {
                 values
             ) ?: throw IOException("MainActivity: ${getString(R.string.null_uri)}")
 
-            val stream = this.contentResolver.openOutputStream(uri) ?: throw IOException("MainActivity: ${getString(R.string.null_stream)}")
-            if (!bm.compress(Bitmap.CompressFormat.JPEG, 100, stream)) throw IOException("MainActivity: ${getString(R.string.bitmap_error)}")
+            val stream = this.contentResolver.openOutputStream(uri)
+                ?: throw IOException("MainActivity: ${getString(R.string.null_stream)}")
+            if (!bm.compress(Bitmap.CompressFormat.JPEG, 100, stream))
+                throw IOException("MainActivity: ${getString(R.string.bitmap_error)}")
             stream.close()
 
             values.put(MediaStore.Images.Media.IS_PENDING, false)
             this.contentResolver.update(uri, values, null, null)
         } catch (e: Exception) {
-            Toast.makeText(this, "${getString(R.string.image_save_error)}\n${e.printStackTrace()}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                "${getString(R.string.image_save_error)}\n${e.printStackTrace()}",
+                Toast.LENGTH_SHORT
+            ).show()
         }
+    }
+}
+
+private class DragDropIdlingResource() : IdlingResource {
+    private var processed = false
+    private var resourceCallback: IdlingResource.ResourceCallback? = null
+
+    override fun getName(): String {
+        return "DragDropIdlingResource"
+    }
+
+    fun setProcessed(value: Boolean) {
+        processed = value
+    }
+
+    override fun isIdleNow(): Boolean {
+        val idle = processed
+        if (idle) {
+            resourceCallback?.apply {
+                onTransitionToIdle()
+            }
+        }
+        return idle
+    }
+
+    override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
+        resourceCallback = callback
+    }
+}
+
+private class SpanningIdlingResource(@NonNull activity: Activity, toSpan: Boolean) :
+    IdlingResource {
+    private val toSpan: Boolean = toSpan
+    private val activity = activity
+    private var resourceCallback: IdlingResource.ResourceCallback? = null
+
+    override fun getName(): String {
+        return "SpanningIdlingResource for ${if (!toSpan) "un" else ""}span request"
+    }
+
+    override fun isIdleNow(): Boolean {
+        val idle: Boolean = if (toSpan) {
+            activity.findViewById<SeekBar>(R.id.saturation)?.visibility == View.VISIBLE &&
+                activity.findViewById<SeekBar>(R.id.brightness)?.visibility == View.VISIBLE
+        } else {
+            activity.findViewById<Spinner>(R.id.controls)?.visibility == View.VISIBLE
+        }
+
+        if (idle) {
+            resourceCallback?.apply {
+                onTransitionToIdle()
+            }
+        }
+        return idle
+    }
+
+    override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
+        resourceCallback = callback
     }
 }

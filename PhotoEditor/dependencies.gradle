@@ -35,6 +35,7 @@ ext {
     ktxCoreVersion = "1.3.0"
     ktxFragmentVersion = "1.2.5"
     viewPager2Version = "1.0.0"
+    espressoCoreVersion = "3.2.0"
 
     androidxDependencies = [
             appCompat       : "androidx.appcompat:appcompat:$appCompatVersion",
@@ -44,6 +45,7 @@ ext {
             ktxCore         : "androidx.core:core-ktx:$ktxCoreVersion",
             ktxFragment     : "androidx.fragment:fragment-ktx:$ktxFragmentVersion",
             viewPager2      : "androidx.viewpager2:viewpager2:$viewPager2Version",
+            espressoCore    : "androidx.test.espresso:espresso-core:$espressoCoreVersion"
     ]
 
     //Google dependencies
@@ -69,7 +71,6 @@ ext {
 
     //Android test dependencies version
     junitInstrumentationVersion = "1.1.1"
-    espressoCoreVersion = "3.2.0"
     testRunnerVersion = "1.2.0"
     testRulesVersion = "1.2.0"
     uiautomatorVersion = "2.2.0"
