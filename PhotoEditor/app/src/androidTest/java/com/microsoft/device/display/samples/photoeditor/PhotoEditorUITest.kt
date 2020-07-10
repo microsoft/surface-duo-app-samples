@@ -3,21 +3,24 @@ package com.microsoft.device.display.samples.photoeditor
 import android.content.Intent
 import android.os.Build
 import androidx.constraintlayout.utils.widget.ImageFilterView
+import androidx.test.espresso.Espresso.onIdle
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.IdlingResource
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.Visibility
+import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import com.microsoft.device.dualscreen.layout.ScreenHelper
+import org.hamcrest.CoreMatchers.`is` as iz
+import org.hamcrest.CoreMatchers.not
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,12 +34,12 @@ import org.junit.runner.RunWith
 class PhotoEditorUITest {
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
-    private var spanningIdlingResource: IdlingResource? = null
 
     /**
      * Tests visibility of controls when app spanned vs. unspanned
      *
-     * @precondition no other applications are open (so app by default opens on left screen)
+     * @precondition device in portrait mode, no other applications are open
+     * (so app by default opens on left screen)
      */
     @Test
     fun testControlVisibility() {
@@ -50,7 +53,7 @@ class PhotoEditorUITest {
         onView(withId(R.id.warmth)).check(matches(withEffectiveVisibility(Visibility.INVISIBLE)))
 
         spanFromLeft()
-        require(isSpanned())
+        assertThat(isSpanned(), iz(true))
 
         // Switched to dual-screen mode, so dropdown should not exist and all sliders should be visible
         onView(withId(R.id.controls)).check(doesNotExist())
@@ -65,13 +68,21 @@ class PhotoEditorUITest {
     /**
      * Tests drag and drop capabilities of PhotoEditor
      *
-     * @precondition most recently saved file in the Files app is an image that's different
-     * from the current image being edited
+     * @precondition device in portrait mode, no other applications are open
+     * (so app by default opens on left screen)
      */
     @Test
     fun testDragAndDrop() {
         // Lock in portrait mode
         device.setOrientationNatural()
+
+        // Rotate and save image file
+        onView(withId(R.id.rotate_left)).perform(click())
+        onView(withId(R.id.save)).perform(click())
+
+        // Reset to unrotated image
+        onView(withId(R.id.rotate_right)).perform(click())
+        val prev = activityRule.activity.findViewById<ImageFilterView>(R.id.image).drawable
 
         val filesPackage =
             if (Build.MODEL.contains("Emulator")) {
@@ -81,14 +92,15 @@ class PhotoEditorUITest {
             }
 
         // Open Files app
-        val context = getInstrumentation().context
+        val context = InstrumentationRegistry.getInstrumentation().context
         val intent = context.packageManager.getLaunchIntentForPackage(filesPackage)?.apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
         context.startActivity(intent)
         device.wait(Until.hasObject(By.pkg(filesPackage).depth(0)), 3000) // timeout at 3 seconds
 
-        val prev = activityRule.activity.findViewById<ImageFilterView>(R.id.image).drawable
+        // Before import, drawable is equal to prev
+        assertThat(prev, iz(activityRule.activity.findViewById<ImageFilterView>(R.id.image).drawable))
 
         // Hardcoded to select most recently saved file in Files app - must be an image file
         device.swipe(1550, 1230, 1550, 1230, 100)
@@ -96,15 +108,15 @@ class PhotoEditorUITest {
         // Slowly drag selected image file to other screen for import
         device.swipe(1550, 1230, 1200, 1100, 600)
 
-        // Register drag/drop idling resource
-        val dragDropIdlingResource = activityRule.activity.getDragDropIdlingResource()
-        IdlingRegistry.getInstance().register(dragDropIdlingResource)
+        // After import, drawable has changed
+        onIdle()
+        assertThat(
+            prev,
+            iz(not(activityRule.activity.findViewById<ImageFilterView>(R.id.image).drawable))
+        )
 
-        // REVISIT: need to use espresso to check that drawable has been updated
-        check(prev != activityRule.activity.findViewById<ImageFilterView>(R.id.image).drawable)
-
-        // Unregister drag/drop idling resource
-        IdlingRegistry.getInstance().unregister(dragDropIdlingResource)
+        // Close Files app
+        closeRight()
 
         // Unlock rotation
         device.unfreezeRotation()
@@ -114,38 +126,42 @@ class PhotoEditorUITest {
      * HELPER FUNCTIONS FOR DUAL-SCREEN BEHAVIOR
      *
      * Use the functions below in your tests when testing dual-screen behaviors and transitions.
-     * Uncomment and run the "configureSpanning" test below to check that the methods produce
-     * the expected behavior on your device.
+     * Run the "configureSpanning" test below to check that the methods produce the expected
+     * behavior on your device.
      *
      * If the test fails, modify the swipe parameters as needed- usually either an increase in the
      * "steps" parameter or a slight shift in the "endX" parameter.
      *
      */
+
+    /**
+     * Runs helper functions and checks that they work as expected
+     *
+     * @precondition device in portrait mode, no other applications are open
+     * (so app by default opens on left screen)
+     */
     @Test
     fun configureSpanning() {
         spanFromLeft()
-        checkIfSpanned()
-        // require(isSpanned())
+        assertThat(isSpanned(), iz(true))
 
         unspanToRight()
-        checkIfNotSpanned()
-        // require(!isSpanned())
+        assertThat(isSpanned(), iz(false))
 
         spanFromRight()
-        checkIfSpanned()
-        // require(isSpanned())
+        assertThat(isSpanned(), iz(true))
 
         unspanToLeft()
-        checkIfNotSpanned()
-        // require(!isSpanned())
+        assertThat(isSpanned(), iz(false))
 
         switchToRight()
         switchToLeft()
+        closeLeft()
     }
 
     companion object {
         // testing device
-        val device: UiDevice = UiDevice.getInstance(getInstrumentation())
+        val device: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
         // Swipe constants
         const val leftX: Int = 675          // middle of left screen
@@ -155,7 +171,8 @@ class PhotoEditorUITest {
         const val middleY: Int = 900        // middle of screen
         const val spanSteps: Int = 400      // spanning swipe
         const val unspanSteps: Int = 200    // unspanning swipe
-        const val switchSteps: Int = 100    // switch from one screen to the other
+        const val switchSteps: Int = 100    // swipe to switch from one screen to the other
+        const val closeSteps: Int = 50      // swipe to close app
     }
 
     private fun spanFromLeft() {
@@ -182,30 +199,16 @@ class PhotoEditorUITest {
         device.swipe(leftX, bottomY, rightX, middleY, switchSteps)
     }
 
+    private fun closeLeft() {
+        device.swipe(leftX, bottomY, leftX, middleY, closeSteps)
+    }
+
+    private fun closeRight() {
+        device.swipe(rightX, bottomY, rightX, middleY, closeSteps)
+    }
+
     private fun isSpanned(): Boolean {
+        onIdle() // wait until layout changes have been fully processed before checking
         return ScreenHelper.isDualMode(activityRule.activity)
-    }
-
-    private fun registerSpanningIdlingResource(toSpan: Boolean) {
-        spanningIdlingResource = activityRule.activity.getSpanningIdlingResource(toSpan)
-        IdlingRegistry.getInstance().register(spanningIdlingResource)
-    }
-
-    private fun unregisterSpanningIdlingResource() {
-        spanningIdlingResource?.let {
-            IdlingRegistry.getInstance().unregister(spanningIdlingResource)
-        }
-    }
-
-    private fun checkIfNotSpanned() {
-        registerSpanningIdlingResource(false)
-        onView(withId(R.id.controls)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
-        unregisterSpanningIdlingResource()
-    }
-
-    private fun checkIfSpanned() {
-        registerSpanningIdlingResource(true)
-        onView(withId(R.id.controls)).check(doesNotExist())
-        unregisterSpanningIdlingResource()
     }
 }

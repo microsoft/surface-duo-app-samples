@@ -38,7 +38,6 @@ dependencies {
     implementation androidxDependencies.constraintLayout
     implementation androidxDependencies.ktxCore
     implementation androidxDependencies.ktxFragment
-    implementation androidxDependencies.espressoCore
 
     implementation microsoftDependencies.dualScreenLayout
 
