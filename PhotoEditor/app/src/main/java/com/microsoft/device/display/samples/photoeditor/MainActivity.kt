@@ -37,7 +37,6 @@ import java.io.IOException
 import java.time.LocalDateTime
 
 class MainActivity : AppCompatActivity() {
-
     companion object {
         // Request code for image select activity
         private const val SELECT_IMAGE = 1000
@@ -400,9 +399,15 @@ class MainActivity : AppCompatActivity() {
         return ContentValues().apply {
             put(MediaStore.Images.Media.TITLE, getString(R.string.photo_name))
             put(MediaStore.Images.Media.DISPLAY_NAME, getString(R.string.photo_name))
-            put(MediaStore.Images.Media.DESCRIPTION, "${getString(R.string.photo_description)} ${LocalDateTime.now()}")
+            put(
+                MediaStore.Images.Media.DESCRIPTION,
+                "${getString(R.string.photo_description)} ${LocalDateTime.now()}"
+            )
             put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-            put(MediaStore.Images.Media.RELATIVE_PATH, "${getString(R.string.pictures_folder)}/${getString(R.string.app_name)}")
+            put(
+                MediaStore.Images.Media.RELATIVE_PATH,
+                "${getString(R.string.pictures_folder)}/${getString(R.string.app_name)}"
+            )
             put(MediaStore.Images.Media.IS_PENDING, true)
             put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis() / 1000) // seconds
             put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis()) // milliseconds
@@ -421,14 +426,20 @@ class MainActivity : AppCompatActivity() {
                 values
             ) ?: throw IOException("MainActivity: ${getString(R.string.null_uri)}")
 
-            val stream = this.contentResolver.openOutputStream(uri) ?: throw IOException("MainActivity: ${getString(R.string.null_stream)}")
-            if (!bm.compress(Bitmap.CompressFormat.JPEG, 100, stream)) throw IOException("MainActivity: ${getString(R.string.bitmap_error)}")
+            val stream = this.contentResolver.openOutputStream(uri)
+                ?: throw IOException("MainActivity: ${getString(R.string.null_stream)}")
+            if (!bm.compress(Bitmap.CompressFormat.JPEG, 100, stream))
+                throw IOException("MainActivity: ${getString(R.string.bitmap_error)}")
             stream.close()
 
             values.put(MediaStore.Images.Media.IS_PENDING, false)
             this.contentResolver.update(uri, values, null, null)
         } catch (e: Exception) {
-            Toast.makeText(this, "${getString(R.string.image_save_error)}\n${e.printStackTrace()}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                "${getString(R.string.image_save_error)}\n${e.printStackTrace()}",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 }
