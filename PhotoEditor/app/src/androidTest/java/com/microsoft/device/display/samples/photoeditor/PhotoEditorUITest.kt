@@ -126,8 +126,8 @@ class PhotoEditorUITest {
      * HELPER FUNCTIONS FOR DUAL-SCREEN BEHAVIOR
      *
      * Use the functions below in your tests when testing dual-screen behaviors and transitions.
-     * Run the "configureSpanning" test below to check that the methods produce the expected
-     * behavior on your device.
+     * Run the "testSpanningHelperFunctions" test below to check that the methods produce
+     * the expected behavior on your device.
      *
      * If the test fails, modify the swipe parameters as needed- usually either an increase in the
      * "steps" parameter or a slight shift in the "endX" parameter.
@@ -141,7 +141,7 @@ class PhotoEditorUITest {
      * (so app by default opens on left screen)
      */
     @Test
-    fun configureSpanning() {
+    fun testSpanningHelperFunctions() {
         spanFromLeft()
         assertThat(isSpanned(), iz(true))
 
