@@ -6,8 +6,13 @@
   -->
 
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#008577</color>
+    <color name="colorPrimary">#C62828</color>
+    <color name="colorPrimaryVariant">#8E0000</color>
+    <color name="colorSecondary">#90A4AE</color>
+    <color name="colorSecondaryVariant">#62757F</color>
+    <color name="colorBackground">#F5F5F5</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorOnSecondary">#000000</color>
+    <color name="colorOnBackground">#000000</color>
     <color name="yellow">#FFD54F</color>
 </resources>

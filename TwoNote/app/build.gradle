@@ -30,6 +30,8 @@ dependencies {
     implementation androidxDependencies.ktxCore
     implementation androidxDependencies.ktxFragment
 
+    implementation googleDependencies.material
+
     implementation microsoftDependencies.dualScreenLayout
 
     testImplementation testDependencies.junit
