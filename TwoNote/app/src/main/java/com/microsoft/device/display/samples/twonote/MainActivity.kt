@@ -6,6 +6,7 @@
 
 package com.microsoft.device.display.samples.twonote
 
+import android.app.ActionBar
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.microsoft.device.display.samples.twonote.model.DataProvider
@@ -15,6 +16,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        this.supportActionBar?.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
+        supportActionBar?.setDisplayShowCustomEnabled(true)
+        supportActionBar?.setCustomView(R.layout.action_toolbar)
+
         setContentView(R.layout.activity_main)
 
         if (!ScreenHelper.isDualMode(this)) {
