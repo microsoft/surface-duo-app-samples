@@ -15,4 +15,8 @@
     <color name="colorOnSecondary">#000000</color>
     <color name="colorOnBackground">#000000</color>
     <color name="yellow">#FFD54F</color>
+    <color name="blue">#03DAC5</color>
+    <color name="red">#FFFF0000</color>
+    <color name="green">#FF00FF00</color>
+    <color name="purple">#800080</color>
 </resources>
