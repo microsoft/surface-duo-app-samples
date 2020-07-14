@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
                 .beginTransaction()
                 .replace(
                     R.id.single_screen_container_id,
-                    ItemsListFragment(),
+                    NoteFragment(),
                     null
                 )
                 .commit()
@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
                 .beginTransaction()
                 .replace(
                     R.id.dual_screen_start_container_id,
-                    ItemsListFragment(),
+                    NoteFragment(),
                     null
                 ).commit()
             supportFragmentManager
