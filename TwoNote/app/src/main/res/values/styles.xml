@@ -17,7 +17,7 @@
         <item name="colorOnPrimary">@color/colorOnPrimary</item>
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
         <item name="colorOnBackground">@color/colorOnBackground</item>
-        <item name="colorOnSurface">@color/colorOnBackground</item>"
+        <item name="colorOnSurface">@color/colorOnBackground</item>
     </style>
 
     <style name="RatingBar" parent="android:style/Widget.Material.RatingBar.Small">
