@@ -15,6 +15,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import androidx.fragment.app.Fragment
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.MovieMock
 import com.microsoft.device.dualscreen.layout.ScreenHelper
@@ -48,8 +49,15 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
             it.choiceMode = ListView.CHOICE_MODE_SINGLE
             it.onItemClickListener = this
         }
+
+        view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
+            addItem()
+        }
+
         return view
     }
+
+    private fun addItem() { }
 
     private fun setSelectedItem(position: Int) {
         listView?.setItemChecked(position, true)
