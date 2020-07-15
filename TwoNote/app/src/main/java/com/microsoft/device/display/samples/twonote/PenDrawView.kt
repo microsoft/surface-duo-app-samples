@@ -14,7 +14,6 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import java.lang.Math.*
-import kotlin.math.ceil
 import kotlin.math.min
 
 class PenDrawView : View {
@@ -104,7 +103,7 @@ class PenDrawView : View {
 
                 MotionEvent.ACTION_UP -> {
                     if (!strokeList.isEmpty())
-                        strokeList[strokeList.lastIndex].finishStroke(event.x, event.y)
+                        strokeList[strokeList.lastIndex].finishStroke()
                 }
             }
         }
@@ -135,6 +134,14 @@ class PenDrawView : View {
 
     fun setStrokeList(s: List<Stroke>) {
         strokeList = s.toMutableList()
+    }
+
+    fun getDataList(): List<SerializedStroke> {
+        val list: MutableList<SerializedStroke> = mutableListOf()
+        for (stroke in strokeList) {
+            list.add(stroke.serializeData())
+        }
+        return list.toList()
     }
 
     fun changePaintColor(color: Int) {
