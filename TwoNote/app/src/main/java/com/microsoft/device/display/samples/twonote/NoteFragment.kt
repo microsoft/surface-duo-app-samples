@@ -13,10 +13,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
+import android.widget.ScrollView
+import android.widget.ToggleButton
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.textfield.TextInputEditText
 import com.microsoft.device.display.samples.twonote.model.DrawViewModel
 import java.io.File
 import java.io.FileInputStream
@@ -43,27 +46,56 @@ class NoteFragment : Fragment() {
     }
 
     private lateinit var drawView: PenDrawView
-    private lateinit var textView: TextView
 
-    // Life cycle
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(
-            R.layout.fragment_items_note,
-            container,
-            false
-        )
-        textView = view.findViewById(R.id.textView)
+        val view = inflater.inflate(R.layout.fragment_items_note, container, false)
+
+        // Sets up toggling between text/ink mode
+        val text = view.findViewById<ScrollView>(R.id.text_mode)
+        val ink = view.findViewById<ConstraintLayout>(R.id.ink_mode)
+
+        val toggleButton = view.findViewById<ToggleButton>(R.id.editing_mode)
+        toggleButton.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                ink.visibility = View.VISIBLE
+                text.visibility = View.GONE
+            } else {
+                ink.visibility = View.GONE
+                text.visibility = View.VISIBLE
+            }
+        }
+
+        setUpInkMode(view)
+        setUpTextMode(view)
+
+        return view
+    }
+
+    // TODO: add handling so clicking inside the scrollview makes the text object in focus
+    private fun setUpTextMode(view: View) {
+        val input = view.findViewById<TextInputEditText>(R.id.text_input)
+
+        input.requestFocus()
+    }
+
+    private fun setUpInkMode(view: View) {
         drawView = view.findViewById(R.id.drawView_single)
+
         val clearButton = view.findViewById<Button>(R.id.button_clear)
         clearButton.setOnClickListener { clearDrawing() }
+
         val redButton = view.findViewById<Button>(R.id.button_red)
         redButton.setOnClickListener { chooseColor(PaintColors.Red.name) }
+
         val blueButton = view.findViewById<Button>(R.id.button_blue)
         blueButton.setOnClickListener { chooseColor(PaintColors.Blue.name) }
+
         val greenButton = view.findViewById<Button>(R.id.button_green)
         greenButton.setOnClickListener { chooseColor(PaintColors.Green.name) }
+
         val yellowButton = view.findViewById<Button>(R.id.button_yellow)
         yellowButton.setOnClickListener { chooseColor(PaintColors.Yellow.name) }
+
         val purpleButton = view.findViewById<Button>(R.id.button_purple)
         purpleButton.setOnClickListener { chooseColor(PaintColors.Purple.name) }
 
@@ -73,8 +105,6 @@ class NoteFragment : Fragment() {
             copyDrawBitmapIfAdded()
         }
         drawView.setPaintRadius(0)
-
-        return view
     }
 
     override fun onResume() {

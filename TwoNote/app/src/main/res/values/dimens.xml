@@ -9,4 +9,7 @@
 <resources>
     <dimen name="list_title">16sp</dimen>
     <dimen name="list_title_padding">16dp</dimen>
+    <dimen name="edge_padding">20dp</dimen>
+    <dimen name="button_width">60dp</dimen>
+    <dimen name="button_height">50dp</dimen>
 </resources>

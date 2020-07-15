@@ -11,7 +11,8 @@ import java.util.ArrayList
 object DataProvider {
     val notes: ArrayList<Note> = ArrayList()
 
-    fun createNote() {
-        notes.add(Note())
+    fun createNote(title: String) {
+        // Add first (most recently edited)
+        notes.add(0, Note(title))
     }
 }
