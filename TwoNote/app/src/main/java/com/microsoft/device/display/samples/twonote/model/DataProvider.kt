@@ -9,12 +9,9 @@ package com.microsoft.device.display.samples.twonote.model
 import java.util.ArrayList
 
 object DataProvider {
-    val movieMocks: ArrayList<MovieMock>
-        get() {
-            val items = ArrayList<MovieMock>()
-            items.add(MovieMock("Item 1", "This is the first item"))
-            items.add(MovieMock("Item 2", "This is the second item"))
-            items.add(MovieMock("Item 3", "This is the third item"))
-            return items
-        }
+    val notes: ArrayList<Note> = ArrayList()
+
+    fun createNote() {
+        notes.add(Note())
+    }
 }

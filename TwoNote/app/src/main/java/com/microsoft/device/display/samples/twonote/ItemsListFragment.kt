@@ -16,30 +16,30 @@ import android.widget.ListView
 import androidx.fragment.app.Fragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.microsoft.device.display.samples.twonote.model.DataProvider
-import com.microsoft.device.display.samples.twonote.model.MovieMock
+import com.microsoft.device.display.samples.twonote.model.Note
 import com.microsoft.device.dualscreen.layout.ScreenHelper
 
 class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
-    private var arrayAdapter: ArrayAdapter<MovieMock>? = null
+    private var arrayAdapter: ArrayAdapter<Note>? = null
     private var listView: ListView? = null
-    private lateinit var movieMocks: ArrayList<MovieMock>
+    private lateinit var notes: ArrayList<Note>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        movieMocks = DataProvider.movieMocks
+        notes = DataProvider.notes
         activity?.let {
             arrayAdapter = ArrayAdapter(
-                it,
-                android.R.layout.simple_list_item_activated_1,
-                movieMocks
+                    it,
+                    android.R.layout.simple_list_item_activated_1,
+                    notes
             )
         }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_items_list, container, false)
         listView = view.findViewById(R.id.list_view)
@@ -50,22 +50,21 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
         }
 
         view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
-            addItem()
+            DataProvider.createNote()
+            arrayAdapter?.notifyDataSetChanged()
         }
 
         return view
     }
-
-    private fun addItem() { }
 
     private fun setSelectedItem(position: Int) {
         listView?.setItemChecked(position, true)
     }
 
     override fun onItemClick(adapterView: AdapterView<*>, item: View, position: Int, rowId: Long) {
-        val movieMock = arrayAdapter?.getItem(position)
+        val note = arrayAdapter?.getItem(position)
         setSelectedItem(position)
-        movieMock?.let { movie ->
+        note?.let {
             activity?.let { activity ->
                 if (ScreenHelper.isDualMode(activity)) {
                     parentFragmentManager.beginTransaction()
