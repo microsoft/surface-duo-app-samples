@@ -18,6 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.Note
 import com.microsoft.device.dualscreen.layout.ScreenHelper
+import kotlin.collections.ArrayList
 
 class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
     private var arrayAdapter: ArrayAdapter<Note>? = null
@@ -29,18 +30,14 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
         notes = DataProvider.notes
         activity?.let {
             arrayAdapter = ArrayAdapter(
-                    it,
-                    android.R.layout.simple_list_item_activated_1,
-                    notes
+                it,
+                android.R.layout.simple_list_item_activated_1,
+                notes
             )
         }
     }
 
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_items_list, container, false)
         listView = view.findViewById(R.id.list_view)
         listView?.let {
@@ -50,8 +47,9 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
         }
 
         view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
-            DataProvider.createNote()
+            DataProvider.createNote(getString(R.string.untitled))
             arrayAdapter?.notifyDataSetChanged()
+            startNoteDetailFragment(0)
         }
 
         return view
@@ -62,6 +60,10 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
     }
 
     override fun onItemClick(adapterView: AdapterView<*>, item: View, position: Int, rowId: Long) {
+        startNoteDetailFragment(position)
+    }
+
+    private fun startNoteDetailFragment(position: Int) {
         val note = arrayAdapter?.getItem(position)
         setSelectedItem(position)
         note?.let {
