@@ -2,25 +2,27 @@ package com.microsoft.device.display.samples.twonote
 
 import android.graphics.Paint
 import android.graphics.Path
-import android.graphics.Rect
 import android.graphics.RectF
-import kotlin.math.max
+import java.io.Serializable
 
-class Stroke (x: Float, y: Float, pressure: Float, color: Int) {
+class Stroke (x: Float, y: Float, pressure: Float, color: Int) : Serializable {
 
-    private var pathList: MutableList<Path> = mutableListOf()
-    private var paints: MutableList<Paint> = mutableListOf()
-    private var pathBounds: MutableList<RectF> = mutableListOf()
+    companion object {
+        private var pathList: MutableList<Path> = mutableListOf()
+        private var paints: MutableList<Paint> = mutableListOf()
+        private var pathBounds: MutableList<RectF> = mutableListOf()
+        private var paintColor: Int = 0
+    }
+
     private var xCoord: Float = 0f
     private var yCoord: Float = 0f
     private var prevPressure: Float = 0f
-    private var color: Int = 0
 
     init {
         val path = Path()
         path.moveTo(x, y)
         updateValues(x, y, pressure)
-        this.color = color
+        paintColor = color
     }
 
     fun continueDrawing(x: Float, y: Float, pressure: Float) {
@@ -48,7 +50,7 @@ class Stroke (x: Float, y: Float, pressure: Float, color: Int) {
         }
 
         val paint = Paint()
-        paint.color = color
+        paint.color = paintColor
         paint.strokeWidth = pressure * 25
 
         val path = Path()
