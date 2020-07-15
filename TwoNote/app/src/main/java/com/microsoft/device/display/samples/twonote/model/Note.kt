@@ -5,10 +5,10 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-class Note {
-    var title: String = "Untitled"
+class Note(title: String) {
+    var title: String = title
     var text: String? = null
-    var dateModified: String? = null
+    val dateModified: String
         get() {
             return LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT))
         }

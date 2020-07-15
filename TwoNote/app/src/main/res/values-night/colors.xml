@@ -11,6 +11,6 @@
     <color name="colorSecondaryVariant">#AA62757F</color>
     <color name="colorBackground">#121212</color>
     <color name="colorOnPrimary">#EEFFFFFF</color>
-    <color name="colorOnSecondary">#EEFFFFFF</color>
+    <color name="colorOnSecondary">#000000</color>
     <color name="colorOnBackground">#EEFFFFFF</color>
 </resources>
