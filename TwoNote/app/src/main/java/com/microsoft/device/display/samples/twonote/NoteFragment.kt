@@ -7,12 +7,8 @@
 
 package com.microsoft.device.display.samples.twonote
 
-import android.content.Context
 import android.os.Bundle
-import android.os.Environment
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -125,26 +121,30 @@ class NoteFragment : Fragment() {
 
     private fun save() {
         val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
-        val file = File(path + "/file")
+        val file = File(path + "/test0")
         val fileStream = FileOutputStream(file)
         val objectStream = ObjectOutputStream(fileStream)
-        objectStream.writeObject(drawView.getStrokeList())
+        objectStream.writeObject(drawView.getDataList())
         objectStream.close()
         fileStream.close()
     }
 
     private fun load() {
         val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
-        val file = File(path + "/file")
+        val file = File(path + "/test0")
         val fileStream = FileInputStream(file)
         val objectStream = ObjectInputStream(fileStream)
-        val obj = objectStream.readObject()
-        if (obj is List<*>) {
-            val strokeList: List<Stroke> =  obj as List<Stroke>
-            val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
-            viewModel.setStrokeList(strokeList)
-            recoverDrawing()
+        val obj = objectStream.readObject() as List<SerializedStroke>
+        val strokeList: MutableList<Stroke> = mutableListOf()
+        for (strokes in 0 until obj.size) {
+            val s = obj[strokes]
+            strokeList.add(Stroke(s.xList, s.yList, s.pressureList, s.paintColor))
         }
+
+        val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
+        viewModel.setStrokeList(strokeList)
+        recoverDrawing()
+
         objectStream.close()
         fileStream.close()
     }
