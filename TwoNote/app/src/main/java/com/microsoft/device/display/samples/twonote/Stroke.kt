@@ -4,6 +4,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
+import kotlin.math.max
 
 class Stroke (x: Float, y: Float, pressure: Float, color: Int) {
 
@@ -23,7 +24,7 @@ class Stroke (x: Float, y: Float, pressure: Float, color: Int) {
     }
 
     fun continueDrawing(x: Float, y: Float, pressure: Float) {
-        if (pressure == prevPressure)
+        if (pressure == prevPressure && !pathList.isEmpty())
             continueJoint(x, y)
         else
             addJoint(x, y, pressure)

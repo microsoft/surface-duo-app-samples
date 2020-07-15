@@ -13,12 +13,12 @@ import android.graphics.Path
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.microsoft.device.display.samples.twonote.Stroke
 
 class DrawViewModel : ViewModel() {
     private val imageLiveData = MutableLiveData<Bitmap?>() // to copy between two screens
-    private var pathList = listOf<Path>() // to retain the drawing when spanning/unspanning
+    private var strokeList = listOf<Stroke>() // to retain the drawing when spanning/unspanning
     private var penRadius: Int = 0 // to retain the pen value when spanning/unspanning
-    private var paints = listOf<Paint>() // to retain the paint value when spanning/unspanning
 
     fun getImageLiveData(): LiveData<Bitmap?> {
         return this.imageLiveData
@@ -28,12 +28,12 @@ class DrawViewModel : ViewModel() {
         imageLiveData.value = bitmap
     }
 
-    fun getPathList(): List<Path> {
-        return this.pathList
+    fun getStrokeList(): List<Stroke> {
+        return strokeList
     }
 
-    fun setPathList(pathList: List<Path>) {
-        this.pathList = pathList
+    fun setStrokeList(s: List<Stroke>) {
+        strokeList = s
     }
 
     fun getPenRadius(): Int {
@@ -42,13 +42,5 @@ class DrawViewModel : ViewModel() {
 
     fun setPenRadius(radius: Int) {
         penRadius = radius
-    }
-
-    fun getPaints(): List<Paint> {
-        return this.paints
-    }
-
-    fun setPaints(paints: List<Paint>) {
-        this.paints = paints
     }
 }
