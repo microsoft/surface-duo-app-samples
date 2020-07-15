@@ -11,4 +11,8 @@
     <string name="note">Title:</string>
     <string name="item_image">Item image</string>
     <string name="items_list">Items List</string>
+    <string name="untitled">Untitled</string>
+    <string name="text">Switch to Text</string>
+    <string name="ink">Switch to Ink</string>
+    <string name="clear">Clear</string>
 </resources>
