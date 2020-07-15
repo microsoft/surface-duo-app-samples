@@ -8,8 +8,6 @@
 package com.microsoft.device.display.samples.twonote.model
 
 import android.graphics.Bitmap
-import android.graphics.Paint
-import android.graphics.Path
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,7 +19,7 @@ class DrawViewModel : ViewModel() {
     private var penRadius: Int = 0 // to retain the pen value when spanning/unspanning
 
     fun getImageLiveData(): LiveData<Bitmap?> {
-        return this.imageLiveData
+        return imageLiveData
     }
 
     fun setImageLiveData(bitmap: Bitmap?) {

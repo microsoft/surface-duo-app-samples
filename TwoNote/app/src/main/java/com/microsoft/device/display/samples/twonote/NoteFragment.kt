@@ -7,7 +7,9 @@
 
 package com.microsoft.device.display.samples.twonote
 
+import android.content.Context
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -19,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.microsoft.device.display.samples.twonote.model.DrawViewModel
+import java.io.*
 
 class NoteFragment : Fragment() {
 
@@ -82,6 +85,8 @@ class NoteFragment : Fragment() {
             PaintColors.Yellow.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.yellow))
             PaintColors.Purple.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.purple))
         }
+
+        load()
     }
 
     private fun recoverDrawing() {
@@ -93,6 +98,7 @@ class NoteFragment : Fragment() {
     }
 
     private fun clearDrawing() {
+        save()
         drawView.clearDrawing()
         val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
         viewModel.setImageLiveData(null)
@@ -115,5 +121,31 @@ class NoteFragment : Fragment() {
         if (isAdded) {
             copyDrawBitmap()
         }
+    }
+
+    private fun save() {
+        val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
+        val file = File(path + "/file")
+        val fileStream = FileOutputStream(file)
+        val objectStream = ObjectOutputStream(fileStream)
+        objectStream.writeObject(drawView.getStrokeList())
+        objectStream.close()
+        fileStream.close()
+    }
+
+    private fun load() {
+        val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
+        val file = File(path + "/file")
+        val fileStream = FileInputStream(file)
+        val objectStream = ObjectInputStream(fileStream)
+        val obj = objectStream.readObject()
+        if (obj is List<*>) {
+            val strokeList: List<Stroke> =  obj as List<Stroke>
+            val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
+            viewModel.setStrokeList(strokeList)
+            recoverDrawing()
+        }
+        objectStream.close()
+        fileStream.close()
     }
 }
