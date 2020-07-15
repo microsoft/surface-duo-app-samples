@@ -5,24 +5,40 @@ import android.graphics.Path
 import android.graphics.RectF
 import java.io.Serializable
 
-class Stroke (x: Float, y: Float, pressure: Float, color: Int) : Serializable {
+class Stroke  : Serializable {
 
-    companion object {
-        private var pathList: MutableList<Path> = mutableListOf()
-        private var paints: MutableList<Paint> = mutableListOf()
-        private var pathBounds: MutableList<RectF> = mutableListOf()
-        private var paintColor: Int = 0
-    }
+    private var xList: MutableList<Float> = mutableListOf()
+    private var yList: MutableList<Float> = mutableListOf()
+    private var pressureList: MutableList<Float> = mutableListOf()
+    private var paintColor: Int = 0
+
+    private var pathList: MutableList<Path> = mutableListOf()
+    private var paints: MutableList<Paint> = mutableListOf()
+    private var pathBounds: MutableList<RectF> = mutableListOf()
 
     private var xCoord: Float = 0f
     private var yCoord: Float = 0f
     private var prevPressure: Float = 0f
 
-    init {
-        val path = Path()
-        path.moveTo(x, y)
-        updateValues(x, y, pressure)
-        paintColor = color
+    constructor(x: Float, y: Float, pressure: Float, color: Int) {
+        initStroke(x, y, pressure, color)
+    }
+
+    // reconstruct serialized data
+    constructor(
+            x: MutableList<Float>,
+            y: MutableList<Float>,
+            pressure: MutableList<Float>,
+            color: Int
+    ) {
+        // need two points to make a line
+        if (x.size > 2) {
+            initStroke(x[0], y[0], pressure[0], color)
+            for (coords in 1 until x.size) {
+                continueDrawing(x[coords], y[coords], pressure[coords])
+            }
+            finishStroke()
+        }
     }
 
     fun continueDrawing(x: Float, y: Float, pressure: Float) {
@@ -32,7 +48,7 @@ class Stroke (x: Float, y: Float, pressure: Float, color: Int) : Serializable {
             addJoint(x, y, pressure)
     }
 
-    fun finishStroke(x: Float, y: Float) {
+    fun finishStroke() {
         if (!pathList.isEmpty()) {
             val bounds = RectF()
             pathList[pathList.lastIndex].computeBounds(bounds, true)
@@ -42,18 +58,15 @@ class Stroke (x: Float, y: Float, pressure: Float, color: Int) : Serializable {
     }
 
     private fun addJoint(x: Float, y: Float, pressure: Float) {
-        if (!pathList.isEmpty()) {
-            val bounds = RectF()
-            pathList[pathList.lastIndex].computeBounds(bounds, true)
-            pathBounds.removeAt(pathBounds.lastIndex)
-            pathBounds.add(bounds)
-        }
+        finishStroke()
 
         val paint = Paint()
         paint.color = paintColor
         paint.strokeWidth = pressure * 25
+        pressureList.add(pressure)
 
         val path = Path()
+
         path.moveTo(xCoord, yCoord)
         path.lineTo(x, y)
         pathList.add(path)
@@ -94,5 +107,23 @@ class Stroke (x: Float, y: Float, pressure: Float, color: Int) : Serializable {
         xCoord = x
         yCoord = y
         prevPressure = pressure
+
+        xList.add(x)
+        yList.add(y)
+        pressureList.add(pressure)
+    }
+
+    private fun initStroke(x: Float, y: Float, pressure: Float, color: Int) {
+        updateValues(x, y, pressure)
+        paintColor = color
+    }
+
+    fun serializeData(): SerializedStroke {
+        return SerializedStroke(
+                xList,
+                yList,
+                pressureList,
+                paintColor
+        )
     }
 }
