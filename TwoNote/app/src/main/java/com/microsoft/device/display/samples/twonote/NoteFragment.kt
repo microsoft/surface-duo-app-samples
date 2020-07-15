@@ -109,7 +109,6 @@ class NoteFragment : Fragment() {
         if (strokeList.isNotEmpty()) {
             viewModel.setStrokeList(strokeList)
         }
-        //viewModel.setPenRadius(150)
     }
 
     private fun copyDrawBitmapIfAdded() {
