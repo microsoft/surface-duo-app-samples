@@ -90,7 +90,6 @@ class PenDrawView : View {
                 eraserY = event.y
             }
         } else {
-            //if (event.getToolType(0) == MotionEvent.TOOL_TYPE_ERASER)
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     val stroke = Stroke(event.x, event.y, event.pressure, currentColor)
