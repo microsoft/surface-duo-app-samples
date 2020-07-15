@@ -7,6 +7,7 @@
 package com.microsoft.device.display.samples.twonote
 
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -63,7 +64,7 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
                     parentFragmentManager.beginTransaction()
                         .replace(
                             R.id.dual_screen_end_container_id,
-                            ItemDetailFragment.newInstance(movie), null
+                            NoteFragment(), null
                         ).commit()
                 } else {
                     startDetailsFragment(movie)
@@ -76,7 +77,7 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
         parentFragmentManager.beginTransaction()
             .replace(
                 R.id.single_screen_container_id,
-                ItemDetailFragment.newInstance(movieMock), null
+                NoteFragment(), null
             ).addToBackStack(null)
             .commit()
     }
