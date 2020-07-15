@@ -55,8 +55,6 @@ class PenDrawView : View {
         val bottom = max(eraserY + offset, 0f)
         rect.set(left, top, right, bottom)
 
-        Log.d("DRAW", "" + left)
-
         if (strokeList.isNotEmpty()) {
             for (line in strokeList.size - 1 downTo 0) {
                 val stroke = strokeList[line]
@@ -92,6 +90,7 @@ class PenDrawView : View {
                 eraserY = event.y
             }
         } else {
+            //if (event.getToolType(0) == MotionEvent.TOOL_TYPE_ERASER)
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     val stroke = Stroke(event.x, event.y, event.pressure, currentColor)
@@ -99,7 +98,8 @@ class PenDrawView : View {
                 }
 
                 MotionEvent.ACTION_MOVE -> {
-                    if (strokeList.size > 0)
+                    Log.d("draw_debugging", "pressure " + event.pressure)
+                    if (!strokeList.isEmpty())
                         strokeList[strokeList.lastIndex].continueDrawing(event.x, event.y, event.pressure)
                 }
 
@@ -116,18 +116,6 @@ class PenDrawView : View {
 
     private fun configurePaint(paint: Paint): Paint {
         val configuredPaint = Paint()
-        /*val baseValue = 155
-        var blurValue = 1
-        if (radius > baseValue) {
-            blurValue = radius - baseValue
-        }
-        configuredPaint.maskFilter = BlurMaskFilter(blurValue.toFloat(), BlurMaskFilter.Blur.NORMAL)
-
-        val lum = radius / baseValue.toFloat()
-        val lumMatrix = ColorMatrix()
-        lumMatrix.setScale(lum, lum, lum, 1f)
-        val colorMatrixColorFilter = ColorMatrixColorFilter(lumMatrix)
-        configuredPaint.colorFilter = colorMatrixColorFilter*/
 
         configuredPaint.style = Paint.Style.STROKE
         configuredPaint.isAntiAlias = true
@@ -137,39 +125,27 @@ class PenDrawView : View {
         return configuredPaint
     }
 
-    private fun setStrokeWithPressure(pressure: Float): Float {
-        return pressure * 25
-    }
-
     fun setPaintRadius(radius: Int) {
         this.radius = radius
         this.invalidate()
     }
 
-    /*fun getPaints(): List<Paint> {
-        return this.paints
+    fun getStrokeList(): List<Stroke> {
+        return strokeList
     }
 
-    fun setPaints(paints: List<Paint>) {
-        this.paints = paints.toMutableList()
-    }*/
+    fun setStrokeList(s: List<Stroke>) {
+        strokeList = s.toMutableList()
+    }
 
     fun changePaintColor(color: Int) {
-        this.currentColor = color
+        currentColor = color
     }
 
     fun getDrawBitmap(): Bitmap? {
         saveDrawBitmap()
-        return this.drawBitmap
+        return drawBitmap
     }
-
-    /*fun getDrawPathList(): List<Path> {
-        return this.pathList
-    }
-
-    fun setDrawPathList(list: List<Path>) {
-        this.pathList = list.toMutableList()
-    }*/
 
     fun clearDrawing() {
         this.drawBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)

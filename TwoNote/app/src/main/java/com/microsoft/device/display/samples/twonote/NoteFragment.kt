@@ -8,6 +8,7 @@
 package com.microsoft.device.display.samples.twonote
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -85,19 +86,17 @@ class NoteFragment : Fragment() {
 
     private fun recoverDrawing() {
         val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
-        val paths = viewModel.getPathList()
-        //drawView.setDrawPathList(paths)
+        val strokes = viewModel.getStrokeList()
+        drawView.setStrokeList(strokes)
         val angle = viewModel.getPenRadius()
         drawView.setPaintRadius(angle)
-        val paints = viewModel.getPaints()
-        //drawView.setPaints(paints)
     }
 
     private fun clearDrawing() {
         drawView.clearDrawing()
         val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
         viewModel.setImageLiveData(null)
-        viewModel.setPathList(listOf())
+        viewModel.setStrokeList(listOf())
     }
 
     private fun copyDrawBitmap() {
@@ -106,13 +105,11 @@ class NoteFragment : Fragment() {
         if (drawBitmap != null) {
             viewModel.setImageLiveData(drawBitmap)
         }
-        //val pathList = drawView.getDrawPathList()
-        //if (pathList.isNotEmpty()) {
-        //    viewModel.setPathList(pathList)
-        //}
+        val strokeList = drawView.getStrokeList()
+        if (strokeList.isNotEmpty()) {
+            viewModel.setStrokeList(strokeList)
+        }
         //viewModel.setPenRadius(150)
-        //val paints = drawView.getPaints()
-        //viewModel.setPaints(paints)
     }
 
     private fun copyDrawBitmapIfAdded() {
