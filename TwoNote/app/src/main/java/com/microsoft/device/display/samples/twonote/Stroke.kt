@@ -5,7 +5,7 @@ import android.graphics.Path
 import android.graphics.RectF
 import java.io.Serializable
 
-class Stroke  : Serializable {
+class Stroke : Serializable {
 
     private var xList: MutableList<MutableList<Float>> = mutableListOf()
     private var yList: MutableList<MutableList<Float>> = mutableListOf()
@@ -26,10 +26,10 @@ class Stroke  : Serializable {
 
     // reconstruct serialized data
     constructor(
-            x: List<MutableList<Float>>,
-            y: List<MutableList<Float>>,
-            pressure: List<MutableList<Float>>,
-            color: Int
+        x: List<MutableList<Float>>,
+        y: List<MutableList<Float>>,
+        pressure: List<MutableList<Float>>,
+        color: Int
     ) {
         // need at least one path
         if (x.size > 0 && x[0].size > 0) {
@@ -111,7 +111,7 @@ class Stroke  : Serializable {
         return stroke
     }
 
-    private fun splitStroke(i: Int) : Stroke{
+    private fun splitStroke(i: Int): Stroke {
         var range = IntRange(i + 1, xList.lastIndex)
         val x: List<MutableList<Float>> = xList.slice(range)
         val y: List<MutableList<Float>> = yList.slice(range)
@@ -169,11 +169,6 @@ class Stroke  : Serializable {
     }
 
     fun serializeData(): SerializedStroke {
-        return SerializedStroke(
-                xList,
-                yList,
-                pressureList,
-                paintColor
-        )
+        return SerializedStroke(xList, yList, pressureList, paintColor)
     }
 }
