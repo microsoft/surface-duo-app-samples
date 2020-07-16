@@ -8,12 +8,16 @@
 package com.microsoft.device.display.samples.twonote
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import java.lang.Math.*
+import java.lang.Math.max
 import kotlin.math.min
 
 class PenDrawView : View {
