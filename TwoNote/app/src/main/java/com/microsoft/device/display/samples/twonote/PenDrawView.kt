@@ -22,10 +22,8 @@ class PenDrawView : View {
     private var drawBitmap: Bitmap? = null
     private var strokeList: MutableList<Stroke> = mutableListOf()
     private var radius = 0
-    private var eraserX = 0f
-    private var eraserY = 0f
     private var isErasing = false
-    private val rect = RectF()
+    private val eraser = RectF()
 
     constructor(context: Context) : super(context) {
         init()
@@ -47,13 +45,6 @@ class PenDrawView : View {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        val offset = 50f
-        val left = max(eraserX - offset, 0f)
-        val right = min(eraserX + offset, width.toFloat() - 1)
-        val top = min(eraserY - offset, height.toFloat() - 1)
-        val bottom = max(eraserY + offset, 0f)
-        rect.set(left, top, right, bottom)
-
         if (strokeList.isNotEmpty()) {
             for (line in strokeList.size - 1 downTo 0) {
                 val stroke = strokeList[line]
@@ -67,8 +58,10 @@ class PenDrawView : View {
                         val path = pathList[section]
                         val paint = paints[section]
 
-                        if (isErasing && bound.intersects(left, top, right, bottom)) {
-                            if (!stroke.removeItem(section))
+                        if (isErasing && bound.intersects(eraser.left, eraser.top, eraser.right, eraser.bottom)) {
+                            val newStroke = stroke.removeItem(section)
+                            newStroke?.let { strokeList.add(newStroke) }
+                            if (stroke.getSize() == 0)
                                 strokeList.removeAt(line)
                         } else {
                             val configuredPaint = configurePaint(paint)
@@ -85,8 +78,13 @@ class PenDrawView : View {
         if (event.getToolType(0) == MotionEvent.TOOL_TYPE_ERASER) {
             if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
                 isErasing = true
-                eraserX = event.x
-                eraserY = event.y
+
+                val offset = 50f
+                val left = max(event.x - offset, 0f)
+                val right = min(event.x + offset, width.toFloat() - 1)
+                val top = min(event.y - offset, height.toFloat() - 1)
+                val bottom = max(event.y + offset, 0f)
+                eraser.set(left, top, right, bottom)
             }
         } else {
             when (event.action) {

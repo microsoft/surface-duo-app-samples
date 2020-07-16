@@ -7,7 +7,6 @@
 package com.microsoft.device.display.samples.twonote
 
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -72,20 +71,20 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
                     parentFragmentManager.beginTransaction()
                         .replace(
                             R.id.dual_screen_end_container_id,
-                            NoteFragment(), null
+                            NoteFragment.newInstance("test1"), null
                         ).commit()
                 } else {
-                    startDetailsFragment(movie)
+                    startNoteFragment()
                 }
             }
         }
     }
 
-    private fun startDetailsFragment(movieMock: MovieMock) {
+    private fun startNoteFragment() {
         parentFragmentManager.beginTransaction()
             .replace(
                 R.id.single_screen_container_id,
-                NoteFragment(), null
+                NoteFragment.newInstance("test1"), null
             ).addToBackStack(null)
             .commit()
     }

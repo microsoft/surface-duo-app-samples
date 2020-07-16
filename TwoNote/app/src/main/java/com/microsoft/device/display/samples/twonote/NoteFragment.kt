@@ -20,6 +20,13 @@ import com.microsoft.device.display.samples.twonote.model.DrawViewModel
 import java.io.*
 
 class NoteFragment : Fragment() {
+    companion object {
+        internal fun newInstance(noteName: String) = NoteFragment().apply {
+            arguments = Bundle().apply {
+                this.putString("note", noteName)
+            }
+        }
+    }
 
     enum class PaintColors {
         Red,
@@ -67,9 +74,21 @@ class NoteFragment : Fragment() {
         return view
     }
 
+    override fun onResume() {
+        super.onResume()
+        load()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        save()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        drawView.viewTreeObserver.removeOnDrawListener { }
+        if (this::drawView.isInitialized) {
+            drawView.viewTreeObserver.removeOnDrawListener { }
+        }
     }
 
     // Drawing related
@@ -81,8 +100,6 @@ class NoteFragment : Fragment() {
             PaintColors.Yellow.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.yellow))
             PaintColors.Purple.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.purple))
         }
-
-        load()
     }
 
     private fun recoverDrawing() {
@@ -94,7 +111,6 @@ class NoteFragment : Fragment() {
     }
 
     private fun clearDrawing() {
-        save()
         drawView.clearDrawing()
         val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
         viewModel.setImageLiveData(null)
@@ -120,32 +136,42 @@ class NoteFragment : Fragment() {
     }
 
     private fun save() {
-        val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
-        val file = File(path + "/test0")
-        val fileStream = FileOutputStream(file)
-        val objectStream = ObjectOutputStream(fileStream)
-        objectStream.writeObject(drawView.getDataList())
-        objectStream.close()
-        fileStream.close()
+        arguments?.let {
+            val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
+            val file = File(path + "/" + it.getString("note"))
+            val fileStream = FileOutputStream(file)
+            val objectStream = ObjectOutputStream(fileStream)
+            objectStream.writeObject(drawView.getDataList())
+            objectStream.close()
+            fileStream.close()
+        }
     }
 
     private fun load() {
-        val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
-        val file = File(path + "/test0")
-        val fileStream = FileInputStream(file)
-        val objectStream = ObjectInputStream(fileStream)
-        val obj = objectStream.readObject() as List<SerializedStroke>
-        val strokeList: MutableList<Stroke> = mutableListOf()
-        for (strokes in 0 until obj.size) {
-            val s = obj[strokes]
-            strokeList.add(Stroke(s.xList, s.yList, s.pressureList, s.paintColor))
+        arguments?.let {
+            val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
+            val file = File(path + "/" + it.getString("note"))
+            var fileStream: FileInputStream? = null
+            var objectStream: ObjectInputStream? = null
+
+            try {
+                fileStream = FileInputStream(file)
+                objectStream = ObjectInputStream(fileStream)
+                val obj = objectStream.readObject() as List<SerializedStroke>
+                val strokeList: MutableList<Stroke> = mutableListOf()
+                for (s in obj) {
+                    strokeList.add(Stroke(s.xList, s.yList, s.pressureList, s.paintColor))
+                }
+
+                val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
+                viewModel.setStrokeList(strokeList)
+                recoverDrawing()
+            } catch (e: FileNotFoundException) {
+
+            } finally {
+                objectStream?.close()
+                fileStream?.close()
+            }
         }
-
-        val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
-        viewModel.setStrokeList(strokeList)
-        recoverDrawing()
-
-        objectStream.close()
-        fileStream.close()
     }
 }
