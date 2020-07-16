@@ -8,6 +8,7 @@
 package com.microsoft.device.display.samples.twonote
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +18,12 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.microsoft.device.display.samples.twonote.model.DrawViewModel
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 
 class NoteFragment : Fragment() {
     companion object {
@@ -35,19 +41,16 @@ class NoteFragment : Fragment() {
         Yellow,
         Purple
     }
+
     private lateinit var drawView: PenDrawView
     private lateinit var textView: TextView
 
     // Life cycle
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(
-                R.layout.fragment_items_note,
-                container,
-                false
+            R.layout.fragment_items_note,
+            container,
+            false
         )
         textView = view.findViewById(R.id.textView)
         drawView = view.findViewById(R.id.drawView_single)
@@ -167,7 +170,7 @@ class NoteFragment : Fragment() {
                 viewModel.setStrokeList(strokeList)
                 recoverDrawing()
             } catch (e: FileNotFoundException) {
-
+                Log.e(this.javaClass.toString(), e.message.toString())
             } finally {
                 objectStream?.close()
                 fileStream?.close()
