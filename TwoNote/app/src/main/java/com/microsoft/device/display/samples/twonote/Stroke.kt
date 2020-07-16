@@ -7,9 +7,9 @@ import java.io.Serializable
 
 class Stroke  : Serializable {
 
-    private var xList: MutableList<Float> = mutableListOf()
-    private var yList: MutableList<Float> = mutableListOf()
-    private var pressureList: MutableList<Float> = mutableListOf()
+    private var xList: MutableList<MutableList<Float>> = mutableListOf()
+    private var yList: MutableList<MutableList<Float>> = mutableListOf()
+    private var pressureList: MutableList<MutableList<Float>> = mutableListOf()
     private var paintColor: Int = 0
 
     private var pathList: MutableList<Path> = mutableListOf()
@@ -26,16 +26,20 @@ class Stroke  : Serializable {
 
     // reconstruct serialized data
     constructor(
-            x: MutableList<Float>,
-            y: MutableList<Float>,
-            pressure: MutableList<Float>,
+            x: List<MutableList<Float>>,
+            y: List<MutableList<Float>>,
+            pressure: List<MutableList<Float>>,
             color: Int
     ) {
-        // need two points to make a line
-        if (x.size > 2) {
-            initStroke(x[0], y[0], pressure[0], color)
-            for (coords in 1 until x.size) {
-                continueDrawing(x[coords], y[coords], pressure[coords])
+        // need at least one path
+        if (x.size > 0 && x[0].size > 0) {
+            for (paths in 0 until x.size) {
+                for (coords in 0 until x[paths].size) {
+                    if (paths == 0 && coords == 0)
+                        initStroke(x[paths][coords], y[paths][coords], pressure[paths][coords], color)
+                    else
+                        continueDrawing(x[paths][coords], y[paths][coords], pressure[paths][coords])
+                }
             }
             finishStroke()
         }
@@ -59,14 +63,13 @@ class Stroke  : Serializable {
 
     private fun addJoint(x: Float, y: Float, pressure: Float) {
         finishStroke()
+        initPath()
 
         val paint = Paint()
         paint.color = paintColor
         paint.strokeWidth = pressure * 25
-        pressureList.add(pressure)
 
         val path = Path()
-
         path.moveTo(xCoord, yCoord)
         path.lineTo(x, y)
         pathList.add(path)
@@ -95,12 +98,49 @@ class Stroke  : Serializable {
         return paints
     }
 
-    // returns false if the stroke is now empty
-    fun removeItem(i: Int): Boolean {
+    // returns newly created stroke if applicable
+    fun removeItem(i: Int): Stroke? {
+        var stroke: Stroke? = null
+
+        // split the stroke into two if middle is erased
+        if (i > 0 && i < xList.lastIndex) {
+            stroke = splitStroke(i)
+        }
+
+        deleteComponents(i)
+        return stroke
+    }
+
+    private fun splitStroke(i: Int) : Stroke{
+        var range = IntRange(i + 1, xList.lastIndex)
+        val x: List<MutableList<Float>> = xList.slice(range)
+        val y: List<MutableList<Float>> = yList.slice(range)
+        val p: List<MutableList<Float>> = pressureList.slice(range)
+
+        val stroke = Stroke(x, y, p, paintColor)
+
+        range = IntRange(0, i)
+        xList = xList.slice(range).toMutableList()
+        yList = yList.slice(range).toMutableList()
+        pressureList = pressureList.slice(range).toMutableList()
+        pathBounds = pathBounds.slice(range).toMutableList()
+        pathList = pathList.slice(range).toMutableList()
+        paints = paints.slice(range).toMutableList()
+
+        return stroke
+    }
+
+    private fun deleteComponents(i: Int) {
+        xList.removeAt(i)
+        yList.removeAt(i)
+        pressureList.removeAt(i)
         pathBounds.removeAt(i)
         pathList.removeAt(i)
         paints.removeAt(i)
-        return !pathBounds.isEmpty()
+    }
+
+    fun getSize(): Int {
+        return pathList.size
     }
 
     private fun updateValues(x: Float, y: Float, pressure: Float) {
@@ -108,14 +148,24 @@ class Stroke  : Serializable {
         yCoord = y
         prevPressure = pressure
 
-        xList.add(x)
-        yList.add(y)
-        pressureList.add(pressure)
+        xList[xList.lastIndex].add(x)
+        yList[yList.lastIndex].add(y)
+        pressureList[pressureList.lastIndex].add(pressure)
     }
 
     private fun initStroke(x: Float, y: Float, pressure: Float, color: Int) {
-        updateValues(x, y, pressure)
+        xCoord = x
+        yCoord = y
+        prevPressure = pressure
         paintColor = color
+
+        addJoint(x, y, pressure)
+    }
+
+    private fun initPath() {
+        xList.add(mutableListOf())
+        yList.add(mutableListOf())
+        pressureList.add(mutableListOf())
     }
 
     fun serializeData(): SerializedStroke {
