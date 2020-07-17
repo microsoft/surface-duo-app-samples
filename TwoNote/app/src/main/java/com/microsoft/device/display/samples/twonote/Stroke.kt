@@ -12,8 +12,7 @@ import android.graphics.Path
 import android.graphics.RectF
 import java.io.Serializable
 
-// does this have to be serializable?
-class Stroke : Serializable {
+class Stroke {
 
     private var xList: MutableList<MutableList<Float>> = mutableListOf()
     private var yList: MutableList<MutableList<Float>> = mutableListOf()
