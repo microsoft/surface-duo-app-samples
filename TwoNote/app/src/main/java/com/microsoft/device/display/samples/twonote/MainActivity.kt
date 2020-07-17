@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity(), NoteFragment.OnFragmentInteractionList
                 .beginTransaction()
                 .replace(
                     R.id.single_screen_container_id,
-                    ItemsListFragment(),
+                    NoteListFragment(),
                     LIST_FRAGMENT
                 )
                 .commit()
@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity(), NoteFragment.OnFragmentInteractionList
                 .beginTransaction()
                 .replace(
                     R.id.dual_screen_start_container_id,
-                    ItemsListFragment(),
+                    NoteListFragment(),
                     LIST_FRAGMENT
                 ).commit()
             supportFragmentManager
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), NoteFragment.OnFragmentInteractionList
     }
 
     /**
-     * Send data from Note Fragment to ItemsListFragment after note contents have been edited
+     * Send data from Note Fragment to NoteListFragment after note contents have been edited
      *
      * REVISIT: may just want to encapsulate fields (have to add drawings/photos) in one object
      *
@@ -57,14 +57,14 @@ class MainActivity : AppCompatActivity(), NoteFragment.OnFragmentInteractionList
      * @param text: updated note text
      */
     override fun onINodeUpdate(title: String) {
-        (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as ItemsListFragment).updateINode(title)
+        (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as NoteListFragment).updateINode(title)
     }
 
     override fun onPause() {
         super.onPause()
         // TODO: Find a better place to trigger DirEntry saving. It doesn't always trigger here
         if (!DataProvider.inodes.isNullOrEmpty()) {
-            (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as ItemsListFragment).writeDirEntry("", DirEntry(DataProvider.inodes))
+            (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as NoteListFragment).writeDirEntry("", DirEntry(DataProvider.inodes))
         }
     }
 }

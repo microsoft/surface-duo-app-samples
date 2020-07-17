@@ -44,7 +44,7 @@ class NoteFragment : Fragment() {
     }
 
     /**
-     * Connects this fragment to the ItemsListFragment (via MainActivity) so any note edits in
+     * Connects this fragment to the NoteListFragment (via MainActivity) so any note edits in
      * the UI will be passed back to the actual list of note objects
      */
     override fun onAttach(context: Context) {
@@ -61,7 +61,7 @@ class NoteFragment : Fragment() {
     private lateinit var drawView: PenDrawView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_items_note, container, false)
+        val view = inflater.inflate(R.layout.fragment_note, container, false)
 
         addNoteContents(view)
         setUpTools(view)
