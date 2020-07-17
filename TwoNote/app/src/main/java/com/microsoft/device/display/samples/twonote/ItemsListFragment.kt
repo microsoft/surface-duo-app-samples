@@ -7,6 +7,8 @@
 package com.microsoft.device.display.samples.twonote
 
 import android.os.Bundle
+import android.provider.ContactsContract
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.Note
 import com.microsoft.device.dualscreen.layout.ScreenHelper
+import java.io.*
 import java.time.LocalDateTime
 import kotlin.collections.ArrayList
 
@@ -41,6 +44,9 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_items_list, container, false)
+        DataProvider.clear()
+        //writeDirEntry("", DirEntry(mutableListOf()))  // uncomment this to clear record of all root entries
+
         listView = view.findViewById(R.id.list_view)
         listView?.let {
             it.adapter = arrayAdapter
@@ -49,14 +55,18 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
         }
 
         view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
-            DataProvider.createNote()
-
             // Set selected item to newly created note (first element in list)
-            setSelectedItem(0)
-            startNoteFragment(selectedItemPosition)
+            startNoteFragment(addDirEntry(""))
         }
 
+        //DataProvider.clear()
+        loadDirectory("")
+
         return view
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     private fun setSelectedItem(position: Int) {
@@ -118,5 +128,91 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
      */
     private fun sortArray() {
         arrayAdapter?.sort { one, two -> two.dateModified.compareTo(one.dateModified) }
+    }
+
+    private fun loadDirectory(subDir: String) {
+        readDirEntry(subDir)?.let {notes ->
+            for (i in notes.ids) {
+                DataProvider.createNote(i)
+                loadNote(subDir, "/n" + i.toString())?.let {note ->
+                    DataProvider.addNote(note)
+                }
+            }
+        }
+    }
+
+    private fun addDirEntry(subDir: String): Int {
+        var id = 0
+        readDirEntry(subDir)?.let { entry ->
+            id = entry.ids[entry.ids.lastIndex] + 1
+            entry.ids.add(id)
+            writeDirEntry(subDir, entry)
+            return DataProvider.createNote(id)
+        }
+        val newEntry = DirEntry(mutableListOf())
+        newEntry.ids.add(id)
+        writeDirEntry(subDir, newEntry)
+        return DataProvider.createNote(id)
+    }
+
+    private fun loadNote(subDir: String, noteName: String): Note? {
+        val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
+        val file = File(path + subDir + noteName)
+        var fileStream: FileInputStream? = null
+        var objectStream: ObjectInputStream? = null
+
+        try {
+            fileStream = FileInputStream(file)
+            objectStream = ObjectInputStream(fileStream)
+            val note = objectStream.readObject()
+            if (note is Note) {
+                return note
+            } else {
+                Log.e(this.javaClass.toString(), "not a note")
+                return null
+            }
+        } catch (e: FileNotFoundException) {
+            Log.e(this.javaClass.toString(), e.message.toString())
+            return null
+        } finally {
+            objectStream?.close()
+            fileStream?.close()
+        }
+    }
+
+    private fun readDirEntry(subDir: String): DirEntry? {
+        val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
+        val file = File(path + subDir + "/dEntry")
+        var fileStream: FileInputStream? = null
+        var objectStream: ObjectInputStream? = null
+
+        try {
+            fileStream = FileInputStream(file)
+            objectStream = ObjectInputStream(fileStream)
+            val entry = objectStream.readObject()
+            if (entry is DirEntry) {
+                return entry
+            } else {
+                Log.e(this.javaClass.toString(), "Error: dEntry not an Int")
+                return null
+            }
+        } catch (e: FileNotFoundException) {
+            val entry = DirEntry(mutableListOf())
+            writeDirEntry(subDir, entry)    // create a new dir entry
+            return entry
+        } finally {
+            objectStream?.close()
+            fileStream?.close()
+        }
+    }
+
+    private fun writeDirEntry(subDir: String, entry: DirEntry) {
+        val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
+        val file = File(path + subDir + "/dEntry")
+        val fileStream = FileOutputStream(file)
+        val objectStream = ObjectOutputStream(fileStream)
+        objectStream.writeObject(entry)
+        objectStream.close()
+        fileStream.close()
     }
 }

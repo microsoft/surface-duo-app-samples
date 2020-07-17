@@ -33,14 +33,11 @@ import java.lang.ClassCastException
 
 class NoteFragment : Fragment() {
     companion object {
-        const val TITLE: String = "title"
-        const val TEXT: String = "text"
         lateinit var mListener: OnFragmentInteractionListener
 
         internal fun newInstance(note: Note) = NoteFragment().apply {
             arguments = Bundle().apply {
-                this.putString(TITLE, note.title)
-                this.putString(TEXT, note.text)
+                this.putSerializable("note", note)
             }
         }
     }
@@ -79,8 +76,14 @@ class NoteFragment : Fragment() {
     }
 
     private fun addNoteContents(view: View) {
-        view.findViewById<TextInputEditText>(R.id.title_input).setText(arguments?.getString(TITLE))
-        view.findViewById<TextInputEditText>(R.id.text_input).setText(arguments?.getString(TEXT))
+        val note: Note? = arguments?.let {
+            val obj = it.getSerializable("note")
+
+            if (obj is Note) obj
+            else null
+        }
+        view.findViewById<TextInputEditText>(R.id.title_input).setText(note?.title)
+        view.findViewById<TextInputEditText>(R.id.text_input).setText(note?.text)
     }
 
     private fun setUpTools(view: View) {
@@ -130,7 +133,10 @@ class NoteFragment : Fragment() {
 
         arguments?.let{
             val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
-            viewModel.setIdentifier(it.getString("note"))
+            val data = it.getSerializable("note")
+            if (data is Note) {
+                viewModel.setIdentifier("/n" + data.id)
+            }
         }
 
         recoverDrawing()
@@ -141,10 +147,10 @@ class NoteFragment : Fragment() {
         drawView.setPaintRadius(0)
     }
 
-    override fun onResume() {
+    /*override fun onResume() {
         super.onResume()
         load()
-    }
+    }*/
 
     override fun onPause() {
         super.onPause()
@@ -207,35 +213,44 @@ class NoteFragment : Fragment() {
 
     private fun save() {
         arguments?.let {
-            val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
-            val file = File(path + "/" + it.getString("note"))
-            val fileStream = FileOutputStream(file)
-            val objectStream = ObjectOutputStream(fileStream)
-            objectStream.writeObject(drawView.getDataList())
-            objectStream.close()
-            fileStream.close()
+            val note = it.getSerializable("note")
+            if (note is Note) {
+                val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
+                val file = File(path + "/n" + note.id)
+                val fileStream = FileOutputStream(file)
+                val objectStream = ObjectOutputStream(fileStream)
+                note.drawings = drawView.getDataList()
+                objectStream.writeObject(note)
+                objectStream.close()
+                fileStream.close()
+            }
         }
     }
 
-    private fun load() {
+    /*private fun load() {
         arguments?.let {
             val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
-            val file = File(path + "/" + it.getString("note"))
+            val file = File(path + "/" + it.getString("title"))
             var fileStream: FileInputStream? = null
             var objectStream: ObjectInputStream? = null
 
             try {
                 fileStream = FileInputStream(file)
                 objectStream = ObjectInputStream(fileStream)
-                val obj = objectStream.readObject() as List<SerializedStroke>
-                val strokeList: MutableList<Stroke> = mutableListOf()
-                for (s in obj) {
-                    strokeList.add(Stroke(s.xList, s.yList, s.pressureList, s.paintColor))
-                }
+                val obj = objectStream.readObject()
+                if (obj is Note) {
+                    val serializedList = obj.drawings
+                    val strokeList: MutableList<Stroke> = mutableListOf()
+                    for (s in serializedList) {
+                        strokeList.add(Stroke(s.xList, s.yList, s.pressureList, s.paintColor))
+                    }
 
-                val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
-                viewModel.setStrokeList(strokeList)
-                recoverDrawing()
+                    val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
+                    viewModel.setStrokeList(strokeList)
+                    recoverDrawing()
+                } else {
+                    Log.e(this.javaClass.toString(), "not a note")
+                }
             } catch (e: FileNotFoundException) {
                 Log.e(this.javaClass.toString(), e.message.toString())
             } finally {
@@ -243,5 +258,5 @@ class NoteFragment : Fragment() {
                 fileStream?.close()
             }
         }
-    }
+    }*/
 }

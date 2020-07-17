@@ -14,7 +14,16 @@ object DataProvider {
     /**
      * Create new note and add it to the top of the note list (position 0)
      */
-    fun createNote() {
-        notes.add(0, Note())
+    fun createNote(index: Int): Int{
+        notes.add(Note(index))
+        return notes.lastIndex
+    }
+    fun addNote(note: Note) {
+        notes.add(note)
+    }
+    fun clear() {
+        for(n in notes.lastIndex downTo 0) {
+            notes.removeAt(n)
+        }
     }
 }
