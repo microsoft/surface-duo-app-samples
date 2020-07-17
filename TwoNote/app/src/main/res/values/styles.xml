@@ -20,9 +20,4 @@
         <item name="colorOnSurface">@color/colorOnBackground</item>
     </style>
 
-    <style name="RatingBar" parent="android:style/Widget.Material.RatingBar.Small">
-        <item name="android:colorControlNormal">#FFD54F</item>
-        <item name="android:colorControlActivated">#FFC400</item>
-    </style>
-
 </resources>
