@@ -11,8 +11,10 @@ import java.util.ArrayList
 object DataProvider {
     val notes: ArrayList<Note> = ArrayList()
 
-    fun createNote(title: String) {
-        // Add first (most recently edited)
-        notes.add(0, Note(title))
+    /**
+     * Create new note and add it to the top of the note list (position 0)
+     */
+    fun createNote() {
+        notes.add(0, Note())
     }
 }

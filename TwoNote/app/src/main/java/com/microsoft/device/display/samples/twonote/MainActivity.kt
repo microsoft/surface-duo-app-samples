@@ -10,7 +10,10 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.microsoft.device.dualscreen.layout.ScreenHelper
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NoteFragment.OnFragmentInteractionListener {
+    companion object {
+        const val LIST_FRAGMENT = "list fragment"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +25,7 @@ class MainActivity : AppCompatActivity() {
                 .replace(
                     R.id.single_screen_container_id,
                     ItemsListFragment(),
-                    null
+                    LIST_FRAGMENT
                 )
                 .commit()
         } else {
@@ -31,7 +34,7 @@ class MainActivity : AppCompatActivity() {
                 .replace(
                     R.id.dual_screen_start_container_id,
                     ItemsListFragment(),
-                    null
+                    LIST_FRAGMENT
                 ).commit()
             supportFragmentManager
                 .beginTransaction()
@@ -41,5 +44,17 @@ class MainActivity : AppCompatActivity() {
                     null
                 ).commit()
         }
+    }
+
+    /**
+     * Send data from Note Fragment to ItemsListFragment after note contents have been edited
+     *
+     * REVISIT: may just want to encapsulate fields (have to add drawings/photos) in one object
+     *
+     * @param title: updated note title
+     * @param text: updated note text
+     */
+    override fun onNoteUpdate(title: String, text: String) {
+        (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as ItemsListFragment).updateNote(title, text)
     }
 }
