@@ -10,6 +10,9 @@ package com.microsoft.device.display.samples.twonote
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -19,6 +22,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.textfield.TextInputEditText
 import com.microsoft.device.display.samples.twonote.model.DrawViewModel
 import com.microsoft.device.display.samples.twonote.model.Note
@@ -28,6 +32,10 @@ import java.io.ObjectOutputStream
 import java.lang.ClassCastException
 
 class NoteFragment : Fragment() {
+    enum class PaintColors { Red, Blue, Green, Yellow, Purple }
+
+    private lateinit var drawView: PenDrawView
+
     companion object {
         lateinit var mListener: OnFragmentInteractionListener
 
@@ -55,10 +63,6 @@ class NoteFragment : Fragment() {
             throw ClassCastException(context.toString() + resources.getString(R.string.exception_message))
         }
     }
-
-    enum class PaintColors { Red, Blue, Green, Yellow, Purple }
-
-    private lateinit var drawView: PenDrawView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_note, container, false)
@@ -99,7 +103,7 @@ class NoteFragment : Fragment() {
     }
 
     private fun setUpTools(view: View) {
-        // Sets up toggling between text/ink mode
+        // Set up toggling between text/ink mode
         val text = view.findViewById<ScrollView>(R.id.text_mode)
         val ink = view.findViewById<ConstraintLayout>(R.id.ink_mode)
 
@@ -113,6 +117,17 @@ class NoteFragment : Fragment() {
                 text.visibility = View.VISIBLE
             }
         }
+
+        // Set up toolbar icons and actions
+        val toolbar = view.findViewById<MaterialToolbar>(R.id.toolbar)
+
+        toolbar.inflateMenu(R.menu.menu_note)
+        toolbar.setOnMenuItemClickListener {
+            onOptionsItemSelected(it)
+        }
+
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
+        toolbar.setNavigationOnClickListener { activity?.onBackPressed() }
     }
 
     // TODO: add handling so clicking inside the scrollview makes the text object in focus
@@ -224,6 +239,27 @@ class NoteFragment : Fragment() {
                 objectStream.writeObject(note)
                 objectStream.close()
                 fileStream.close()
+            }
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_move -> {
+                // TODO: pop up new dialog with categories to move to, return true when implemented
+                false
+            }
+            R.id.action_share -> {
+                // TODO: return true when implemented
+                // true
+                false
+            }
+            R.id.action_delete -> {
+                // TODO: return to list fragment, remove note from list, return true when implemented
+                false
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
             }
         }
     }

@@ -18,6 +18,12 @@
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
         <item name="colorOnBackground">@color/colorOnBackground</item>
         <item name="colorOnSurface">@color/colorOnBackground</item>
+        <item name="actionOverflowButtonStyle">@style/overflowStyle</item>
+        <item name="actionModeStyle">@style/actionModeStyle</item>
+    </style>
+
+    <style name="overflowStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">
+        <item name="android:tint">@color/colorOnPrimary</item>
     </style>
 
 </resources>
