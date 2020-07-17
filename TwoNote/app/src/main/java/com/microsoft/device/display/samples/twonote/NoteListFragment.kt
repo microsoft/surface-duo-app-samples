@@ -29,7 +29,7 @@ import java.io.ObjectOutputStream
 import java.lang.Exception
 import java.time.LocalDateTime
 
-class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
+class NoteListFragment : Fragment(), AdapterView.OnItemClickListener {
     private var arrayAdapter: ArrayAdapter<INode>? = null
     private var listView: ListView? = null
     private lateinit var inodes: MutableList<INode>
@@ -49,7 +49,7 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_items_list, container, false)
+        val view = inflater.inflate(R.layout.fragment_note_list, container, false)
         // writeDirEntry("", DirEntry(mutableListOf()))  // uncomment this to clear record of all root entries (use for testing)
 
         listView = view.findViewById(R.id.list_view)
