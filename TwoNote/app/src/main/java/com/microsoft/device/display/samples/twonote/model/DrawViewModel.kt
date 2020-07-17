@@ -17,6 +17,7 @@ class DrawViewModel : ViewModel() {
     private val imageLiveData = MutableLiveData<Bitmap?>() // to copy between two screens
     private var strokeList = listOf<Stroke>() // to retain the drawing when spanning/unspanning
     private var penRadius: Int = 0 // to retain the pen value when spanning/unspanning
+    private var identifier: String = ""
 
     fun getImageLiveData(): LiveData<Bitmap?> {
         return imageLiveData
@@ -40,5 +41,20 @@ class DrawViewModel : ViewModel() {
 
     fun setPenRadius(radius: Int) {
         penRadius = radius
+    }
+
+    fun setIdentifier(id: String?) {
+        id?.let {
+            if (identifier != id) {
+                resetViewModel()
+                identifier = id
+            }
+        }
+    }
+
+    fun resetViewModel() {
+        strokeList = listOf()
+        penRadius = 0
+        identifier = ""
     }
 }
