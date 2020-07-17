@@ -6,10 +6,6 @@
 
 <resources>
     <string name="app_name">Two Note</string>
-    <string name="rating">Rating:</string>
-    <string name="details">Details:</string>
-    <string name="note">Title:</string>
-    <string name="item_image">Item image</string>
     <string name="items_list">Items List</string>
     <string name="untitled">Untitled</string>
     <string name="text">Switch to Text</string>
