@@ -18,12 +18,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.Note
 import com.microsoft.device.dualscreen.layout.ScreenHelper
+import java.time.LocalDateTime
 import kotlin.collections.ArrayList
 
 class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
     private var arrayAdapter: ArrayAdapter<Note>? = null
     private var listView: ListView? = null
     private lateinit var notes: ArrayList<Note>
+    private var selectedItemPosition: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,9 +49,11 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
         }
 
         view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
-            DataProvider.createNote(getString(R.string.untitled))
-            arrayAdapter?.notifyDataSetChanged()
-            startNoteDetailFragment(0)
+            DataProvider.createNote()
+
+            // Set selected item to newly created note (first element in list)
+            setSelectedItem(0)
+            startNoteFragment(selectedItemPosition)
         }
 
         return view
@@ -57,36 +61,61 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
 
     private fun setSelectedItem(position: Int) {
         listView?.setItemChecked(position, true)
+        selectedItemPosition = position
     }
 
     override fun onItemClick(adapterView: AdapterView<*>, item: View, position: Int, rowId: Long) {
-        startNoteDetailFragment(position)
+        startNoteFragment(position)
     }
 
-    private fun startNoteDetailFragment(position: Int) {
+    private fun startNoteFragment(position: Int) {
         val note = arrayAdapter?.getItem(position)
         setSelectedItem(position)
+
         note?.let {
             activity?.let { activity ->
                 if (ScreenHelper.isDualMode(activity)) {
                     parentFragmentManager.beginTransaction()
                         .replace(
                             R.id.dual_screen_end_container_id,
-                            NoteFragment.newInstance("test1"), null
+                            NoteFragment.newInstance(note), null
                         ).commit()
                 } else {
-                    startNoteFragment()
+                    parentFragmentManager.beginTransaction()
+                        .replace(
+                            R.id.single_screen_container_id,
+                            NoteFragment.newInstance(note), null
+                        ).addToBackStack(null)
+                        .commit()
                 }
             }
         }
     }
 
-    private fun startNoteFragment() {
-        parentFragmentManager.beginTransaction()
-            .replace(
-                R.id.single_screen_container_id,
-                NoteFragment.newInstance("test1"), null
-            ).addToBackStack(null)
-            .commit()
+    fun updateNote(title: String, text: String) {
+        // REVISIT: assuming that currently selected item is the note that just got updated
+        var note: Note?
+
+        arrayAdapter?.let { array ->
+            note = array.getItem(selectedItemPosition)
+
+            note?.let {
+                it.title = title
+                it.text = text
+                it.dateModified = LocalDateTime.now()
+            }
+        }
+    }
+
+    /**
+     * Sort list of notes based on date modified (most recently edited at top)
+     *
+     * REVISIT: when should it be sorted? (ex: in dual-screen view, not done editing,
+     * should it be at original position or pop to top as soon as editing begins?)
+     * Should also adjust the listView's "selectedItemPosition" highlight feature (and the
+     * index of the attribute "selectedItemPosition")
+     */
+    private fun sortArray() {
+        arrayAdapter?.sort { one, two -> two.dateModified.compareTo(one.dateModified) }
     }
 }

@@ -7,6 +7,7 @@
 
 package com.microsoft.device.display.samples.twonote
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,35 +22,68 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
 import com.microsoft.device.display.samples.twonote.model.DrawViewModel
+import com.microsoft.device.display.samples.twonote.model.Note
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
+import java.lang.ClassCastException
 
 class NoteFragment : Fragment() {
     companion object {
-        internal fun newInstance(noteName: String) = NoteFragment().apply {
+        const val TITLE: String = "title"
+        const val TEXT: String = "text"
+        lateinit var mListener: OnFragmentInteractionListener
+
+        internal fun newInstance(note: Note) = NoteFragment().apply {
             arguments = Bundle().apply {
-                this.putString("note", noteName)
+                this.putString(TITLE, note.title)
+                this.putString(TEXT, note.text)
             }
         }
     }
 
-    enum class PaintColors {
-        Red,
-        Blue,
-        Green,
-        Yellow,
-        Purple
+    interface OnFragmentInteractionListener {
+        // TODO: add more fields (drawings? photos?) or create an object to encapsulate all the fields
+        fun onNoteUpdate(title: String, text: String)
     }
+
+    /**
+     * Connects this fragment to the ItemsListFragment (via MainActivity) so any note edits in
+     * the UI will be passed back to the actual list of note objects
+     */
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnFragmentInteractionListener) {
+            mListener = context
+        } else {
+            throw ClassCastException(context.toString() + resources.getString(R.string.exception_message))
+        }
+    }
+
+    enum class PaintColors { Red, Blue, Green, Yellow, Purple }
 
     private lateinit var drawView: PenDrawView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_items_note, container, false)
 
+        addNoteContents(view)
+        setUpTools(view)
+        setUpInkMode(view)
+        setUpTextMode(view)
+
+        return view
+    }
+
+    private fun addNoteContents(view: View) {
+        view.findViewById<TextInputEditText>(R.id.title_input).setText(arguments?.getString(TITLE))
+        view.findViewById<TextInputEditText>(R.id.text_input).setText(arguments?.getString(TEXT))
+    }
+
+    private fun setUpTools(view: View) {
         // Sets up toggling between text/ink mode
         val text = view.findViewById<ScrollView>(R.id.text_mode)
         val ink = view.findViewById<ConstraintLayout>(R.id.ink_mode)
@@ -64,11 +98,6 @@ class NoteFragment : Fragment() {
                 text.visibility = View.VISIBLE
             }
         }
-
-        setUpInkMode(view)
-        setUpTextMode(view)
-
-        return view
     }
 
     // TODO: add handling so clicking inside the scrollview makes the text object in focus
@@ -115,6 +144,10 @@ class NoteFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         save()
+
+        val title = view?.findViewById<TextInputEditText>(R.id.title_input)
+        val text = view?.findViewById<TextInputEditText>(R.id.text_input)
+        mListener.onNoteUpdate(title?.text.toString(), text?.text.toString())
     }
 
     override fun onDestroy() {
@@ -124,9 +157,8 @@ class NoteFragment : Fragment() {
         }
     }
 
-    // Drawing related
-    private fun chooseColor(title: String) {
-        when (title) {
+    private fun chooseColor(color: String) {
+        when (color) {
             PaintColors.Red.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.red))
             PaintColors.Blue.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.blue))
             PaintColors.Green.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.green))
