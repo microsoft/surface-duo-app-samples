@@ -87,6 +87,7 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
                             NoteFragment.newInstance(note), null
                         ).addToBackStack(null)
                         .commit()
+
                 }
             }
         }

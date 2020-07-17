@@ -128,6 +128,11 @@ class NoteFragment : Fragment() {
         val purpleButton = view.findViewById<Button>(R.id.button_purple)
         purpleButton.setOnClickListener { chooseColor(PaintColors.Purple.name) }
 
+        arguments?.let{
+            val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
+            viewModel.setIdentifier(it.getString("note"))
+        }
+
         recoverDrawing()
 
         drawView.viewTreeObserver.addOnDrawListener {
