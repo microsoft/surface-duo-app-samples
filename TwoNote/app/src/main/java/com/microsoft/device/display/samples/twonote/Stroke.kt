@@ -1,3 +1,10 @@
+/*
+ *
+ *  * Copyright (c) Microsoft Corporation. All rights reserved.
+ *  * Licensed under the MIT License.
+ *
+ */
+
 package com.microsoft.device.display.samples.twonote
 
 import android.graphics.Paint
@@ -5,6 +12,7 @@ import android.graphics.Path
 import android.graphics.RectF
 import java.io.Serializable
 
+// does this have to be serializable?
 class Stroke : Serializable {
 
     private var xList: MutableList<MutableList<Float>> = mutableListOf()

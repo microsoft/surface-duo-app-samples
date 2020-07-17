@@ -77,6 +77,7 @@ class PenDrawView : View {
         }
     }
 
+    var prevPressure = 0f
     override fun onTouchEvent(event: MotionEvent): Boolean {
         isErasing = false
         if (event.getToolType(0) == MotionEvent.TOOL_TYPE_ERASER) {
@@ -95,16 +96,17 @@ class PenDrawView : View {
                 MotionEvent.ACTION_DOWN -> {
                     val stroke = Stroke(event.x, event.y, event.pressure, currentColor)
                     strokeList.add(stroke)
+                    prevPressure = event.pressure
                 }
 
                 MotionEvent.ACTION_MOVE -> {
                     Log.d("draw_debugging", "pressure " + event.pressure)
-                    if (!strokeList.isEmpty())
+                    if (strokeList.isNotEmpty())
                         strokeList[strokeList.lastIndex].continueDrawing(event.x, event.y, event.pressure)
                 }
 
                 MotionEvent.ACTION_UP -> {
-                    if (!strokeList.isEmpty())
+                    if (strokeList.isNotEmpty())
                         strokeList[strokeList.lastIndex].finishStroke()
                 }
             }
