@@ -6,15 +6,19 @@
 
 package com.microsoft.device.display.samples.twonote
 
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.DirEntry
@@ -29,7 +33,8 @@ import java.io.ObjectOutputStream
 import java.lang.Exception
 import java.time.LocalDateTime
 
-class NoteListFragment : Fragment(), AdapterView.OnItemClickListener {
+
+class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     private var arrayAdapter: ArrayAdapter<INode>? = null
     private var listView: ListView? = null
     private lateinit var inodes: MutableList<INode>
@@ -40,11 +45,23 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener {
         super.onCreate(savedInstanceState)
         inodes = DataProvider.inodes
         activity?.let {
-            arrayAdapter = ArrayAdapter(
-                it,
-                android.R.layout.simple_list_item_activated_1,
-                inodes
-            )
+            arrayAdapter = object : ArrayAdapter<INode>(it, android.R.layout.simple_list_item_2, android.R.id.text1, inodes) {
+                // Override getView function so that ArrayAdapter can be used while both text
+                // views in the simple_list_item_2 format are updated
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                    val view = super.getView(position, convertView, parent)
+
+                    val text1 = view.findViewById<View>(android.R.id.text1) as TextView
+                    text1.text = inodes[position].title
+                    text1.setTypeface(null, Typeface.BOLD)
+
+                    val text2 = view.findViewById<View>(android.R.id.text2) as TextView
+                    text2.text = inodes[position].dateModifiedString
+                    text2.setTextColor(it.getColor(R.color.colorOnBackgroundVariant))
+
+                    return view
+                }
+            }
         }
     }
 
@@ -57,6 +74,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener {
             it.adapter = arrayAdapter
             it.choiceMode = ListView.CHOICE_MODE_SINGLE
             it.onItemClickListener = this
+            it.onItemLongClickListener = this
         }
 
         view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
@@ -65,6 +83,23 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener {
         }
 
         loadDirectory(ROOT)
+
+        // Set up toolbar icons and actions
+        val toolbar = view.findViewById<MaterialToolbar>(R.id.toolbar)
+
+        toolbar.inflateMenu(R.menu.menu_note_list)
+        toolbar.setOnMenuItemClickListener {
+            onOptionsItemSelected(it)
+        }
+
+        context?.let {
+            // TODO: switch to colored icon
+            toolbar.setNavigationIcon(R.drawable.ic_icon_unfilled)
+            toolbar.navigationIcon?.setTint(it.getColor(R.color.colorOnPrimary))
+        }
+
+        // TODO: once category tabs have been implemented, connect to toolbar title here
+        toolbar.title = "Category 1"
 
         return view
     }
@@ -75,7 +110,12 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener {
     }
 
     override fun onItemClick(adapterView: AdapterView<*>, item: View, position: Int, rowId: Long) {
-        startNoteFragment(position)
+        if (listView?.choiceMode == ListView.CHOICE_MODE_SINGLE) {
+            startNoteFragment(position)
+        } else {
+            // REVISIT: selectedItemPosition variable needs to be debugged/changed
+            setSelectedItem(position)
+        }
     }
 
     private fun startNoteFragment(position: Int) {
@@ -89,17 +129,17 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener {
 
                 if (ScreenHelper.isDualMode(activity)) {
                     parentFragmentManager.beginTransaction()
-                        .replace(
-                            R.id.dual_screen_end_container_id,
-                            NoteFragment.newInstance(note), null
-                        ).commit()
+                            .replace(
+                                    R.id.dual_screen_end_container_id,
+                                    NoteFragment.newInstance(note), null
+                            ).commit()
                 } else {
                     parentFragmentManager.beginTransaction()
-                        .replace(
-                            R.id.single_screen_container_id,
-                            NoteFragment.newInstance(note), null
-                        ).addToBackStack(null)
-                        .commit()
+                            .replace(
+                                    R.id.single_screen_container_id,
+                                    NoteFragment.newInstance(note), null
+                            ).addToBackStack(null)
+                            .commit()
                 }
             }
         }
@@ -199,7 +239,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener {
     // reads directory entry to get inodes
     private fun readDirEntry(subDir: String): DirEntry? {
         val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
-        val file = File(path + subDir + "/dEntry")
+        val file = File("$path$subDir/dEntry")
         var fileStream: FileInputStream? = null
         var objectStream: ObjectInputStream? = null
 
@@ -226,11 +266,40 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener {
     // update/create directory entry
     fun writeDirEntry(subDir: String, entry: DirEntry) {
         val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
-        val file = File(path + subDir + "/dEntry")
+        val file = File("$path$subDir/dEntry")
         val fileStream = FileOutputStream(file)
         val objectStream = ObjectOutputStream(fileStream)
         objectStream.writeObject(entry)
         objectStream.close()
         fileStream.close()
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_select -> {
+                // TODO: add selection bubbles to all notes and pop up contextual toolbar, return true when implemented
+                initListViewMultipleMode(listView)
+
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
+    }
+
+    override fun onItemLongClick(adapterView: AdapterView<*>, item: View, position: Int, rowId: Long): Boolean {
+        initListViewMultipleMode(listView)
+        setSelectedItem(position)
+
+        return true
+    }
+
+    private fun initListViewMultipleMode(listView: ListView?) {
+        listView?.let {
+            it.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
+            it.setMultiChoiceModeListener(NoteSelectionListener(this, it))
+        }
+    }
 }
+
