@@ -9,7 +9,6 @@ package com.microsoft.device.display.samples.twonote
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,10 +23,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.microsoft.device.display.samples.twonote.model.DrawViewModel
 import com.microsoft.device.display.samples.twonote.model.Note
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
-import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.lang.ClassCastException
 
@@ -44,7 +40,7 @@ class NoteFragment : Fragment() {
 
     interface OnFragmentInteractionListener {
         // TODO: add more fields (drawings? photos?) or create an object to encapsulate all the fields
-        fun onNoteUpdate(title: String, text: String)
+        fun onNoteUpdate(title: String)
     }
 
     /**
@@ -77,13 +73,29 @@ class NoteFragment : Fragment() {
 
     private fun addNoteContents(view: View) {
         val note: Note? = arguments?.let {
-            val obj = it.getSerializable("note")
+            val note = it.getSerializable("note")
 
-            if (obj is Note) obj
+            if (note is Note) note
             else null
         }
         view.findViewById<TextInputEditText>(R.id.title_input).setText(note?.title)
         view.findViewById<TextInputEditText>(R.id.text_input).setText(note?.text)
+    }
+
+    private fun updateNoteContents(view: View?) {
+        arguments?.let {
+            val note = it.getSerializable("note")
+            if (note is Note) {
+                val text = view?.findViewById<TextInputEditText>(R.id.text_input)?.text.toString()
+                val title = view?.findViewById<TextInputEditText>(R.id.title_input)?.text.toString()
+
+                note.drawings = drawView.getDataList()
+                note.text = text
+                note.title = title
+
+                mListener.onNoteUpdate(title)
+            }
+        }
     }
 
     private fun setUpTools(view: View) {
@@ -131,34 +143,30 @@ class NoteFragment : Fragment() {
         val purpleButton = view.findViewById<Button>(R.id.button_purple)
         purpleButton.setOnClickListener { chooseColor(PaintColors.Purple.name) }
 
-        arguments?.let{
+        arguments?.let {
             val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
-            val data = it.getSerializable("note")
-            if (data is Note) {
-                viewModel.setIdentifier("/n" + data.id)
+            val note = it.getSerializable("note")
+            if (note is Note) {
+                val strokeList: MutableList<Stroke> = mutableListOf()
+                for (s in note.drawings) {
+                    strokeList.add(Stroke(s.xList, s.yList, s.pressureList, s.paintColor))
+                }
+                viewModel.setStrokeList(strokeList)
             }
         }
 
         recoverDrawing()
 
         drawView.viewTreeObserver.addOnDrawListener {
-            copyDrawBitmapIfAdded()
+            copyDrawingIfAdded()
         }
         drawView.setPaintRadius(0)
     }
 
-    /*override fun onResume() {
-        super.onResume()
-        load()
-    }*/
-
     override fun onPause() {
         super.onPause()
+        updateNoteContents(view)
         save()
-
-        val title = view?.findViewById<TextInputEditText>(R.id.title_input)
-        val text = view?.findViewById<TextInputEditText>(R.id.text_input)
-        mListener.onNoteUpdate(title?.text.toString(), text?.text.toString())
     }
 
     override fun onDestroy() {
@@ -182,32 +190,26 @@ class NoteFragment : Fragment() {
         val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
         val strokes = viewModel.getStrokeList()
         drawView.setStrokeList(strokes)
-        val angle = viewModel.getPenRadius()
-        drawView.setPaintRadius(angle)
     }
 
     private fun clearDrawing() {
         drawView.clearDrawing()
         val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
-        viewModel.setImageLiveData(null)
         viewModel.setStrokeList(listOf())
     }
 
-    private fun copyDrawBitmap() {
+    private fun copyDrawing() {
         val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
-        val drawBitmap = drawView.getDrawBitmap()
-        if (drawBitmap != null) {
-            viewModel.setImageLiveData(drawBitmap)
-        }
+
         val strokeList = drawView.getStrokeList()
         if (strokeList.isNotEmpty()) {
             viewModel.setStrokeList(strokeList)
         }
     }
 
-    private fun copyDrawBitmapIfAdded() {
+    private fun copyDrawingIfAdded() {
         if (isAdded) {
-            copyDrawBitmap()
+            copyDrawing()
         }
     }
 
@@ -219,44 +221,10 @@ class NoteFragment : Fragment() {
                 val file = File(path + "/n" + note.id)
                 val fileStream = FileOutputStream(file)
                 val objectStream = ObjectOutputStream(fileStream)
-                note.drawings = drawView.getDataList()
                 objectStream.writeObject(note)
                 objectStream.close()
                 fileStream.close()
             }
         }
     }
-
-    /*private fun load() {
-        arguments?.let {
-            val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
-            val file = File(path + "/" + it.getString("title"))
-            var fileStream: FileInputStream? = null
-            var objectStream: ObjectInputStream? = null
-
-            try {
-                fileStream = FileInputStream(file)
-                objectStream = ObjectInputStream(fileStream)
-                val obj = objectStream.readObject()
-                if (obj is Note) {
-                    val serializedList = obj.drawings
-                    val strokeList: MutableList<Stroke> = mutableListOf()
-                    for (s in serializedList) {
-                        strokeList.add(Stroke(s.xList, s.yList, s.pressureList, s.paintColor))
-                    }
-
-                    val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
-                    viewModel.setStrokeList(strokeList)
-                    recoverDrawing()
-                } else {
-                    Log.e(this.javaClass.toString(), "not a note")
-                }
-            } catch (e: FileNotFoundException) {
-                Log.e(this.javaClass.toString(), e.message.toString())
-            } finally {
-                objectStream?.close()
-                fileStream?.close()
-            }
-        }
-    }*/
 }

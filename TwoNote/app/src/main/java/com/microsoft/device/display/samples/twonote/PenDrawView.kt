@@ -152,22 +152,11 @@ class PenDrawView : View {
         currentColor = color
     }
 
-    fun getDrawBitmap(): Bitmap? {
-        saveDrawBitmap()
-        return drawBitmap
-    }
-
     fun clearDrawing() {
         this.drawBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         strokeList.clear()
 
         invalidate()
-    }
-
-    private fun saveDrawBitmap() {
-        if (height > 0 && width > 0) {
-            this.drawBitmap = takeScreenshotOfView(this, height, width)
-        }
     }
 
     private fun takeScreenshotOfView(view: View, height: Int, width: Int): Bitmap {
