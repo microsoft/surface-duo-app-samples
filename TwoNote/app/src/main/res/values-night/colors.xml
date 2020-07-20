@@ -7,10 +7,11 @@
 <resources>
     <color name="colorPrimary">#AAC62828</color>
     <color name="colorPrimaryVariant">#AA8E0000</color>
-    <color name="colorSecondary">#AA90A4AE</color>
-    <color name="colorSecondaryVariant">#AA62757F</color>
+    <color name="colorSecondary">#90A4AE</color>
+    <color name="colorSecondaryVariant">#62757F</color>
     <color name="colorBackground">#121212</color>
-    <color name="colorOnPrimary">#EEFFFFFF</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
     <color name="colorOnSecondary">#000000</color>
-    <color name="colorOnBackground">#EEFFFFFF</color>
+    <color name="colorOnBackground">#FFFFFF</color>
+    <color name="colorOnBackgroundVariant">#BBBBBB</color>
 </resources>
