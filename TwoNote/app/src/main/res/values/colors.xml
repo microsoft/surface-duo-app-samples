@@ -14,6 +14,7 @@
     <color name="colorOnPrimary">#FFFFFF</color>
     <color name="colorOnSecondary">#000000</color>
     <color name="colorOnBackground">#000000</color>
+    <color name="colorOnBackgroundVariant">#4D4D4D</color>
     <color name="yellow">#FFD54F</color>
     <color name="blue">#03DAC5</color>
     <color name="red">#FFFF0000</color>
