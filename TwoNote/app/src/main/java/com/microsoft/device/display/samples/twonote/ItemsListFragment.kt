@@ -7,7 +7,6 @@
 package com.microsoft.device.display.samples.twonote
 
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +17,8 @@ import android.widget.ListView
 import androidx.fragment.app.Fragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.microsoft.device.display.samples.twonote.model.DataProvider
+import com.microsoft.device.display.samples.twonote.model.DirEntry
+import com.microsoft.device.display.samples.twonote.model.Inode
 import com.microsoft.device.display.samples.twonote.model.Note
 import com.microsoft.device.dualscreen.layout.ScreenHelper
 import java.io.*
@@ -25,27 +26,27 @@ import java.time.LocalDateTime
 import kotlin.collections.ArrayList
 
 class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
-    private var arrayAdapter: ArrayAdapter<Note>? = null
+    private var arrayAdapter: ArrayAdapter<Inode>? = null
     private var listView: ListView? = null
-    private lateinit var notes: ArrayList<Note>
+    private lateinit var inodes: ArrayList<Inode>
     private var selectedItemPosition: Int = 0
+    private val ROOT = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        notes = DataProvider.notes
+        inodes = DataProvider.notes
         activity?.let {
             arrayAdapter = ArrayAdapter(
                 it,
                 android.R.layout.simple_list_item_activated_1,
-                notes
+                inodes
             )
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_items_list, container, false)
-        DataProvider.clear()
-        //writeDirEntry("", DirEntry(mutableListOf()))  // uncomment this to clear record of all root entries
+        // writeDirEntry("", DirEntry(mutableListOf()))  // uncomment this to clear record of all root entries (use for testing)
 
         listView = view.findViewById(R.id.list_view)
         listView?.let {
@@ -56,17 +57,12 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
 
         view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
             // Set selected item to newly created note (first element in list)
-            startNoteFragment(addDirEntry(""))
+            startNoteFragment(addInode(ROOT))
         }
 
-        //DataProvider.clear()
-        loadDirectory("")
+        loadDirectory(ROOT)
 
         return view
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     private fun setSelectedItem(position: Int) {
@@ -79,11 +75,14 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
     }
 
     private fun startNoteFragment(position: Int) {
-        val note = arrayAdapter?.getItem(position)
         setSelectedItem(position)
 
-        note?.let {
+        arrayAdapter?.getItem(position)?.let { inode ->
             activity?.let { activity ->
+                var note = loadNote("", "/n" + inode.id)
+                if (note == null)
+                    note = Note(inode.id)
+
                 if (ScreenHelper.isDualMode(activity)) {
                     parentFragmentManager.beginTransaction()
                         .replace(
@@ -97,23 +96,22 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
                             NoteFragment.newInstance(note), null
                         ).addToBackStack(null)
                         .commit()
-
                 }
             }
         }
     }
 
-    fun updateNote(title: String, text: String) {
-        // REVISIT: assuming that currently selected item is the note that just got updated
-        var note: Note?
+    fun updateNote(title: String) {
+        var inode: Inode?
 
         arrayAdapter?.let { array ->
-            note = array.getItem(selectedItemPosition)
+            inode = array.getItem(selectedItemPosition)
 
-            note?.let {
+            inode?.let {
+                DataProvider.notes.remove(it)
                 it.title = title
-                it.text = text
                 it.dateModified = LocalDateTime.now()
+                DataProvider.notes.add(selectedItemPosition, it)
             }
         }
     }
@@ -130,31 +128,45 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
         arrayAdapter?.sort { one, two -> two.dateModified.compareTo(one.dateModified) }
     }
 
+    // loads inode information from the current directory into the DataProvider
     private fun loadDirectory(subDir: String) {
-        readDirEntry(subDir)?.let {notes ->
-            for (i in notes.ids) {
-                DataProvider.createNote(i)
-                loadNote(subDir, "/n" + i.toString())?.let {note ->
-                    DataProvider.addNote(note)
+        if (DataProvider.notes.isEmpty()) {
+            readDirEntry(subDir)?.let { notes ->
+                for (inode in notes.inodes) {
+                    DataProvider.addNote(inode)
                 }
             }
         }
     }
 
-    private fun addDirEntry(subDir: String): Int {
-        var id = 0
+    // add a new inode
+    private fun addInode(subDir: String): Int {
+        val inode = Inode("Note 0", LocalDateTime.now(), 0)
         readDirEntry(subDir)?.let { entry ->
-            id = entry.ids[entry.ids.lastIndex] + 1
-            entry.ids.add(id)
-            writeDirEntry(subDir, entry)
-            return DataProvider.createNote(id)
+            if (entry.inodes.isNotEmpty()) {
+                inode.id = entry.inodes[entry.inodes.lastIndex].id + 1
+                inode.title = "Note " + inode.id
+                entry.inodes.add(Inode(inode.title, inode.dateModified, inode.id))
+                writeDirEntry(subDir, entry)
+                DataProvider.addNote(inode)
+                return entry.inodes.lastIndex
+            } else {
+                return createNewInode(subDir, inode, entry)
+            }
         }
         val newEntry = DirEntry(mutableListOf())
-        newEntry.ids.add(id)
-        writeDirEntry(subDir, newEntry)
-        return DataProvider.createNote(id)
+        return createNewInode(subDir, inode, newEntry)
     }
 
+    // helper for addInode, creates a new Inode entry
+    private fun createNewInode(subDir: String, inode: Inode, dirEntry: DirEntry): Int {
+        dirEntry.inodes.add(Inode(inode.title, inode.dateModified, inode.id))
+        writeDirEntry(subDir, dirEntry)
+        DataProvider.addNote(inode)
+        return dirEntry.inodes.lastIndex
+    }
+
+    // reads a file and parses note data
     private fun loadNote(subDir: String, noteName: String): Note? {
         val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
         val file = File(path + subDir + noteName)
@@ -168,10 +180,13 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
             if (note is Note) {
                 return note
             } else {
-                Log.e(this.javaClass.toString(), "not a note")
+                Log.e(this.javaClass.toString(), "Error: loaded file is not of type Note")
                 return null
             }
         } catch (e: FileNotFoundException) {
+            Log.e(this.javaClass.toString(), e.message.toString())
+            return null
+        } catch (e: InvalidClassException) {
             Log.e(this.javaClass.toString(), e.message.toString())
             return null
         } finally {
@@ -180,6 +195,7 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
         }
     }
 
+    // reads directory entry to get inodes
     private fun readDirEntry(subDir: String): DirEntry? {
         val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
         val file = File(path + subDir + "/dEntry")
@@ -193,12 +209,16 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
             if (entry is DirEntry) {
                 return entry
             } else {
-                Log.e(this.javaClass.toString(), "Error: dEntry not an Int")
+                Log.e(this.javaClass.toString(), "Error: loaded file is not of type DirEntry")
                 return null
             }
         } catch (e: FileNotFoundException) {
             val entry = DirEntry(mutableListOf())
-            writeDirEntry(subDir, entry)    // create a new dir entry
+            writeDirEntry(subDir, entry) // create a new dir entry
+            return entry
+        } catch (e: InvalidClassException) {
+            val entry = DirEntry(mutableListOf())
+            writeDirEntry(subDir, entry)
             return entry
         } finally {
             objectStream?.close()
@@ -206,7 +226,8 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
         }
     }
 
-    private fun writeDirEntry(subDir: String, entry: DirEntry) {
+    // update/create directory entry
+    fun writeDirEntry(subDir: String, entry: DirEntry) {
         val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
         val file = File(path + subDir + "/dEntry")
         val fileStream = FileOutputStream(file)
