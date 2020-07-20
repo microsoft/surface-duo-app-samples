@@ -20,10 +20,22 @@
         <item name="colorOnSurface">@color/colorOnBackground</item>
         <item name="actionOverflowButtonStyle">@style/overflowStyle</item>
         <item name="actionModeStyle">@style/actionModeStyle</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeCloseDrawable">@drawable/ic_close</item>
     </style>
 
     <style name="overflowStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">
         <item name="android:tint">@color/colorOnPrimary</item>
+    </style>
+
+    <style name="actionModeStyle" parent="Widget.AppCompat.ActionMode">
+        <item name="background">@color/colorSecondary</item>
+        <item name="titleTextStyle">@style/actionModeTextStyle</item>
+        <item name="actionOverflowButtonStyle">@color/colorOnSecondary</item>
+    </style>
+
+    <style name="actionModeTextStyle" parent="TextAppearance.AppCompat.Widget.ActionMode.Title">
+        <item name="android:textColor">@color/colorOnSecondary</item>"
     </style>
 
 </resources>
