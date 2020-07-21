@@ -56,15 +56,15 @@ class MainActivity : AppCompatActivity(), NoteFragment.OnFragmentInteractionList
      * @param title: updated note title
      * @param text: updated note text
      */
-    override fun onNoteUpdate(title: String) {
-        (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as ItemsListFragment).updateNote(title)
+    override fun onINodeUpdate(title: String) {
+        (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as ItemsListFragment).updateINode(title)
     }
 
     override fun onPause() {
         super.onPause()
         // TODO: Find a better place to trigger DirEntry saving. It doesn't always trigger here
-        if (!DataProvider.notes.isNullOrEmpty()) {
-            (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as ItemsListFragment).writeDirEntry("", DirEntry(DataProvider.notes))
+        if (!DataProvider.inodes.isNullOrEmpty()) {
+            (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as ItemsListFragment).writeDirEntry("", DirEntry(DataProvider.inodes))
         }
     }
 }

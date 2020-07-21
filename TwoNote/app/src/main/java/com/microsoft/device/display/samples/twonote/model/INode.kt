@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-class Inode(
+class INode(
     var title: String,
     var dateModified: LocalDateTime,
     var id: Int
