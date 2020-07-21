@@ -35,5 +35,4 @@ class NoteSelectionListener(private var host: NoteListFragment, private var list
     private fun updateTitle(mode: ActionMode) {
         mode.title = "${listView.checkedItemCount} ${host.getString(R.string.selected)}"
     }
-
 }
