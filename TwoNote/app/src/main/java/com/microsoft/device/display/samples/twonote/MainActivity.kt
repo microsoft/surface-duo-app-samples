@@ -8,8 +8,6 @@ package com.microsoft.device.display.samples.twonote
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.microsoft.device.display.samples.twonote.model.DataProvider
-import com.microsoft.device.display.samples.twonote.model.DirEntry
 import com.microsoft.device.dualscreen.layout.ScreenHelper
 
 class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteractionListener {
@@ -58,13 +56,5 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
      */
     override fun onINodeUpdate(title: String) {
         (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as NoteListFragment).updateINode(title)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        // TODO: Find a better place to trigger DirEntry saving. It doesn't always trigger here
-        if (!DataProvider.inodes.isNullOrEmpty()) {
-            (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as NoteListFragment).writeDirEntry("", DirEntry(DataProvider.inodes))
-        }
     }
 }
