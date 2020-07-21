@@ -66,7 +66,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_note_list, container, false)
-        // writeDirEntry("", DirEntry(mutableListOf()))  // uncomment this to clear record of all root entries (use for testing)
+        // writeDirEntry("", DirEntry())  // uncomment this to clear record of all root entries (use for testing)
 
         listView = view.findViewById(R.id.list_view)
         listView?.let {
@@ -78,7 +78,9 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
         view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
             // Set selected item to newly created note (first element in list)
-            startNoteFragment(addInode(ROOT))
+            val inode = addInode(ROOT)
+            arrayAdapter?.notifyDataSetChanged()
+            startNoteFragment(inode)
         }
 
         loadDirectory(ROOT)
@@ -103,6 +105,11 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         return view
     }
 
+    override fun onPause() {
+        super.onPause()
+        writeDirEntry(ROOT, DirEntry(DataProvider.inodes))
+    }
+
     private fun setSelectedItem(position: Int) {
         listView?.setItemChecked(position, true)
         selectedItemPosition = position
@@ -115,6 +122,10 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
             // REVISIT: selectedItemPosition variable needs to be debugged/changed
             setSelectedItem(position)
         }
+
+        // arrayAdapter?.getItem(position)?.let {inode ->
+        // delete(ROOT, inode)
+        // }
     }
 
     private fun startNoteFragment(position: Int) {
@@ -156,6 +167,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                 it.dateModified = LocalDateTime.now()
                 DataProvider.inodes.add(selectedItemPosition, it)
             }
+            writeDirEntry(ROOT, DirEntry(DataProvider.inodes))
         }
     }
 
@@ -178,6 +190,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                 for (inode in notes.inodes) {
                     DataProvider.addINode(inode)
                 }
+                arrayAdapter?.notifyDataSetChanged()
             }
         }
     }
@@ -185,28 +198,15 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     // add a new inode
     private fun addInode(subDir: String): Int {
         val inode = INode()
-        readDirEntry(subDir)?.let { entry ->
-            if (entry.inodes.isNotEmpty()) {
-                inode.id = entry.inodes[entry.inodes.lastIndex].id + 1
-                inode.title = "Note " + inode.id
-                entry.inodes.add(inode)
-                writeDirEntry(subDir, entry)
-                DataProvider.addINode(inode)
-                return entry.inodes.lastIndex
-            } else {
-                return createNewInode(subDir, inode, entry)
-            }
+        if (DataProvider.inodes.isNotEmpty()) {
+            inode.id = DataProvider.inodes[DataProvider.inodes.lastIndex].id + 1
+            inode.title = "Note " + inode.id
+            DataProvider.addINode(inode)
+            return DataProvider.inodes.lastIndex
+        } else {
+            DataProvider.addINode(inode)
+            return DataProvider.inodes.lastIndex
         }
-        val newEntry = DirEntry(mutableListOf())
-        return createNewInode(subDir, inode, newEntry)
-    }
-
-    // helper for addInode, creates a new Inode entry
-    private fun createNewInode(subDir: String, inode: INode, dirEntry: DirEntry): Int {
-        dirEntry.inodes.add(INode(inode.title, inode.dateModified, inode.id))
-        writeDirEntry(subDir, dirEntry)
-        DataProvider.addINode(inode)
-        return dirEntry.inodes.lastIndex
     }
 
     // reads a file and parses note data
@@ -235,6 +235,24 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         }
     }
 
+    // remove an inode and its associated note
+    private fun delete(subDir: String, inode: INode): Boolean {
+        val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
+        val file = File(path + subDir + "/n" + inode.id)
+
+        if (!DataProvider.inodes.isNullOrEmpty()) {
+            DataProvider.removeINode(inode)
+            arrayAdapter?.notifyDataSetChanged()
+            setSelectedItem(0)
+
+            if (file.exists()) {
+                file.delete()
+                return true
+            }
+        }
+        return false
+    }
+
     // reads directory entry to get inodes
     private fun readDirEntry(subDir: String): DirEntry? {
         val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
@@ -253,7 +271,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                 return null
             }
         } catch (e: Exception) {
-            val entry = DirEntry(mutableListOf())
+            val entry = DirEntry()
             writeDirEntry(subDir, entry) // create a new dir entry
             return entry
         } finally {
