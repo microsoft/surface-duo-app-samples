@@ -18,7 +18,7 @@ class INode(
     var id: Int = 0
 ) : Serializable {
 
-    val dateModifiedString : String
+    val dateModifiedString: String
         get() {
             return dateModified.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT))
         }

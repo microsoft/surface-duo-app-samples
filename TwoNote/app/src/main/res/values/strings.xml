@@ -7,17 +7,13 @@
 <resources>
     <string name="app_name">Two Note</string>
     <string name="items_list">Items List</string>
-    <string name="untitled">Untitled</string>
     <string name="text">Switch to Text</string>
     <string name="ink">Switch to Ink</string>
     <string name="clear">Clear</string>
     <string name="exception_message">must implement OnFragmentInteractionListener</string>
-    <string name="action_back">Go back to note list</string>
     <string name="action_delete">Delete</string>
     <string name="action_move">Move to</string>
     <string name="action_share">Share</string>
     <string name="action_select">Select notes</string>
-    <string name="action_close">Close</string>
-    <string name="action_search">Search notes</string>
     <string name="selected">selected</string>
 </resources>

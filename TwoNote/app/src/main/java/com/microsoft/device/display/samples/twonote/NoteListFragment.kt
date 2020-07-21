@@ -33,7 +33,6 @@ import java.io.ObjectOutputStream
 import java.lang.Exception
 import java.time.LocalDateTime
 
-
 class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     private var arrayAdapter: ArrayAdapter<INode>? = null
     private var listView: ListView? = null
@@ -129,17 +128,17 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
                 if (ScreenHelper.isDualMode(activity)) {
                     parentFragmentManager.beginTransaction()
-                            .replace(
-                                    R.id.dual_screen_end_container_id,
-                                    NoteFragment.newInstance(note), null
-                            ).commit()
+                        .replace(
+                            R.id.dual_screen_end_container_id,
+                            NoteFragment.newInstance(note), null
+                        ).commit()
                 } else {
                     parentFragmentManager.beginTransaction()
-                            .replace(
-                                    R.id.single_screen_container_id,
-                                    NoteFragment.newInstance(note), null
-                            ).addToBackStack(null)
-                            .commit()
+                        .replace(
+                            R.id.single_screen_container_id,
+                            NoteFragment.newInstance(note), null
+                        ).addToBackStack(null)
+                        .commit()
                 }
             }
         }
@@ -302,4 +301,3 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         }
     }
 }
-
