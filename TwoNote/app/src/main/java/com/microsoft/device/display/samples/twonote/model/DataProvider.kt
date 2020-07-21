@@ -6,15 +6,13 @@
 
 package com.microsoft.device.display.samples.twonote.model
 
-import java.util.ArrayList
-
 object DataProvider {
-    val notes: ArrayList<Inode> = ArrayList()
+    val inodes: MutableList<INode> = mutableListOf()
 
     /**
-     * Create new note and add it to the top of the note list (position 0)
+     * Add a new inode to the inode list
      */
-    fun addNote(note: Inode) {
-        notes.add(note)
+    fun addINode(inode: INode) {
+        inodes.add(inode)
     }
 }

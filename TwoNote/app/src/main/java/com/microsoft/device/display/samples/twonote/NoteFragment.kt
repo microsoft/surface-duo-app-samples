@@ -40,7 +40,7 @@ class NoteFragment : Fragment() {
 
     interface OnFragmentInteractionListener {
         // TODO: add more fields (drawings? photos?) or create an object to encapsulate all the fields
-        fun onNoteUpdate(title: String)
+        fun onINodeUpdate(title: String)
     }
 
     /**
@@ -93,7 +93,7 @@ class NoteFragment : Fragment() {
                 note.text = text
                 note.title = title
 
-                mListener.onNoteUpdate(title)
+                mListener.onINodeUpdate(title)
             }
         }
     }
