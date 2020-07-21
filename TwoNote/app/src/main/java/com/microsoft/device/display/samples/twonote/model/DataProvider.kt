@@ -15,4 +15,7 @@ object DataProvider {
     fun addINode(inode: INode) {
         inodes.add(inode)
     }
+    fun removeINode(inode: INode) {
+        inodes.remove(inode)
+    }
 }
