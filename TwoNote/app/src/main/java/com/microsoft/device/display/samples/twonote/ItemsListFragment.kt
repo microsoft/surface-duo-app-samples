@@ -145,12 +145,12 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
 
     // add a new inode
     private fun addInode(subDir: String): Int {
-        val inode = INode("Note 0", LocalDateTime.now(), 0)
+        val inode = INode()
         readDirEntry(subDir)?.let { entry ->
             if (entry.inodes.isNotEmpty()) {
                 inode.id = entry.inodes[entry.inodes.lastIndex].id + 1
                 inode.title = "Note " + inode.id
-                entry.inodes.add(INode(inode.title, inode.dateModified, inode.id))
+                entry.inodes.add(inode)
                 writeDirEntry(subDir, entry)
                 DataProvider.addINode(inode)
                 return entry.inodes.lastIndex
