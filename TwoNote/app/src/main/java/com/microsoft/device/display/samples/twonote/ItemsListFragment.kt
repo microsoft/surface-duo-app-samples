@@ -18,23 +18,27 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.DirEntry
-import com.microsoft.device.display.samples.twonote.model.Inode
+import com.microsoft.device.display.samples.twonote.model.INode
 import com.microsoft.device.display.samples.twonote.model.Note
 import com.microsoft.device.dualscreen.layout.ScreenHelper
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
+import java.lang.Exception
 import java.time.LocalDateTime
-import kotlin.collections.ArrayList
 
 class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
-    private var arrayAdapter: ArrayAdapter<Inode>? = null
+    private var arrayAdapter: ArrayAdapter<INode>? = null
     private var listView: ListView? = null
-    private lateinit var inodes: ArrayList<Inode>
+    private lateinit var inodes: MutableList<INode>
     private var selectedItemPosition: Int = 0
     private val ROOT = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        inodes = DataProvider.notes
+        inodes = DataProvider.inodes
         activity?.let {
             arrayAdapter = ArrayAdapter(
                 it,
@@ -101,17 +105,17 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
         }
     }
 
-    fun updateNote(title: String) {
-        var inode: Inode?
+    fun updateINode(title: String) {
+        var inode: INode?
 
         arrayAdapter?.let { array ->
             inode = array.getItem(selectedItemPosition)
 
             inode?.let {
-                DataProvider.notes.remove(it)
+                DataProvider.inodes.remove(it)
                 it.title = title
                 it.dateModified = LocalDateTime.now()
-                DataProvider.notes.add(selectedItemPosition, it)
+                DataProvider.inodes.add(selectedItemPosition, it)
             }
         }
     }
@@ -130,10 +134,10 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
 
     // loads inode information from the current directory into the DataProvider
     private fun loadDirectory(subDir: String) {
-        if (DataProvider.notes.isEmpty()) {
+        if (DataProvider.inodes.isEmpty()) {
             readDirEntry(subDir)?.let { notes ->
                 for (inode in notes.inodes) {
-                    DataProvider.addNote(inode)
+                    DataProvider.addINode(inode)
                 }
             }
         }
@@ -141,14 +145,14 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
 
     // add a new inode
     private fun addInode(subDir: String): Int {
-        val inode = Inode("Note 0", LocalDateTime.now(), 0)
+        val inode = INode("Note 0", LocalDateTime.now(), 0)
         readDirEntry(subDir)?.let { entry ->
             if (entry.inodes.isNotEmpty()) {
                 inode.id = entry.inodes[entry.inodes.lastIndex].id + 1
                 inode.title = "Note " + inode.id
-                entry.inodes.add(Inode(inode.title, inode.dateModified, inode.id))
+                entry.inodes.add(INode(inode.title, inode.dateModified, inode.id))
                 writeDirEntry(subDir, entry)
-                DataProvider.addNote(inode)
+                DataProvider.addINode(inode)
                 return entry.inodes.lastIndex
             } else {
                 return createNewInode(subDir, inode, entry)
@@ -159,10 +163,10 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
     }
 
     // helper for addInode, creates a new Inode entry
-    private fun createNewInode(subDir: String, inode: Inode, dirEntry: DirEntry): Int {
-        dirEntry.inodes.add(Inode(inode.title, inode.dateModified, inode.id))
+    private fun createNewInode(subDir: String, inode: INode, dirEntry: DirEntry): Int {
+        dirEntry.inodes.add(INode(inode.title, inode.dateModified, inode.id))
         writeDirEntry(subDir, dirEntry)
-        DataProvider.addNote(inode)
+        DataProvider.addINode(inode)
         return dirEntry.inodes.lastIndex
     }
 
@@ -183,10 +187,7 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
                 Log.e(this.javaClass.toString(), "Error: loaded file is not of type Note")
                 return null
             }
-        } catch (e: FileNotFoundException) {
-            Log.e(this.javaClass.toString(), e.message.toString())
-            return null
-        } catch (e: InvalidClassException) {
+        } catch (e: Exception) {
             Log.e(this.javaClass.toString(), e.message.toString())
             return null
         } finally {
@@ -212,13 +213,9 @@ class ItemsListFragment : Fragment(), AdapterView.OnItemClickListener {
                 Log.e(this.javaClass.toString(), "Error: loaded file is not of type DirEntry")
                 return null
             }
-        } catch (e: FileNotFoundException) {
+        } catch (e: Exception) {
             val entry = DirEntry(mutableListOf())
             writeDirEntry(subDir, entry) // create a new dir entry
-            return entry
-        } catch (e: InvalidClassException) {
-            val entry = DirEntry(mutableListOf())
-            writeDirEntry(subDir, entry)
             return entry
         } finally {
             objectStream?.close()
