@@ -13,9 +13,9 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 class INode(
-    var title: String,
-    var dateModified: LocalDateTime,
-    var id: Int
+    var title: String = "Note 0",
+    var dateModified: LocalDateTime = LocalDateTime.now(),
+    var id: Int = 0
 ) : Serializable {
 
     override fun toString(): String {
