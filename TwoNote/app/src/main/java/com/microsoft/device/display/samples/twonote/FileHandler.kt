@@ -53,7 +53,7 @@ class FileHandler {
             if (note is Note) {
                 return note
             } else {
-                Log.e(this.javaClass.toString(), "Error: loaded file is not of type Note")
+                Log.e(this.javaClass.toString(), context.resources.getString(R.string.load_error_note))
                 return null
             }
         } catch (e: Exception) {
@@ -79,7 +79,7 @@ class FileHandler {
             if (entry is DirEntry) {
                 return entry
             } else {
-                Log.e(this.javaClass.toString(), "Error: loaded file is not of type DirEntry")
+                Log.e(this.javaClass.toString(), context.resources.getString(R.string.load_error_dir))
                 return null
             }
         } catch (e: Exception) {
