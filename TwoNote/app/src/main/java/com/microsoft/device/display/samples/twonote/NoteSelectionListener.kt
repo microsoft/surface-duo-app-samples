@@ -6,32 +6,43 @@ import android.view.MenuItem
 import android.widget.AbsListView
 import android.widget.ArrayAdapter
 import android.widget.ListView
+import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.INode
+import com.microsoft.device.dualscreen.layout.ScreenHelper
 
 class NoteSelectionListener(
     private var host: NoteListFragment,
     private var listView: ListView,
-    private var arrayAdapter: ArrayAdapter<INode>?
+    private var arrayAdapter: ArrayAdapter<INode>
 ) : AbsListView.MultiChoiceModeListener {
 
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_delete -> {
-                val fileHandler = FileHandler()
-                arrayAdapter?.let {
-                    val list = listView.checkedItemPositions
-                    for (i in it.count - 1 downTo 0) {
-                        if (list.get(i)) {
-                            it.getItem(i)?.let { inode ->
-                                host.context?.let { cntx ->
-                                    fileHandler.delete(cntx, "", inode)
-                                }
+                val list = listView.checkedItemPositions
+                for (i in arrayAdapter.count - 1 downTo 0) {
+                    if (list.get(i)) {
+                        arrayAdapter.getItem(i)?.let { inode ->
+                            host.context?.let { cntx ->
+                                FileHandler.delete(cntx, "", inode)
                             }
                         }
                     }
-                    arrayAdapter?.notifyDataSetChanged()
                 }
+                arrayAdapter.notifyDataSetChanged()
                 onDestroyActionMode(mode)
+
+                // If spanned, check if the displayed NoteDetailFragment has been deleted
+                if (ScreenHelper.isDualMode(host.requireActivity())) {
+                    // REVISIT: couldn't get findFragmentById to work but this needs to be changed to something more efficient eventually
+                    val inode = host.parentFragmentManager.fragments.find { frag -> frag is NoteDetailFragment }?.arguments?.getSerializable(MainActivity.INODE) as? INode
+
+                    if (!DataProvider.inodes.contains(inode)) {
+                        host.parentFragmentManager.beginTransaction()
+                            .replace(R.id.dual_screen_end_container_id, GetStartedFragment(), null)
+                            .commit()
+                    }
+                }
             }
         }
         return true
