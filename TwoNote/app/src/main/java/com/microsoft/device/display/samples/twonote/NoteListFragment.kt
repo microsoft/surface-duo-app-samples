@@ -8,7 +8,6 @@ package com.microsoft.device.display.samples.twonote
 
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -25,12 +24,6 @@ import com.microsoft.device.display.samples.twonote.model.DirEntry
 import com.microsoft.device.display.samples.twonote.model.INode
 import com.microsoft.device.display.samples.twonote.model.Note
 import com.microsoft.device.dualscreen.layout.ScreenHelper
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
-import java.lang.Exception
 import java.time.LocalDateTime
 
 class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
@@ -63,6 +56,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                 }
             }
         }
+        fileHandler.loadDirectory(requireContext(), ROOT)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -83,9 +77,6 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
             arrayAdapter?.notifyDataSetChanged()
             startNoteFragment(inode)
         }
-
-        fileHandler.loadDirectory(requireContext(), ROOT)
-        arrayAdapter?.notifyDataSetChanged()
 
         // Set up toolbar icons and actions
         val toolbar = view.findViewById<MaterialToolbar>(R.id.toolbar)
@@ -131,7 +122,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
         arrayAdapter?.getItem(position)?.let { inode ->
             activity?.let { activity ->
-                var note = fileHandler.loadNote(requireContext(),"", "/n" + inode.id)
+                var note = fileHandler.loadNote(requireContext(), "", "/n" + inode.id)
                 if (note == null)
                     note = Note(inode.id)
 
@@ -154,12 +145,8 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     }
 
     fun updateINode(inode: INode, title: String) {
-        val position = DataProvider.inodes.indexOf(inode)
-
-        DataProvider.inodes.removeAt(position)
         inode.title = title
         inode.dateModified = LocalDateTime.now()
-        DataProvider.inodes.add(position, inode)
 
         fileHandler.writeDirEntry(requireContext(), ROOT, DirEntry(DataProvider.inodes))
     }
@@ -200,7 +187,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     private fun initListViewMultipleMode(listView: ListView?) {
         listView?.let {
             it.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
-            it.setMultiChoiceModeListener(NoteSelectionListener(this, it, requireContext(), arrayAdapter))
+            it.setMultiChoiceModeListener(NoteSelectionListener(this, it, arrayAdapter))
         }
     }
 }
