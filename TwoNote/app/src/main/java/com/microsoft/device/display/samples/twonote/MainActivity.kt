@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
                 .beginTransaction()
                 .replace(
                     R.id.dual_screen_end_container_id,
-                    NoteDetailFragment(),
+                    GetStartedFragment(),
                     null
                 ).commit()
         }
