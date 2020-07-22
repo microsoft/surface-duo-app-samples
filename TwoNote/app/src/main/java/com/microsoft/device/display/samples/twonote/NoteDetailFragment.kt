@@ -279,17 +279,16 @@ class NoteDetailFragment : Fragment() {
         activity?.let { activity ->
             if (ScreenHelper.isDualMode(activity)) {
                 parentFragmentManager.beginTransaction()
-                        .replace(
-                                R.id.dual_screen_start_container_id,
-                                NoteListFragment(), null
-                        ).commit()
+                    .replace(
+                        R.id.dual_screen_start_container_id,
+                        NoteListFragment(), null
+                    ).commit()
             } else {
                 parentFragmentManager.beginTransaction()
-                        .replace(
-                                R.id.single_screen_container_id,
-                                NoteListFragment(), null
-                        ).addToBackStack(null)
-                        .commit()
+                    .replace(
+                        R.id.single_screen_container_id,
+                        NoteListFragment(), null
+                    ).addToBackStack(null).commit()
             }
         }
     }
