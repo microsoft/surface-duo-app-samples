@@ -18,10 +18,9 @@ class INode(
     var id: Int = 0
 ) : Serializable {
 
-    val dateModifiedString: String
-        get() {
-            return dateModified.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT))
-        }
+    fun dateModifiedString(): String {
+        return dateModified.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT))
+    }
 
     // REVISIT: this is no longer used for ListView display, so should we still keep it?
     override fun toString(): String {
