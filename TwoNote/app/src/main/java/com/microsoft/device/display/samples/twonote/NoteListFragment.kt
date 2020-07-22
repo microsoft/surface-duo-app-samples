@@ -27,12 +27,16 @@ import com.microsoft.device.dualscreen.layout.ScreenHelper
 import java.time.LocalDateTime
 
 class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
-    private var fileHandler: FileHandler = FileHandler()
     private var arrayAdapter: ArrayAdapter<INode>? = null
     private var listView: ListView? = null
     private lateinit var inodes: MutableList<INode>
     private var selectedItemPosition: Int = 0
     private val ROOT = ""
+
+    companion object {
+        const val ACTION_MODE = "action mode"
+        const val LIST_VIEW = "list view"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +60,13 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                 }
             }
         }
-        fileHandler.loadDirectory(requireContext(), ROOT)
+        FileHandler.loadDirectory(requireContext(), ROOT)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putParcelable(LIST_VIEW, listView?.onSaveInstanceState())
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -66,14 +76,20 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         listView = view.findViewById(R.id.list_view)
         listView?.let {
             it.adapter = arrayAdapter
-            it.choiceMode = ListView.CHOICE_MODE_SINGLE
             it.onItemClickListener = this
             it.onItemLongClickListener = this
+
+            if (savedInstanceState != null) {
+                listView?.onRestoreInstanceState(savedInstanceState.getParcelable(LIST_VIEW))
+                // TODO: save/restore action mode data
+            } else {
+                it.choiceMode = ListView.CHOICE_MODE_SINGLE
+            }
         }
 
         view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
             // Set selected item to newly created note (first element in list)
-            val inode = fileHandler.addInode(ROOT)
+            val inode = FileHandler.addInode(ROOT)
             arrayAdapter?.notifyDataSetChanged()
             startNoteFragment(inode)
         }
@@ -100,7 +116,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
     override fun onPause() {
         super.onPause()
-        fileHandler.writeDirEntry(requireContext(), ROOT, DirEntry(DataProvider.inodes))
+        FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry(DataProvider.inodes))
     }
 
     private fun setSelectedItem(position: Int) {
@@ -121,25 +137,25 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         setSelectedItem(position)
 
         arrayAdapter?.getItem(position)?.let { inode ->
-            activity?.let { activity ->
-                var note = fileHandler.loadNote(requireContext(), "", "/n" + inode.id)
-                if (note == null)
-                    note = Note(inode.id)
+            var note = FileHandler.loadNote(requireContext(), "", "/n" + inode.id)
+            if (note == null)
+                note = Note(inode.id)
 
-                if (ScreenHelper.isDualMode(activity)) {
-                    parentFragmentManager.beginTransaction()
-                        .replace(
-                            R.id.dual_screen_end_container_id,
-                            NoteDetailFragment.newInstance(inode, note), null
-                        ).commit()
-                } else {
-                    parentFragmentManager.beginTransaction()
-                        .replace(
-                            R.id.single_screen_container_id,
-                            NoteDetailFragment.newInstance(inode, note), null
-                        ).addToBackStack(null)
-                        .commit()
-                }
+            if (ScreenHelper.isDualMode(requireActivity())) {
+                parentFragmentManager.beginTransaction()
+                    .replace(
+                        R.id.dual_screen_end_container_id,
+                        NoteDetailFragment.newInstance(inode, note),
+                        null
+                    ).commit()
+            } else {
+                parentFragmentManager.beginTransaction()
+                    .replace(
+                        R.id.single_screen_container_id,
+                        NoteDetailFragment.newInstance(inode, note),
+                        null
+                    ).addToBackStack(null)
+                    .commit()
             }
         }
     }
@@ -148,7 +164,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         inode.title = title
         inode.dateModified = LocalDateTime.now()
 
-        fileHandler.writeDirEntry(requireContext(), ROOT, DirEntry(DataProvider.inodes))
+        FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry(DataProvider.inodes))
     }
 
     /**
@@ -167,7 +183,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         return when (item.itemId) {
             R.id.action_select -> {
                 // TODO: add selection bubbles to all notes and pop up contextual toolbar, return true when implemented
-                initListViewMultipleMode(listView)
+                initListViewMultipleMode()
 
                 true
             }
@@ -178,16 +194,22 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     }
 
     override fun onItemLongClick(adapterView: AdapterView<*>, item: View, position: Int, rowId: Long): Boolean {
-        initListViewMultipleMode(listView)
+        initListViewMultipleMode()
         setSelectedItem(position)
 
         return true
     }
 
-    private fun initListViewMultipleMode(listView: ListView?) {
-        listView?.let {
-            it.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
-            it.setMultiChoiceModeListener(NoteSelectionListener(this, it, arrayAdapter))
+    private fun initListViewMultipleMode() {
+        listView?.let { lv ->
+            arrayAdapter?.let { aa ->
+                lv.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
+                lv.setMultiChoiceModeListener(NoteSelectionListener(this, lv, aa))
+            }
         }
+    }
+
+    fun updateArrayAdapter() {
+        arrayAdapter?.notifyDataSetChanged()
     }
 }
