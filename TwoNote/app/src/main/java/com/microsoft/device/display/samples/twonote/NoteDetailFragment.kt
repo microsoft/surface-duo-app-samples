@@ -23,7 +23,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.textfield.TextInputEditText
 import com.microsoft.device.display.samples.twonote.model.DrawViewModel
+import com.microsoft.device.display.samples.twonote.model.INode
 import com.microsoft.device.display.samples.twonote.model.Note
+import com.microsoft.device.dualscreen.layout.ScreenHelper
 import java.io.File
 import java.io.FileOutputStream
 import java.io.ObjectOutputStream
@@ -33,20 +35,22 @@ class NoteDetailFragment : Fragment() {
     enum class PaintColors { Red, Blue, Green, Yellow, Purple }
 
     private lateinit var drawView: PenDrawView
+    private var deleted = false
 
     companion object {
         lateinit var mListener: OnFragmentInteractionListener
 
-        internal fun newInstance(note: Note) = NoteDetailFragment().apply {
+        internal fun newInstance(inode: INode, note: Note) = NoteDetailFragment().apply {
             arguments = Bundle().apply {
                 this.putSerializable("note", note)
+                this.putSerializable("inode", inode)
             }
         }
     }
 
     interface OnFragmentInteractionListener {
         // TODO: add more fields (drawings? photos?) or create an object to encapsulate all the fields
-        fun onINodeUpdate(title: String)
+        fun onINodeUpdate(inode: INode, title: String)
     }
 
     /**
@@ -87,7 +91,8 @@ class NoteDetailFragment : Fragment() {
     private fun updateNoteContents(view: View?) {
         arguments?.let {
             val note = it.getSerializable("note")
-            if (note is Note) {
+            val inode = it.getSerializable("inode")
+            if (note is Note && inode is INode && !deleted) {
                 val text = view?.findViewById<TextInputEditText>(R.id.text_input)?.text.toString()
                 val title = view?.findViewById<TextInputEditText>(R.id.title_input)?.text.toString()
 
@@ -95,7 +100,7 @@ class NoteDetailFragment : Fragment() {
                 note.text = text
                 note.title = title
 
-                mListener.onINodeUpdate(title)
+                mListener.onINodeUpdate(inode, title)
             }
         }
     }
@@ -253,11 +258,38 @@ class NoteDetailFragment : Fragment() {
                 false
             }
             R.id.action_delete -> {
-                // TODO: return to list fragment, remove note from list, return true when implemented
-                false
+                arguments?.let {
+                    val fileHandler = FileHandler()
+                    val inode = it.getSerializable("inode")
+                    if (inode is INode) {
+                        fileHandler.delete(requireContext(), "", inode)
+                        deleted = true
+                    }
+                }
+                startListFragment()
+                true
             }
             else -> {
                 super.onOptionsItemSelected(item)
+            }
+        }
+    }
+
+    private fun startListFragment() {
+        activity?.let { activity ->
+            if (ScreenHelper.isDualMode(activity)) {
+                parentFragmentManager.beginTransaction()
+                        .replace(
+                                R.id.dual_screen_start_container_id,
+                                NoteListFragment(), null
+                        ).commit()
+            } else {
+                parentFragmentManager.beginTransaction()
+                        .replace(
+                                R.id.single_screen_container_id,
+                                NoteListFragment(), null
+                        ).addToBackStack(null)
+                        .commit()
             }
         }
     }

@@ -34,6 +34,7 @@ import java.lang.Exception
 import java.time.LocalDateTime
 
 class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+    private var fileHandler: FileHandler = FileHandler()
     private var arrayAdapter: ArrayAdapter<INode>? = null
     private var listView: ListView? = null
     private lateinit var inodes: MutableList<INode>
@@ -78,12 +79,13 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
         view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
             // Set selected item to newly created note (first element in list)
-            val inode = addInode(ROOT)
+            val inode = fileHandler.addInode(ROOT)
             arrayAdapter?.notifyDataSetChanged()
             startNoteFragment(inode)
         }
 
-        loadDirectory(ROOT)
+        fileHandler.loadDirectory(requireContext(), ROOT)
+        arrayAdapter?.notifyDataSetChanged()
 
         // Set up toolbar icons and actions
         val toolbar = view.findViewById<MaterialToolbar>(R.id.toolbar)
@@ -107,7 +109,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
     override fun onPause() {
         super.onPause()
-        writeDirEntry(ROOT, DirEntry(DataProvider.inodes))
+        fileHandler.writeDirEntry(requireContext(), ROOT, DirEntry(DataProvider.inodes))
     }
 
     private fun setSelectedItem(position: Int) {
@@ -122,10 +124,6 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
             // REVISIT: selectedItemPosition variable needs to be debugged/changed
             setSelectedItem(position)
         }
-
-        // arrayAdapter?.getItem(position)?.let {inode ->
-        // delete(ROOT, inode)
-        // }
     }
 
     private fun startNoteFragment(position: Int) {
@@ -133,7 +131,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
         arrayAdapter?.getItem(position)?.let { inode ->
             activity?.let { activity ->
-                var note = loadNote("", "/n" + inode.id)
+                var note = fileHandler.loadNote(requireContext(),"", "/n" + inode.id)
                 if (note == null)
                     note = Note(inode.id)
 
@@ -141,13 +139,13 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                     parentFragmentManager.beginTransaction()
                         .replace(
                             R.id.dual_screen_end_container_id,
-                            NoteDetailFragment.newInstance(note), null
+                            NoteDetailFragment.newInstance(inode, note), null
                         ).commit()
                 } else {
                     parentFragmentManager.beginTransaction()
                         .replace(
                             R.id.single_screen_container_id,
-                            NoteDetailFragment.newInstance(note), null
+                            NoteDetailFragment.newInstance(inode, note), null
                         ).addToBackStack(null)
                         .commit()
                 }
@@ -155,20 +153,15 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         }
     }
 
-    fun updateINode(title: String) {
-        var inode: INode?
+    fun updateINode(inode: INode, title: String) {
+        val position = DataProvider.inodes.indexOf(inode)
 
-        arrayAdapter?.let { array ->
-            inode = array.getItem(selectedItemPosition)
+        DataProvider.inodes.removeAt(position)
+        inode.title = title
+        inode.dateModified = LocalDateTime.now()
+        DataProvider.inodes.add(position, inode)
 
-            inode?.let {
-                DataProvider.inodes.remove(it)
-                it.title = title
-                it.dateModified = LocalDateTime.now()
-                DataProvider.inodes.add(selectedItemPosition, it)
-            }
-            writeDirEntry(ROOT, DirEntry(DataProvider.inodes))
-        }
+        fileHandler.writeDirEntry(requireContext(), ROOT, DirEntry(DataProvider.inodes))
     }
 
     /**
@@ -181,114 +174,6 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
      */
     private fun sortArray() {
         arrayAdapter?.sort { one, two -> two.dateModified.compareTo(one.dateModified) }
-    }
-
-    // loads inode information from the current directory into the DataProvider
-    private fun loadDirectory(subDir: String) {
-        if (DataProvider.inodes.isEmpty()) {
-            readDirEntry(subDir)?.let { notes ->
-                for (inode in notes.inodes) {
-                    DataProvider.addINode(inode)
-                }
-                arrayAdapter?.notifyDataSetChanged()
-            }
-        }
-    }
-
-    // add a new inode
-    private fun addInode(subDir: String): Int {
-        val inode = INode()
-        if (DataProvider.inodes.isNotEmpty()) {
-            inode.id = DataProvider.inodes[DataProvider.inodes.lastIndex].id + 1
-            inode.title = "Note " + inode.id
-            DataProvider.addINode(inode)
-            return DataProvider.inodes.lastIndex
-        } else {
-            DataProvider.addINode(inode)
-            return DataProvider.inodes.lastIndex
-        }
-    }
-
-    // reads a file and parses note data
-    private fun loadNote(subDir: String, noteName: String): Note? {
-        val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
-        val file = File(path + subDir + noteName)
-        var fileStream: FileInputStream? = null
-        var objectStream: ObjectInputStream? = null
-
-        try {
-            fileStream = FileInputStream(file)
-            objectStream = ObjectInputStream(fileStream)
-            val note = objectStream.readObject()
-            if (note is Note) {
-                return note
-            } else {
-                Log.e(this.javaClass.toString(), "Error: loaded file is not of type Note")
-                return null
-            }
-        } catch (e: Exception) {
-            Log.e(this.javaClass.toString(), e.message.toString())
-            return null
-        } finally {
-            objectStream?.close()
-            fileStream?.close()
-        }
-    }
-
-    // remove an inode and its associated note
-    private fun delete(subDir: String, inode: INode): Boolean {
-        val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
-        val file = File(path + subDir + "/n" + inode.id)
-
-        if (!DataProvider.inodes.isNullOrEmpty()) {
-            DataProvider.removeINode(inode)
-            arrayAdapter?.notifyDataSetChanged()
-            setSelectedItem(0)
-
-            if (file.exists()) {
-                file.delete()
-                return true
-            }
-        }
-        return false
-    }
-
-    // reads directory entry to get inodes
-    private fun readDirEntry(subDir: String): DirEntry? {
-        val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
-        val file = File("$path$subDir/dEntry")
-        var fileStream: FileInputStream? = null
-        var objectStream: ObjectInputStream? = null
-
-        try {
-            fileStream = FileInputStream(file)
-            objectStream = ObjectInputStream(fileStream)
-            val entry = objectStream.readObject()
-            if (entry is DirEntry) {
-                return entry
-            } else {
-                Log.e(this.javaClass.toString(), "Error: loaded file is not of type DirEntry")
-                return null
-            }
-        } catch (e: Exception) {
-            val entry = DirEntry()
-            writeDirEntry(subDir, entry) // create a new dir entry
-            return entry
-        } finally {
-            objectStream?.close()
-            fileStream?.close()
-        }
-    }
-
-    // update/create directory entry
-    fun writeDirEntry(subDir: String, entry: DirEntry) {
-        val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
-        val file = File("$path$subDir/dEntry")
-        val fileStream = FileOutputStream(file)
-        val objectStream = ObjectOutputStream(fileStream)
-        objectStream.writeObject(entry)
-        objectStream.close()
-        fileStream.close()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -315,7 +200,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     private fun initListViewMultipleMode(listView: ListView?) {
         listView?.let {
             it.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
-            it.setMultiChoiceModeListener(NoteSelectionListener(this, it))
+            it.setMultiChoiceModeListener(NoteSelectionListener(this, it, requireContext(), arrayAdapter))
         }
     }
 }
