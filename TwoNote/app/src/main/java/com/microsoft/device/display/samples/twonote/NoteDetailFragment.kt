@@ -29,7 +29,7 @@ import java.io.FileOutputStream
 import java.io.ObjectOutputStream
 import java.lang.ClassCastException
 
-class NoteFragment : Fragment() {
+class NoteDetailFragment : Fragment() {
     enum class PaintColors { Red, Blue, Green, Yellow, Purple }
 
     private lateinit var drawView: PenDrawView
@@ -37,7 +37,7 @@ class NoteFragment : Fragment() {
     companion object {
         lateinit var mListener: OnFragmentInteractionListener
 
-        internal fun newInstance(note: Note) = NoteFragment().apply {
+        internal fun newInstance(note: Note) = NoteDetailFragment().apply {
             arguments = Bundle().apply {
                 this.putSerializable("note", note)
             }
@@ -63,7 +63,7 @@ class NoteFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_note, container, false)
+        val view = inflater.inflate(R.layout.fragment_note_detail, container, false)
 
         addNoteContents(view)
         setUpTools(view)
@@ -119,7 +119,7 @@ class NoteFragment : Fragment() {
         // Set up toolbar icons and actions
         val toolbar = view.findViewById<MaterialToolbar>(R.id.toolbar)
 
-        toolbar.inflateMenu(R.menu.menu_note)
+        toolbar.inflateMenu(R.menu.menu_note_detail)
         toolbar.setOnMenuItemClickListener {
             onOptionsItemSelected(it)
         }
