@@ -55,7 +55,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                     text1.setTypeface(null, Typeface.BOLD)
 
                     val text2 = view.findViewById<View>(android.R.id.text2) as TextView
-                    text2.text = inodes[position].dateModifiedString
+                    text2.text = inodes[position].dateModifiedString()
                     text2.setTextColor(it.getColor(R.color.colorOnBackgroundVariant))
 
                     return view
