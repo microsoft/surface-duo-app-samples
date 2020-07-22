@@ -18,4 +18,6 @@
     <string name="selected">selected</string>
     <string name="load_error_note">Error: loaded file is not of type Note</string>
     <string name="load_error_dir">Error: loaded file is not of type DirEntry</string>
+    <string name="welcome">Welcome to Two Note</string>
+    <string name="get_started">Select or create a note to get started.</string>
 </resources>
