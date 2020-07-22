@@ -130,13 +130,13 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                     parentFragmentManager.beginTransaction()
                         .replace(
                             R.id.dual_screen_end_container_id,
-                            NoteFragment.newInstance(note), null
+                            NoteDetailFragment.newInstance(note), null
                         ).commit()
                 } else {
                     parentFragmentManager.beginTransaction()
                         .replace(
                             R.id.single_screen_container_id,
-                            NoteFragment.newInstance(note), null
+                            NoteDetailFragment.newInstance(note), null
                         ).addToBackStack(null)
                         .commit()
                 }
