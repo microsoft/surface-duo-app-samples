@@ -8,6 +8,7 @@ package com.microsoft.device.display.samples.twonote
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.microsoft.device.display.samples.twonote.model.INode
 import com.microsoft.device.dualscreen.layout.ScreenHelper
 
 class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteractionListener {
@@ -54,7 +55,7 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
      * @param title: updated note title
      * @param text: updated note text
      */
-    override fun onINodeUpdate(title: String) {
-        (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as NoteListFragment).updateINode(title)
+    override fun onINodeUpdate(inode: INode, title: String) {
+        (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as NoteListFragment).updateINode(inode, title)
     }
 }
