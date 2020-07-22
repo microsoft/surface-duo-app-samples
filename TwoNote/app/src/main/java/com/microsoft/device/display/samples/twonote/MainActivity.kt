@@ -12,7 +12,7 @@ import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.DirEntry
 import com.microsoft.device.dualscreen.layout.ScreenHelper
 
-class MainActivity : AppCompatActivity(), NoteFragment.OnFragmentInteractionListener {
+class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteractionListener {
     companion object {
         const val LIST_FRAGMENT = "list fragment"
     }
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity(), NoteFragment.OnFragmentInteractionList
                 .beginTransaction()
                 .replace(
                     R.id.dual_screen_end_container_id,
-                    NoteFragment(),
+                    NoteDetailFragment(),
                     null
                 ).commit()
         }
