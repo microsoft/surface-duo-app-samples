@@ -16,4 +16,6 @@
     <string name="action_share">Share</string>
     <string name="action_select">Select notes</string>
     <string name="selected">selected</string>
+    <string name="load_error_note">Error: loaded file is not of type Note</string>
+    <string name="load_error_dir">Error: loaded file is not of type DirEntry</string>
 </resources>
