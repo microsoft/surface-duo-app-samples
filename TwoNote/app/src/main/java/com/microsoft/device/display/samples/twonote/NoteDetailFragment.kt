@@ -39,11 +39,10 @@ class NoteDetailFragment : Fragment() {
 
     companion object {
         lateinit var mListener: OnFragmentInteractionListener
-
         internal fun newInstance(inode: INode, note: Note) = NoteDetailFragment().apply {
             arguments = Bundle().apply {
-                this.putSerializable("note", note)
-                this.putSerializable("inode", inode)
+                this.putSerializable(MainActivity.NOTE, note)
+                this.putSerializable(MainActivity.INODE, inode)
             }
         }
     }
@@ -62,7 +61,7 @@ class NoteDetailFragment : Fragment() {
         if (context is OnFragmentInteractionListener) {
             mListener = context
         } else {
-            throw ClassCastException(context.toString() + resources.getString(R.string.exception_message))
+            throw ClassCastException("$context ${resources.getString(R.string.exception_message)}")
         }
     }
 
@@ -72,14 +71,13 @@ class NoteDetailFragment : Fragment() {
         addNoteContents(view)
         setUpTools(view)
         setUpInkMode(view)
-        setUpTextMode(view)
 
         return view
     }
 
     private fun addNoteContents(view: View) {
         val note: Note? = arguments?.let {
-            val note = it.getSerializable("note")
+            val note = it.getSerializable(MainActivity.NOTE)
 
             if (note is Note) note
             else null
@@ -90,8 +88,8 @@ class NoteDetailFragment : Fragment() {
 
     private fun updateNoteContents(view: View?) {
         arguments?.let {
-            val note = it.getSerializable("note")
-            val inode = it.getSerializable("inode")
+            val note = it.getSerializable(MainActivity.NOTE)
+            val inode = it.getSerializable(MainActivity.INODE)
             if (note is Note && inode is INode && !deleted) {
                 val text = view?.findViewById<TextInputEditText>(R.id.text_input)?.text.toString()
                 val title = view?.findViewById<TextInputEditText>(R.id.title_input)?.text.toString()
@@ -130,14 +128,7 @@ class NoteDetailFragment : Fragment() {
         }
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
-        toolbar.setNavigationOnClickListener { activity?.onBackPressed() }
-    }
-
-    // TODO: add handling so clicking inside the scrollview makes the text object in focus
-    private fun setUpTextMode(view: View) {
-        val input = view.findViewById<TextInputEditText>(R.id.text_input)
-
-        input.requestFocus()
+        toolbar.setNavigationOnClickListener { onBackPressed() }
     }
 
     private fun setUpInkMode(view: View) {
@@ -163,7 +154,7 @@ class NoteDetailFragment : Fragment() {
 
         arguments?.let {
             val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
-            val note = it.getSerializable("note")
+            val note = it.getSerializable(MainActivity.NOTE)
             if (note is Note) {
                 val strokeList: MutableList<Stroke> = mutableListOf()
                 for (s in note.drawings) {
@@ -233,10 +224,10 @@ class NoteDetailFragment : Fragment() {
 
     private fun save() {
         arguments?.let {
-            val note = it.getSerializable("note")
+            val note = it.getSerializable(MainActivity.NOTE)
             if (note is Note) {
                 val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
-                val file = File(path + "/n" + note.id)
+                val file = File("$path/n${note.id}")
                 val fileStream = FileOutputStream(file)
                 val objectStream = ObjectOutputStream(fileStream)
                 objectStream.writeObject(note)
@@ -259,14 +250,13 @@ class NoteDetailFragment : Fragment() {
             }
             R.id.action_delete -> {
                 arguments?.let {
-                    val fileHandler = FileHandler()
-                    val inode = it.getSerializable("inode")
+                    val inode = it.getSerializable(MainActivity.INODE)
                     if (inode is INode) {
-                        fileHandler.delete(requireContext(), "", inode)
+                        FileHandler.delete(requireContext(), "", inode)
                         deleted = true
                     }
                 }
-                startListFragment()
+                closeFragment()
                 true
             }
             else -> {
@@ -275,20 +265,46 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    private fun startListFragment() {
+    /**
+     * Close NoteDetailFragment after deletion and open either the NoteListFragment (unspanned)
+     * or the GetStartedFragment (spanned)
+     */
+    private fun closeFragment() {
         activity?.let { activity ->
             if (ScreenHelper.isDualMode(activity)) {
+                // Tell NoteListFragment that list data has changed
+                (parentFragmentManager.findFragmentByTag(MainActivity.LIST_FRAGMENT) as NoteListFragment)
+                    .updateArrayAdapter()
+
                 parentFragmentManager.beginTransaction()
                     .replace(
-                        R.id.dual_screen_start_container_id,
-                        NoteListFragment(), null
+                        R.id.dual_screen_end_container_id,
+                        GetStartedFragment(),
+                        null
                     ).commit()
             } else {
                 parentFragmentManager.beginTransaction()
                     .replace(
                         R.id.single_screen_container_id,
-                        NoteListFragment(), null
-                    ).addToBackStack(null).commit()
+                        NoteListFragment(),
+                        null
+                    ).commit()
+            }
+        }
+    }
+
+    // TODO: back gesture does not get overridden by this
+    private fun onBackPressed() {
+        activity?.let {
+            if (ScreenHelper.isDualMode(it)) {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.dual_screen_end_container_id, GetStartedFragment(), null)
+                    .commit()
+            } else {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.single_screen_container_id, NoteListFragment(), null)
+                    .commit()
+                // it.onBackPressed()
             }
         }
     }
