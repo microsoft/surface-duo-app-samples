@@ -10,7 +10,7 @@ import com.microsoft.device.display.samples.twonote.SerializedStroke
 import java.io.Serializable
 
 class Note(var id: Int) : Serializable {
-    var title: String = "Note " + id
+    var title: String = "Note $id"
     var text: String = ""
     var drawings: List<SerializedStroke> = listOf()
 }
