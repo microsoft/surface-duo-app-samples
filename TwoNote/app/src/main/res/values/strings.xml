@@ -23,4 +23,6 @@
     <string name="tap_here">Tap here to add note contents</string>
     <string name="action_add_category">Add category</string>
     <string name="action_delete_category">Delete category</string>
+    <string name="action_ink_on">Activate inking</string>
+    <string name="action_ink_off">Deactivate inking</string>
 </resources>
