@@ -21,13 +21,14 @@ import java.lang.Math.max
 import kotlin.math.min
 
 class PenDrawView : View {
-
     private var currentColor: Int = 0
     private var drawBitmap: Bitmap? = null
     private var strokeList: MutableList<Stroke> = mutableListOf()
     private var radius = 0
     private var isErasing = false
     private val eraser = RectF()
+    private var prevPressure = 0f
+    private var disabled = true
 
     constructor(context: Context) : super(context) {
         init()
@@ -77,8 +78,22 @@ class PenDrawView : View {
         }
     }
 
-    var prevPressure = 0f
+    fun disable() {
+        disabled = true
+    }
+
+    fun enable() {
+        disabled = false
+    }
+
+    fun isDisabled(): Boolean {
+        return disabled
+    }
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (isDisabled())
+            return true
+
         isErasing = false
         if (event.getToolType(0) == MotionEvent.TOOL_TYPE_ERASER) {
             if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {

@@ -2,6 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/action_ink"
+        android:title="@string/action_ink_on"
+        android:icon="@drawable/ic_fluent_calligraphy_pen_24_filled"
+        app:iconTint="?attr/colorOnPrimary"
+        app:showAsAction="ifRoom"
+        />
+
     <!-- overflow/options menu items -->
     <item android:id="@+id/action_move"
         android:title="@string/action_move"

@@ -33,6 +33,7 @@ dependencies {
     implementation googleDependencies.material
 
     implementation microsoftDependencies.dualScreenLayout
+    implementation microsoftDependencies.fluent
 
     testImplementation testDependencies.junit
     androidTestImplementation instrumentationTestDependencies.junit
