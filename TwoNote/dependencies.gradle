@@ -57,9 +57,11 @@ ext {
 
     //Microsoft dependencies version
     dualScreenLayoutVersion = "1.0.0-alpha01"
+    fluentVersion = "1.1.33"
 
     microsoftDependencies = [
-            dualScreenLayout: "com.microsoft.device:dualscreen-layout:$dualScreenLayoutVersion"
+            dualScreenLayout: "com.microsoft.device:dualscreen-layout:$dualScreenLayoutVersion",
+            fluent: "com.microsoft.design:fluent-system-icons:$fluentVersion",
     ]
 
     //Network dependencies version
