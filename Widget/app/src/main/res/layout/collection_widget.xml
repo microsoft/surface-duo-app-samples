@@ -1,0 +1,92 @@
+<!--
+  ~ Copyright (c) Microsoft Corporation. All rights reserved.
+  ~ Licensed under the MIT License.
+  ~
+  -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:background="@color/softBlue">
+
+        <ImageView
+            android:id="@+id/widgetLogo"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:src="@drawable/ic_microsoft"/>
+
+        <TextView
+            android:id="@+id/widgetTitleLabel"
+            android:layout_height="64dp"
+            android:layout_width="wrap_content"
+            android:text="@string/widget_title"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/widgetLogo"
+            android:textAllCaps="true" />
+
+        <ImageView
+            android:id="@+id/widgetUpdateButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_refresh"/>
+
+        <ImageView
+            android:id="@+id/widgetSettingsButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/widgetUpdateButton"
+            android:src="@drawable/ic_settings"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/softBlue">
+
+        <ListView
+            android:id="@+id/widgetListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/softWhite"
+            android:dividerHeight="1dp"
+            android:divider="#33000000"
+            tools:listitem="@layout/collection_widget_list_item" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/widgetListView">
+
+            <ProgressBar
+                android:id="@+id/appwidget_progress_bar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                android:indeterminate="true"
+                android:visibility="visible"/>
+
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>
