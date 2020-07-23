@@ -15,29 +15,39 @@ import java.lang.Exception
 
 class FileHandler {
     companion object {
+
         // loads inode information from the current directory into the DataProvider
         fun loadDirectory(context: Context, subDir: String) {
-            if (DataProvider.inodes.isEmpty()) {
+            if (DataProvider.getINodes().isEmpty()) {
                 readDirEntry(context, subDir)?.let { notes ->
-                    for (inode in notes.inodes) {
-                        DataProvider.addINode(inode)
+                    for (inode in notes.inodes.size - 1 downTo 0) {
+                        DataProvider.addINode(notes.inodes[inode])
                     }
                 }
             }
         }
 
         // add a new inode
-        fun addInode(subDir: String): Int {
+        fun addInode() {
             val inode = INode()
-            if (DataProvider.inodes.isNotEmpty()) {
-                inode.id = DataProvider.inodes[DataProvider.inodes.lastIndex].id + 1
+            if (DataProvider.getINodes().isNotEmpty()) {
+                inode.id = DataProvider.getNextInodeId()
                 inode.title = "Note " + inode.id
-                DataProvider.addINode(inode)
-                return DataProvider.inodes.lastIndex
-            } else {
-                DataProvider.addINode(inode)
-                return DataProvider.inodes.lastIndex
             }
+            DataProvider.addINode(inode)
+        }
+
+        fun addCategory() {
+            val inode = INode("Category 0")
+            if (DataProvider.getCategories().isNotEmpty()) {
+                inode.id = DataProvider.getNextCategoryId()
+                inode.title = "Category " + inode.id
+            }
+            DataProvider.addCategory(inode)
+        }
+
+        fun switchCategory(inode: INode) {
+            DataProvider.moveINodeToTop(inode)
         }
 
         // reads a file and parses note data
@@ -109,7 +119,7 @@ class FileHandler {
             val path: String? = context.getExternalFilesDir(null)?.absolutePath
             val file = File(path + subDir + "/n" + inode.id)
 
-            if (!DataProvider.inodes.isNullOrEmpty()) {
+            if (!DataProvider.getINodes().isNullOrEmpty()) {
                 DataProvider.removeINode(inode)
 
                 if (file.exists()) {
