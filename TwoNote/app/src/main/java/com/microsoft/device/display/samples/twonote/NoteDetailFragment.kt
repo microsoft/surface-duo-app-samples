@@ -293,7 +293,7 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    // TODO: back gesture does not get overridden by this
+    // TODO: back gesture does not get overridden by this (connected to activity's onBackPressed)
     private fun onBackPressed() {
         activity?.let {
             if (ScreenHelper.isDualMode(it)) {
@@ -304,7 +304,6 @@ class NoteDetailFragment : Fragment() {
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.single_screen_container_id, NoteListFragment(), null)
                     .commit()
-                // it.onBackPressed()
             }
         }
     }
