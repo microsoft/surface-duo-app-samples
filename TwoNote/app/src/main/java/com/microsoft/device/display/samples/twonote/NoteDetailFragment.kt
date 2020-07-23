@@ -14,8 +14,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.ScrollView
-import android.widget.ToggleButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -66,8 +66,8 @@ class NoteDetailFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_note_detail, container, false)
 
         addNoteContents(view)
-        setUpTools(view)
         setUpInkMode(view)
+        setUpTools(view)
 
         return view
     }
@@ -104,21 +104,6 @@ class NoteDetailFragment : Fragment() {
     }
 
     private fun setUpTools(view: View) {
-        // Set up toggling between text/ink mode
-        val text = view.findViewById<ScrollView>(R.id.text_mode)
-        val ink = view.findViewById<ConstraintLayout>(R.id.ink_mode)
-
-        val toggleButton = view.findViewById<ToggleButton>(R.id.editing_mode)
-        toggleButton.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                ink.visibility = View.VISIBLE
-                text.visibility = View.GONE
-            } else {
-                ink.visibility = View.GONE
-                text.visibility = View.VISIBLE
-            }
-        }
-
         // Set up toolbar icons and actions
         val toolbar = view.findViewById<MaterialToolbar>(R.id.toolbar)
 
@@ -129,10 +114,12 @@ class NoteDetailFragment : Fragment() {
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
         toolbar.setNavigationOnClickListener { onBackPressed() }
+
+        view.findViewById<ScrollView>(R.id.text_mode)?.bringToFront()
     }
 
     private fun setUpInkMode(view: View) {
-        drawView = view.findViewById(R.id.drawView_single)
+        drawView = view.findViewById(R.id.draw_view)
 
         val clearButton = view.findViewById<Button>(R.id.button_clear)
         clearButton.setOnClickListener { clearDrawing() }
@@ -170,6 +157,9 @@ class NoteDetailFragment : Fragment() {
             copyDrawingIfAdded()
         }
         drawView.setPaintRadius(0)
+
+        // REVISIT: connect to savedInstanceState bundle
+        drawView.disable()
     }
 
     override fun onPause() {
@@ -251,6 +241,27 @@ class NoteDetailFragment : Fragment() {
                     }
                 }
                 closeFragment()
+                true
+            }
+            R.id.action_ink -> {
+                val colors = view?.findViewById<LinearLayout>(R.id.color_buttons)
+                val clear = view?.findViewById<Button>(R.id.button_clear)
+
+                if (drawView.isDisabled()) {
+                    drawView.enable()
+                    clear?.visibility = View.VISIBLE
+                    colors?.visibility = View.VISIBLE
+                    view?.findViewById<ConstraintLayout>(R.id.ink_mode)?.bringToFront()
+                    item.setIcon(R.drawable.ic_text)
+                }
+                else {
+                    drawView.disable()
+                    clear?.visibility = View.INVISIBLE
+                    colors?.visibility = View.INVISIBLE
+                    view?.findViewById<ScrollView>(R.id.text_mode)?.bringToFront()
+                    item.setIcon(R.drawable.ic_fluent_calligraphy_pen_24_filled)
+                }
+
                 true
             }
             else -> {
