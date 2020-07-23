@@ -30,7 +30,6 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     private var arrayAdapter: ArrayAdapter<INode>? = null
     private var listView: ListView? = null
     private lateinit var inodes: MutableList<INode>
-    private var selectedItemPosition: Int = 0
     private val ROOT = ""
 
     companion object {
@@ -40,7 +39,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        inodes = DataProvider.inodes
+        inodes = DataProvider.getINodes()
         activity?.let {
             arrayAdapter = object : ArrayAdapter<INode>(it, android.R.layout.simple_list_item_2, android.R.id.text1, inodes) {
                 // Override getView function so that ArrayAdapter can be used while both text
@@ -89,9 +88,9 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
         view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
             // Set selected item to newly created note (first element in list)
-            val inode = FileHandler.addInode(ROOT)
+            FileHandler.addInode()
             arrayAdapter?.notifyDataSetChanged()
-            startNoteFragment(inode)
+            startNoteFragment(0)
         }
 
         // Set up toolbar icons and actions
@@ -116,25 +115,19 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
     override fun onPause() {
         super.onPause()
-        FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry(DataProvider.inodes))
-    }
-
-    private fun setSelectedItem(position: Int) {
-        listView?.setItemChecked(position, true)
-        selectedItemPosition = position
+        FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry(inodes))
     }
 
     override fun onItemClick(adapterView: AdapterView<*>, item: View, position: Int, rowId: Long) {
         if (listView?.choiceMode == ListView.CHOICE_MODE_SINGLE) {
             startNoteFragment(position)
         } else {
-            // REVISIT: selectedItemPosition variable needs to be debugged/changed
-            setSelectedItem(position)
+            listView?.setItemChecked(position, true)
         }
     }
 
     private fun startNoteFragment(position: Int) {
-        setSelectedItem(position)
+        listView?.setItemChecked(position, true)
 
         arrayAdapter?.getItem(position)?.let { inode ->
             var note = FileHandler.loadNote(requireContext(), "", "/n" + inode.id)
@@ -163,8 +156,9 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     fun updateINode(inode: INode, title: String) {
         inode.title = title
         inode.dateModified = LocalDateTime.now()
+        DataProvider.moveINodeToTop(inode)
 
-        FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry(DataProvider.inodes))
+        FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry(inodes))
     }
 
     /**
@@ -195,7 +189,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
     override fun onItemLongClick(adapterView: AdapterView<*>, item: View, position: Int, rowId: Long): Boolean {
         initListViewMultipleMode()
-        setSelectedItem(position)
+        listView?.setItemChecked(position, true)
 
         return true
     }
