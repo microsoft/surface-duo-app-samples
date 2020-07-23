@@ -35,7 +35,9 @@ class NoteSelectionListener(
                 // If spanned, check if the displayed NoteDetailFragment has been deleted
                 if (ScreenHelper.isDualMode(host.requireActivity())) {
                     // REVISIT: couldn't get findFragmentById to work but this needs to be changed to something more efficient eventually
-                    val inode = host.parentFragmentManager.fragments.find { frag -> frag is NoteDetailFragment }?.arguments?.getSerializable(MainActivity.INODE) as? INode
+                    val inode = host.parentFragmentManager.fragments
+                        .find { frag -> frag is NoteDetailFragment }
+                        ?.arguments?.getSerializable(MainActivity.INODE) as? INode
 
                     if (!DataProvider.inodes.contains(inode)) {
                         host.parentFragmentManager.beginTransaction()
