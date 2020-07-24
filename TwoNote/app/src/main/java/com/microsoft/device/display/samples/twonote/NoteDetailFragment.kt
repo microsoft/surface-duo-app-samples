@@ -255,13 +255,14 @@ class NoteDetailFragment : Fragment() {
                     colors?.visibility = View.VISIBLE
                     view?.findViewById<ConstraintLayout>(R.id.ink_mode)?.bringToFront()
                     item.setIcon(R.drawable.ic_text)
-                }
-                else {
+                    item.title = getString(R.string.action_ink_off)
+                } else {
                     drawView.disable()
                     clear?.visibility = View.INVISIBLE
                     colors?.visibility = View.INVISIBLE
                     view?.findViewById<ScrollView>(R.id.text_mode)?.bringToFront()
                     item.setIcon(R.drawable.ic_fluent_calligraphy_pen_24_filled)
+                    item.title = getString(R.string.action_ink_on)
                 }
 
                 true
