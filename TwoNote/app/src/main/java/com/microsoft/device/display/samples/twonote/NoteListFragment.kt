@@ -39,7 +39,8 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     private lateinit var categories: MutableList<INode>
     private lateinit var editText: TextInputEditText
     private val root = ""
-    private var selectedFlag = false
+    private var selectedFlag = false    
+    private var noteSelectionListener: NoteSelectionListener? = null
 
     companion object {
         const val LIST_VIEW = "list view"
@@ -118,13 +119,13 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
             it.adapter = arrayAdapter
             it.onItemClickListener = this
             it.onItemLongClickListener = this
+            noteSelectionListener = NoteSelectionListener(this, it, arrayAdapter!!)
+            it.setMultiChoiceModeListener(noteSelectionListener)
+            it.choiceMode = ListView.CHOICE_MODE_SINGLE
 
-            if (savedInstanceState != null) {
+            // REVISIT: is this necessary
+            if (savedInstanceState != null)
                 listView?.onRestoreInstanceState(savedInstanceState.getParcelable(LIST_VIEW))
-                // TODO: save/restore action mode data
-            } else {
-                it.choiceMode = ListView.CHOICE_MODE_SINGLE
-            }
         }
 
         categoryView = view.findViewById(R.id.dropdown_spinner)
@@ -148,9 +149,12 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
             onOptionsItemSelected(it)
         }
 
-        context?.let {
+        requireContext().let {
             toolbar.setNavigationIcon(R.drawable.ic_icon_unfilled)
             toolbar.navigationIcon?.setTint(it.getColor(R.color.colorOnPrimary))
+
+            // Set overflow icon color
+            toolbar.overflowIcon?.setTint(it.getColor(R.color.colorOnPrimary))
         }
 
         return view
@@ -266,9 +270,11 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                 true
             }
             R.id.action_select -> {
-                // TODO: add selection bubbles to all notes and pop up contextual toolbar, return true when implemented
-                initListViewMultipleMode()
-
+                // TODO: toolbar doesn't show up at first, add selection bubbles/visual indication
+                listView?.let {
+                    it.clearChoices()
+                    it.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
+                }
                 true
             }
             else -> {
@@ -278,9 +284,11 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     }
 
     override fun onItemLongClick(adapterView: AdapterView<*>, item: View, position: Int, rowId: Long): Boolean {
-        initListViewMultipleMode()
-        listView?.setItemChecked(position, true)
-
+        listView?.let {
+            it.clearChoices()
+            it.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
+        }
+        setSelectedItem(position)
         return true
     }
 
@@ -297,15 +305,6 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                     detail.deleted = true // set flag so file isn't resaved on destroy
                     detail.closeFragment()
                 }
-            }
-        }
-    }
-
-    private fun initListViewMultipleMode() {
-        listView?.let { lv ->
-            arrayAdapter?.let { aa ->
-                lv.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
-                lv.setMultiChoiceModeListener(NoteSelectionListener(this, lv, aa))
             }
         }
     }

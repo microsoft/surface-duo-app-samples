@@ -24,8 +24,9 @@
         <item name="actionModeCloseDrawable">@drawable/ic_close</item>
     </style>
 
+    <!-- set tint to colorOnSecondary for action mode toolbar -->
     <style name="overflowStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">
-        <item name="android:tint">@color/colorOnPrimary</item>
+        <item name="android:tint">@color/colorOnSecondary</item>
     </style>
 
     <style name="actionModeStyle" parent="Widget.AppCompat.ActionMode">

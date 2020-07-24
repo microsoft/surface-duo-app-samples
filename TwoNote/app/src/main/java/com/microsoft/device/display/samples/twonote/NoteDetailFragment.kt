@@ -115,6 +115,8 @@ class NoteDetailFragment : Fragment() {
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
+        toolbar.overflowIcon?.setTint(requireContext().getColor(R.color.colorOnPrimary))
+
         view.findViewById<ScrollView>(R.id.text_mode)?.bringToFront()
     }
 
