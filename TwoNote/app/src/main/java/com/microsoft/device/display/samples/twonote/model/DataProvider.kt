@@ -59,6 +59,16 @@ object DataProvider {
         }
         return subDir
     }
+    fun getActiveCategoryName(): String {
+        if (categories.isNotEmpty())
+            return categories[0].title
+        else
+            return ""
+    }
+    fun setActiveCategoryName(title: String) {
+        if (categories.isNotEmpty())
+            categories[0].title = title
+    }
     fun clearInodes() {
         for (inode in inodes.size - 1 downTo 0) {
             inodes.removeAt(inode)
