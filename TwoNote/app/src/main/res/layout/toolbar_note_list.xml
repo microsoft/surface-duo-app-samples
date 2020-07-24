@@ -12,12 +12,24 @@
         android:background="?attr/colorPrimary"
         app:titleTextColor="?attr/colorOnPrimary">
 
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/title_list_input"
+            android:text="@string/app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:inputType="text"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:textColor="?attr/colorOnPrimary" />
+
         <Spinner
             android:id="@+id/dropdown_spinner"
             style="@style/Widget.AppCompat.Spinner"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
     </com.google.android.material.appbar.MaterialToolbar>
+
+
 </com.google.android.material.appbar.AppBarLayout>
