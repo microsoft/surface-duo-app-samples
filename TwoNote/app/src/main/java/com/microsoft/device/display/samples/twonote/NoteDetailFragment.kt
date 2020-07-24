@@ -9,6 +9,7 @@ package com.microsoft.device.display.samples.twonote
 
 import android.content.Context
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -22,13 +23,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.textfield.TextInputEditText
+import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.DrawViewModel
 import com.microsoft.device.display.samples.twonote.model.INode
 import com.microsoft.device.display.samples.twonote.model.Note
 import com.microsoft.device.dualscreen.layout.ScreenHelper
-import java.io.File
-import java.io.FileOutputStream
-import java.io.ObjectOutputStream
 import java.lang.ClassCastException
 
 class NoteDetailFragment : Fragment() {
@@ -225,16 +224,11 @@ class NoteDetailFragment : Fragment() {
     private fun save() {
         arguments?.let {
             val note = it.getSerializable(MainActivity.NOTE)
-            if (note is Note) {
-                val path: String? = requireContext().getExternalFilesDir(null)?.absolutePath
-                val file = File("$path/n${note.id}")
-                val fileStream = FileOutputStream(file)
-                val objectStream = ObjectOutputStream(fileStream)
-                objectStream.writeObject(note)
-                objectStream.close()
-                fileStream.close()
+            if (note is Note && !deleted) {
+                FileHandler.save(requireContext(), DataProvider.getActiveSubDirectory(), note)
             }
         }
+        deleted = false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -252,7 +246,7 @@ class NoteDetailFragment : Fragment() {
                 arguments?.let {
                     val inode = it.getSerializable(MainActivity.INODE)
                     if (inode is INode) {
-                        FileHandler.delete(requireContext(), "", inode)
+                        FileHandler.delete(requireContext(), DataProvider.getActiveSubDirectory(), inode)
                         deleted = true
                     }
                 }
