@@ -1,3 +1,5 @@
+![App samples CI](https://github.com/microsoft/surface-duo-app-samples/workflows/App%20samples%20CI/badge.svg)
+
 # Surface Duo app samples
 
 This repo contains sample Android applications for Microsoft Surface Duo.
