@@ -21,4 +21,6 @@
     <string name="welcome">Welcome to TwoNote</string>
     <string name="get_started">Select or create a note to get started.</string>
     <string name="tap_here">Tap here to add note contents</string>
+    <string name="action_add_category">Add category</string>
+    <string name="action_delete_category">Delete category</string>
 </resources>

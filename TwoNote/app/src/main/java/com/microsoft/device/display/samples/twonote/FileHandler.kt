@@ -1,6 +1,7 @@
 package com.microsoft.device.display.samples.twonote
 
 import android.content.Context
+import android.os.FileUtils
 import android.provider.ContactsContract
 import android.util.Log
 import com.microsoft.device.display.samples.twonote.model.DataProvider
@@ -57,7 +58,7 @@ class FileHandler {
 
         fun addCategory(context: Context) {
             // TODO: put all of the default names in strings.xml for future localization
-            val inode = INode("Category 0")
+            val inode = INode(title = "Category 0", descriptor = "/c")
             if (DataProvider.getCategories().isNotEmpty()) {
                 inode.id = DataProvider.getNextCategoryId()
                 inode.title = "Category " + inode.id
@@ -65,8 +66,13 @@ class FileHandler {
             DataProvider.addCategory(inode)
         }
 
-        fun switchCategory(context: Context, inode: INode) {
-            DataProvider.moveCategoryToTop(inode)
+        fun switchCategory(context: Context, inode: INode?) {
+            var newNode = inode
+            if (newNode == null) {
+                addCategory(context)
+                newNode = DataProvider.getCategories()[0]
+            }
+            DataProvider.moveCategoryToTop(newNode)
             loadDirectory(context, DataProvider.getActiveSubDirectory())
         }
 
@@ -145,15 +151,17 @@ class FileHandler {
         // remove an inode and its associated note
         fun delete(context: Context, subDir: String, inode: INode): Boolean {
             val path: String? = context.getExternalFilesDir(null)?.absolutePath
-            val file = File(path + subDir + "/n" + inode.id)
+            val file = File(path + subDir + inode.descriptor + inode.id)
 
             if (!DataProvider.getINodes().isNullOrEmpty()) {
                 DataProvider.removeINode(inode)
 
-                if (file.exists()) {
-                    Log.d("FILE_HANDLER", "deleting note $path$subDir/n${inode.id}")
-                    file.delete()
-                    return true
+                if (file.isFile) {
+                    Log.d("FILE_HANDLER", "deleting note $path$subDir${inode.descriptor}${inode.id}")
+                    return file.delete()
+                }
+                if (file.isDirectory) {
+                    return file.deleteRecursively()
                 }
             }
             return false

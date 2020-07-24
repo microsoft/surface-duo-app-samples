@@ -8,6 +8,9 @@ package com.microsoft.device.display.samples.twonote
 
 import android.graphics.Typeface
 import android.os.Bundle
+import android.provider.ContactsContract
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -20,6 +23,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputEditText
 import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.DirEntry
 import com.microsoft.device.display.samples.twonote.model.INode
@@ -35,6 +39,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     private var categoryView: Spinner? = null
     private lateinit var inodes: MutableList<INode>
     private lateinit var categories: MutableList<INode>
+    private lateinit var editText: TextInputEditText
     private val ROOT = ""
 
     companion object {
@@ -55,7 +60,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent)
 
-                    val text1 = view.findViewById<View>(android.R.id.text1) as TextView
+                    val text1 = view.findViewById<TextView>(android.R.id.text1)
                     text1.text = inodes[position].title
                     text1.setTypeface(null, Typeface.BOLD)
 
@@ -71,14 +76,10 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                     val view = super.getView(position, convertView, parent)
 
                     if (categories.isNotEmpty()) {
-                        val text1 = view.findViewById<View>(android.R.id.text1) as TextView
-                        text1.text = categories[position].title
-                        text1.setTypeface(null, Typeface.BOLD)
+                        val text1 = view.findViewById<TextView>(android.R.id.text1)
+                        text1.text = ""//categories[position].title
+                        //text1.setTypeface(null, Typeface.BOLD)
                     }
-
-                    //val text2 = view.findViewById<View>(android.R.id.text2) as TextView
-                    //text2.text = inodes[position].dateModifiedString()
-                    //text2.setTextColor(it.getColor(R.color.colorOnBackgroundVariant))
 
                     return view
                 }
@@ -111,6 +112,9 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_note_list, container, false)
 
+        editText = view.findViewById(R.id.title_list_input)
+        editText.setText(DataProvider.getActiveCategoryName())
+        setOnChangeListenerForTextInput(editText)
 
         listView = view.findViewById(R.id.list_view)
         listView?.let {
@@ -135,7 +139,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
             // Set selected item to newly created note (first element in list)
             FileHandler.addInode()
-            arrayAdapter?.notifyDataSetChanged()
+            updateArrayAdapter()
             startNoteFragment(0)
         }
 
@@ -166,16 +170,13 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     }
 
     var selected_flag = false
-    override fun onItemSelected(adapterView: AdapterView<*>, item: View, position: Int, id: Long) {
+    override fun onItemSelected(adapterView: AdapterView<*>, item: View?, position: Int, id: Long) {
         if (selected_flag) {
-            FileHandler.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
             dropDownAdapter?.let {
                 it.getItem(position)?.let { inode ->
-                    FileHandler.switchCategory(requireContext(), inode)
-                    categoryView?.setSelection(0)
-                    updateArrayAdapter()
+                    setNewCategory(inode)
+                    editText.setText(inode.title)
                 }
-                it.notifyDataSetChanged()
             }
         }
         selected_flag = !selected_flag
@@ -193,11 +194,33 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         }
     }
 
+    // listener for changes to text in code editor
+    private fun setOnChangeListenerForTextInput(field: TextInputEditText) {
+        field.addTextChangedListener(object : TextWatcher {
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                DataProvider.setActiveCategoryName(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun setNewCategory(inode: INode?) {
+        FileHandler.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
+        FileHandler.switchCategory(requireContext(), inode)
+        updateDropDown()
+        updateArrayAdapter()
+        categoryView?.setSelection(0)
+    }
+
     private fun startNoteFragment(position: Int) {
         listView?.setItemChecked(position, true)
 
         arrayAdapter?.getItem(position)?.let { inode ->
-            var note = FileHandler.loadNote(requireContext(), DataProvider.getActiveSubDirectory(), "/n" + inode.id)
+            var note = FileHandler.loadNote(requireContext(), DataProvider.getActiveSubDirectory(), inode.descriptor + inode.id)
             if (note == null)
                 note = Note(inode.id)
 
@@ -242,6 +265,24 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_add_category -> {
+                setNewCategory(null)
+                editText.setText(DataProvider.getActiveCategoryName())
+                true
+            }
+            R.id.action_delete_category -> {
+                if (DataProvider.getCategories().size > 1) {
+                    setNewCategory(DataProvider.getCategories()[1])
+
+                    val categoryToDelete = DataProvider.getCategories()[1]
+                    FileHandler.delete(requireContext(), ROOT, categoryToDelete)
+                    DataProvider.removeCategory(categoryToDelete)
+
+                    editText.setText(DataProvider.getActiveCategoryName())
+                    updateDropDown()
+                }
+                true
+            }
             R.id.action_select -> {
                 // TODO: add selection bubbles to all notes and pop up contextual toolbar, return true when implemented
                 initListViewMultipleMode()
@@ -272,5 +313,8 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
     fun updateArrayAdapter() {
         arrayAdapter?.notifyDataSetChanged()
+    }
+    fun updateDropDown() {
+        dropDownAdapter?.notifyDataSetChanged()
     }
 }
