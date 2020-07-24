@@ -12,6 +12,12 @@
         android:background="?attr/colorPrimary"
         app:titleTextColor="?attr/colorOnPrimary">
 
-    </com.google.android.material.appbar.MaterialToolbar>
+        <Spinner
+            android:id="@+id/dropdown_spinner"
+            style="@style/Widget.AppCompat.Spinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
 
+    </com.google.android.material.appbar.MaterialToolbar>
 </com.google.android.material.appbar.AppBarLayout>

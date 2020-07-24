@@ -52,4 +52,17 @@ object DataProvider {
     fun getNextCategoryId(): Int {
         return highestCategoryId + 1
     }
+    fun getActiveSubDirectory(): String {
+        var subDir = ""
+        if (categories.isNotEmpty()) {
+            subDir = "/c${categories[0].id}"
+        }
+        return subDir
+    }
+    fun clearInodes() {
+        for (inode in inodes.size - 1 downTo 0) {
+            inodes.removeAt(inode)
+        }
+        highestINodeId = 0
+    }
 }
