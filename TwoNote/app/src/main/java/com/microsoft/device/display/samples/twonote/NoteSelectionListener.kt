@@ -24,7 +24,7 @@ class NoteSelectionListener(
                     if (list.get(i)) {
                         arrayAdapter.getItem(i)?.let { inode ->
                             host.context?.let { cntx ->
-                                FileHandler.delete(cntx, "", inode)
+                                FileHandler.delete(cntx, DataProvider.getActiveSubDirectory(), inode)
                             }
                         }
                     }
@@ -39,7 +39,7 @@ class NoteSelectionListener(
                         .find { frag -> frag is NoteDetailFragment }
                         ?.arguments?.getSerializable(MainActivity.INODE) as? INode
 
-                    if (!DataProvider.inodes.contains(inode)) {
+                    if (!DataProvider.getINodes().contains(inode)) {
                         host.parentFragmentManager.beginTransaction()
                             .replace(R.id.dual_screen_end_container_id, GetStartedFragment(), null)
                             .commit()

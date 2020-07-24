@@ -1,6 +1,7 @@
 package com.microsoft.device.display.samples.twonote
 
 import android.content.Context
+import android.provider.ContactsContract
 import android.util.Log
 import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.DirEntry
@@ -18,11 +19,11 @@ class FileHandler {
 
         // loads inode information from the current directory into the DataProvider
         fun loadDirectory(context: Context, subDir: String) {
-            if (DataProvider.getINodes().isEmpty()) {
-                readDirEntry(context, subDir)?.let { notes ->
-                    for (inode in notes.inodes.size - 1 downTo 0) {
-                        DataProvider.addINode(notes.inodes[inode])
-                    }
+            Log.d("FILE_HANDLER", "loading from directory $subDir")
+            DataProvider.clearInodes()
+            readDirEntry(context, subDir)?.let { notes ->
+                for (inode in notes.inodes.size - 1 downTo 0) {
+                    DataProvider.addINode(notes.inodes[inode])
                 }
             }
         }
@@ -35,9 +36,27 @@ class FileHandler {
                 inode.title = "Note " + inode.id
             }
             DataProvider.addINode(inode)
+            Log.d("FILE_HANDLER", "inode size: ${DataProvider.getINodes().size}")
         }
 
-        fun addCategory() {
+        fun loadCategories(context: Context, subDir: String) {
+            if (DataProvider.getCategories().isEmpty()) {
+                readDirEntry(context, subDir)?.let { dir ->
+                    for (category in dir.inodes.size - 1 downTo 0) {
+                        DataProvider.addCategory(dir.inodes[category])
+                    }
+                }
+
+                // If no categories were found, make a new one
+                if (DataProvider.getCategories().isEmpty())
+                    addCategory(context)
+
+                loadDirectory(context, DataProvider.getActiveSubDirectory())
+            }
+        }
+
+        fun addCategory(context: Context) {
+            // TODO: put all of the default names in strings.xml for future localization
             val inode = INode("Category 0")
             if (DataProvider.getCategories().isNotEmpty()) {
                 inode.id = DataProvider.getNextCategoryId()
@@ -46,8 +65,9 @@ class FileHandler {
             DataProvider.addCategory(inode)
         }
 
-        fun switchCategory(inode: INode) {
-            DataProvider.moveINodeToTop(inode)
+        fun switchCategory(context: Context, inode: INode) {
+            DataProvider.moveCategoryToTop(inode)
+            loadDirectory(context, DataProvider.getActiveSubDirectory())
         }
 
         // reads a file and parses note data
@@ -62,13 +82,14 @@ class FileHandler {
                 objectStream = ObjectInputStream(fileStream)
                 val note = objectStream.readObject()
                 if (note is Note) {
+                    Log.d("FILE_HANDLER", "loading note $path$subDir$noteName")
                     return note
                 } else {
-                    Log.e(this.javaClass.toString(), context.resources.getString(R.string.load_error_note))
+                    Log.e(this::class.java.toString(), context.resources.getString(R.string.load_error_note))
                     return null
                 }
             } catch (e: Exception) {
-                Log.e(this.javaClass.toString(), e.message.toString())
+                Log.e(this::class.java.toString(), e.message.toString())
                 return null
             } finally {
                 objectStream?.close()
@@ -79,7 +100,7 @@ class FileHandler {
         // reads directory entry to get inodes
         fun readDirEntry(context: Context, subDir: String): DirEntry? {
             val path: String? = context.getExternalFilesDir(null)?.absolutePath
-            val file = File("$path$subDir/dEntry")
+            val file = File(path + subDir + "/dEntry")
             var fileStream: FileInputStream? = null
             var objectStream: ObjectInputStream? = null
 
@@ -90,7 +111,7 @@ class FileHandler {
                 if (entry is DirEntry) {
                     return entry
                 } else {
-                    Log.e(this.javaClass.toString(), context.resources.getString(R.string.load_error_dir))
+                    Log.e(this::class.java.toString(), context.resources.getString(R.string.load_error_dir))
                     return null
                 }
             } catch (e: Exception) {
@@ -103,10 +124,17 @@ class FileHandler {
             }
         }
 
+        fun createDirectory(context: Context, subDir: String) {
+            val path: String? = context.getExternalFilesDir(null)?.absolutePath
+            val file = File(path + subDir)
+            file.mkdirs()
+        }
+
         // update/create directory entry
         fun writeDirEntry(context: Context, subDir: String, entry: DirEntry) {
             val path: String? = context.getExternalFilesDir(null)?.absolutePath
-            val file = File("$path$subDir/dEntry")
+            createDirectory(context, subDir)
+            val file = File(path + subDir + "/dEntry")
             val fileStream = FileOutputStream(file)
             val objectStream = ObjectOutputStream(fileStream)
             objectStream.writeObject(entry)
@@ -123,11 +151,22 @@ class FileHandler {
                 DataProvider.removeINode(inode)
 
                 if (file.exists()) {
+                    Log.d("FILE_HANDLER", "deleting note $path$subDir/n${inode.id}")
                     file.delete()
                     return true
                 }
             }
             return false
+        }
+
+        fun save(context: Context, subDir: String, note: Note) {
+            val path: String? = context.getExternalFilesDir(null)?.absolutePath
+            val file = File("$path$subDir/n${note.id}")
+            val fileStream = FileOutputStream(file)
+            val objectStream = ObjectOutputStream(fileStream)
+            objectStream.writeObject(note)
+            objectStream.close()
+            fileStream.close()
         }
     }
 }
