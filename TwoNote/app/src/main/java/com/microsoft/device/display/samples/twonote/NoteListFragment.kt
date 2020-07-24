@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.android.material.appbar.MaterialToolbar
@@ -24,12 +25,16 @@ import com.microsoft.device.display.samples.twonote.model.DirEntry
 import com.microsoft.device.display.samples.twonote.model.INode
 import com.microsoft.device.display.samples.twonote.model.Note
 import com.microsoft.device.dualscreen.layout.ScreenHelper
+import java.io.File
 import java.time.LocalDateTime
 
-class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, AdapterView.OnItemSelectedListener {
     private var arrayAdapter: ArrayAdapter<INode>? = null
+    private var dropDownAdapter: ArrayAdapter<INode>? = null
     private var listView: ListView? = null
+    private var categoryView: Spinner? = null
     private lateinit var inodes: MutableList<INode>
+    private lateinit var categories: MutableList<INode>
     private val ROOT = ""
 
     companion object {
@@ -40,6 +45,9 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         inodes = DataProvider.getINodes()
+        categories = DataProvider.getCategories()
+        FileHandler.loadCategories(requireContext(), ROOT)
+
         activity?.let {
             arrayAdapter = object : ArrayAdapter<INode>(it, android.R.layout.simple_list_item_2, android.R.id.text1, inodes) {
                 // Override getView function so that ArrayAdapter can be used while both text
@@ -58,8 +66,40 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                     return view
                 }
             }
+            dropDownAdapter = object : ArrayAdapter<INode>(it, android.R.layout.simple_spinner_item, android.R.id.text1, categories) {
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                    val view = super.getView(position, convertView, parent)
+
+                    if (categories.isNotEmpty()) {
+                        val text1 = view.findViewById<View>(android.R.id.text1) as TextView
+                        text1.text = categories[position].title
+                        text1.setTypeface(null, Typeface.BOLD)
+                    }
+
+                    //val text2 = view.findViewById<View>(android.R.id.text2) as TextView
+                    //text2.text = inodes[position].dateModifiedString()
+                    //text2.setTextColor(it.getColor(R.color.colorOnBackgroundVariant))
+
+                    return view
+                }
+            }
+            dropDownAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
-        FileHandler.loadDirectory(requireContext(), ROOT)
+
+         /*val cat = DataProvider.getCategories()
+         for (nodes in cat.size - 1 downTo 0) {
+             FileHandler.switchCategory(requireContext(), cat[0])
+             val n = DataProvider.getINodes()
+             for (notes in n.size - 1 downTo 0) {
+                 FileHandler.delete(requireContext(), ROOT, n[notes])
+                 n.removeAt(notes)
+             }
+             FileHandler.delete(requireContext(), ROOT, cat[nodes])
+             cat.removeAt(nodes)
+         }*/
+         //FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry())  // uncomment this to clear record of all root entries (use for testing)
+        // FileHandler.addCategory(requireContext())
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -70,7 +110,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_note_list, container, false)
-        // writeDirEntry("", DirEntry())  // uncomment this to clear record of all root entries (use for testing)
+
 
         listView = view.findViewById(R.id.list_view)
         listView?.let {
@@ -84,6 +124,12 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
             } else {
                 it.choiceMode = ListView.CHOICE_MODE_SINGLE
             }
+        }
+
+        categoryView = view.findViewById(R.id.dropdown_spinner)
+        categoryView?.let {
+            it.adapter = dropDownAdapter
+            it.onItemSelectedListener = this
         }
 
         view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
@@ -108,14 +154,35 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         }
 
         // TODO: once category tabs have been implemented, connect to toolbar title here
-        toolbar.title = "Category 1"
+        //toolbar.title = "Category 1"
 
         return view
     }
 
     override fun onPause() {
         super.onPause()
-        FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry(inodes))
+        FileHandler.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
+        FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry(categories))
+    }
+
+    var selected_flag = false
+    override fun onItemSelected(adapterView: AdapterView<*>, item: View, position: Int, id: Long) {
+        if (selected_flag) {
+            FileHandler.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
+            dropDownAdapter?.let {
+                it.getItem(position)?.let { inode ->
+                    FileHandler.switchCategory(requireContext(), inode)
+                    categoryView?.setSelection(0)
+                    updateArrayAdapter()
+                }
+                it.notifyDataSetChanged()
+            }
+        }
+        selected_flag = !selected_flag
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        // TODO: implement this
     }
 
     override fun onItemClick(adapterView: AdapterView<*>, item: View, position: Int, rowId: Long) {
@@ -130,7 +197,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         listView?.setItemChecked(position, true)
 
         arrayAdapter?.getItem(position)?.let { inode ->
-            var note = FileHandler.loadNote(requireContext(), "", "/n" + inode.id)
+            var note = FileHandler.loadNote(requireContext(), DataProvider.getActiveSubDirectory(), "/n" + inode.id)
             if (note == null)
                 note = Note(inode.id)
 
@@ -158,7 +225,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         inode.dateModified = LocalDateTime.now()
         DataProvider.moveINodeToTop(inode)
 
-        FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry(inodes))
+        FileHandler.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
     }
 
     /**
