@@ -7,8 +7,6 @@
 <resources>
     <string name="app_name">TwoNote</string>
     <string name="items_list">Items List</string>
-    <string name="text">Switch to Text</string>
-    <string name="ink">Switch to Ink</string>
     <string name="clear">Clear</string>
     <string name="exception_message">must implement OnFragmentInteractionListener</string>
     <string name="action_delete">Delete</string>
