@@ -1,12 +1,11 @@
 ---
 page_type: sample
 name: Surface Duo - Widget
+description: "Widget example pulling RSS data from the Surface Duo blog or other sources."
 languages:
 - kotlin
 products:
 - surface-duo
-description: "Widget example pulling RSS data from the Surface Duo blog or other sources."
-keywords: dual-screen, surface duo, kotlin
 urlFragment: Widget
 ---
 
