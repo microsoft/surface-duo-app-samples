@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+     Copyright (c) Microsoft Corporation. All rights reserved.
+     Licensed under the MIT License.
+-->
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:title="@string/widget_settings_predefined_title"
+        android:key="@string/widget_settings_predefined_key"
+        android:entries="@array/appwidget_feeds"
+        android:summary="@string/widget_settings_predefined_summary"
+        android:entryValues="@array/appwidget_feeds_value"
+        android:icon="@drawable/ic_settings_feed_urls"
+        android:defaultValue="@string/app_widget_feeds_default_value"/>
+
+    <EditTextPreference
+        android:key="@string/widget_settings_custom_key"
+        android:title="@string/widget_settings_custom_title"
+        android:summary="@string/widget_settings_custom_summary"
+        android:defaultValue="https://educationblog.microsoft.com/en-us/feed/"
+        android:icon="@drawable/ic_settings_feed_link"
+        android:dialogTitle="Enter your preferred feed(with https://):" />
+
+</PreferenceScreen>
