@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.INode
-import com.microsoft.device.dualscreen.layout.ScreenHelper
 
 class NoteSelectionListener(
     private var host: NoteListFragment,
