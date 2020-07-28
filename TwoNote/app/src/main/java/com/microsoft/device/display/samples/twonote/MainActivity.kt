@@ -15,6 +15,7 @@ import com.microsoft.device.dualscreen.layout.ScreenHelper
 class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteractionListener {
     companion object {
         const val LIST_FRAGMENT = "list fragment"
+        const val DETAIL_FRAGMENT = "detail fragment"
         const val NOTE = "note"
         const val INODE = "inode"
     }
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
 
     private fun startNoteDetailFragment(container: Int, note: Note, inode: INode) {
         supportFragmentManager.beginTransaction()
-            .replace(container, NoteDetailFragment.newInstance(inode, note), null)
+            .replace(container, NoteDetailFragment.newInstance(inode, note), DETAIL_FRAGMENT)
             .commit()
     }
 
@@ -84,9 +85,15 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
         // REVISIT: couldn't really think of a cleaner way to do this (because using
         // ScreenHelper.isDualMode didn't return the expected values)
         if (fragDual is NoteDetailFragment) {
-            saveCurrentNote(outState, fragDual)
+            if (fragDual.deleted)
+                outState.clear()
+            else
+                saveCurrentNote(outState, fragDual)
         } else if (fragSingle is NoteDetailFragment) {
-            saveCurrentNote(outState, fragSingle)
+            if (fragSingle.deleted)
+                outState.clear()
+            else
+                saveCurrentNote(outState, fragSingle)
         }
     }
 

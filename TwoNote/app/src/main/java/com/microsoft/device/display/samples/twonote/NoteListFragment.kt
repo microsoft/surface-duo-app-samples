@@ -8,7 +8,6 @@ package com.microsoft.device.display.samples.twonote
 
 import android.graphics.Typeface
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -29,7 +28,6 @@ import com.microsoft.device.display.samples.twonote.model.DirEntry
 import com.microsoft.device.display.samples.twonote.model.INode
 import com.microsoft.device.display.samples.twonote.model.Note
 import com.microsoft.device.dualscreen.layout.ScreenHelper
-import java.io.File
 import java.time.LocalDateTime
 
 class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, AdapterView.OnItemSelectedListener {
@@ -41,6 +39,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     private lateinit var categories: MutableList<INode>
     private lateinit var editText: TextInputEditText
     private val ROOT = ""
+    private var selected_flag = false
 
     companion object {
         const val ACTION_MODE = "action mode"
@@ -97,9 +96,9 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
              }
              FileHandler.delete(requireContext(), ROOT, cat[nodes])
              cat.removeAt(nodes)
-         }*/
-         //FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry())  // uncomment this to clear record of all root entries (use for testing)
-        // FileHandler.addCategory(requireContext())
+         }
+         FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry())  // uncomment this to clear record of all root entries (use for testing)
+         FileHandler.addCategory(requireContext())*/
 
     }
 
@@ -157,9 +156,6 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
             toolbar.navigationIcon?.setTint(it.getColor(R.color.colorOnPrimary))
         }
 
-        // TODO: once category tabs have been implemented, connect to toolbar title here
-        //toolbar.title = "Category 1"
-
         return view
     }
 
@@ -169,12 +165,11 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry(categories))
     }
 
-    var selected_flag = false
     override fun onItemSelected(adapterView: AdapterView<*>, item: View?, position: Int, id: Long) {
         if (selected_flag) {
             dropDownAdapter?.let {
                 it.getItem(position)?.let { inode ->
-                    setNewCategory(inode)
+                    setNewCategory(inode, false)
                     editText.setText(inode.title)
                 }
             }
@@ -208,7 +203,8 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         })
     }
 
-    private fun setNewCategory(inode: INode?) {
+    private fun setNewCategory(inode: INode?, deleting: Boolean) {
+        exitDetailFragment(deleting)
         FileHandler.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
         FileHandler.switchCategory(requireContext(), inode)
         updateDropDown()
@@ -217,9 +213,11 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     }
 
     private fun startNoteFragment(position: Int) {
-        listView?.setItemChecked(position, true)
-
         arrayAdapter?.getItem(position)?.let { inode ->
+            DataProvider.moveINodeToTop(inode)
+            updateArrayAdapter()
+            listView?.setItemChecked(position, true)
+
             var note = FileHandler.loadNote(requireContext(), DataProvider.getActiveSubDirectory(), inode.descriptor + inode.id)
             if (note == null)
                 note = Note(inode.id)
@@ -229,14 +227,14 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                     .replace(
                         R.id.dual_screen_end_container_id,
                         NoteDetailFragment.newInstance(inode, note),
-                        null
+                        MainActivity.DETAIL_FRAGMENT
                     ).commit()
             } else {
                 parentFragmentManager.beginTransaction()
                     .replace(
                         R.id.single_screen_container_id,
                         NoteDetailFragment.newInstance(inode, note),
-                        null
+                        MainActivity.DETAIL_FRAGMENT
                     ).addToBackStack(null)
                     .commit()
             }
@@ -246,33 +244,20 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     fun updateINode(inode: INode, title: String) {
         inode.title = title
         inode.dateModified = LocalDateTime.now()
-        DataProvider.moveINodeToTop(inode)
-
         FileHandler.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
-    }
-
-    /**
-     * Sort list of notes based on date modified (most recently edited at top)
-     *
-     * REVISIT: when should it be sorted? (ex: in dual-screen view, not done editing,
-     * should it be at original position or pop to top as soon as editing begins?)
-     * Should also adjust the listView's "selectedItemPosition" highlight feature (and the
-     * index of the attribute "selectedItemPosition")
-     */
-    private fun sortArray() {
-        arrayAdapter?.sort { one, two -> two.dateModified.compareTo(one.dateModified) }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_add_category -> {
-                setNewCategory(null)
+                setNewCategory(null, false)
                 editText.setText(DataProvider.getActiveCategoryName())
                 true
             }
             R.id.action_delete_category -> {
                 if (DataProvider.getCategories().size > 1) {
-                    setNewCategory(DataProvider.getCategories()[1])
+                    DataProvider.clearInodes()
+                    setNewCategory(DataProvider.getCategories()[1], true)
 
                     val categoryToDelete = DataProvider.getCategories()[1]
                     FileHandler.delete(requireContext(), ROOT, categoryToDelete)
@@ -300,6 +285,23 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         listView?.setItemChecked(position, true)
 
         return true
+    }
+
+    fun exitDetailFragment(deleting: Boolean) {
+        activity?.let {
+            if (ScreenHelper.isDualMode(it)) {
+                val fragment = parentFragmentManager.findFragmentByTag(MainActivity.DETAIL_FRAGMENT) as NoteDetailFragment?
+
+                fragment?.let {detail ->
+                    if (!deleting) {
+                        detail.updateNoteContents(fragment.view)
+                        detail.save()
+                    }
+                    detail.deleted = true // set flag so file isn't resaved on destroy
+                    detail.closeFragment()
+                }
+            }
+        }
     }
 
     private fun initListViewMultipleMode() {
