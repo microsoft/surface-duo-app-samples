@@ -1,8 +1,6 @@
 package com.microsoft.device.display.samples.twonote
 
 import android.content.Context
-import android.os.FileUtils
-import android.provider.ContactsContract
 import android.util.Log
 import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.DirEntry
