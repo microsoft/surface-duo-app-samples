@@ -34,7 +34,7 @@ class NoteDetailFragment : Fragment() {
     enum class PaintColors { Red, Blue, Green, Yellow, Purple }
 
     private lateinit var drawView: PenDrawView
-    private var deleted = false
+    var deleted = false
 
     companion object {
         lateinit var mListener: OnFragmentInteractionListener
@@ -85,7 +85,7 @@ class NoteDetailFragment : Fragment() {
         view.findViewById<TextInputEditText>(R.id.text_input).setText(note?.text)
     }
 
-    private fun updateNoteContents(view: View?) {
+    fun updateNoteContents(view: View?) {
         arguments?.let {
             val note = it.getSerializable(MainActivity.NOTE)
             val inode = it.getSerializable(MainActivity.INODE)
@@ -93,7 +93,10 @@ class NoteDetailFragment : Fragment() {
                 val text = view?.findViewById<TextInputEditText>(R.id.text_input)?.text.toString()
                 val title = view?.findViewById<TextInputEditText>(R.id.title_input)?.text.toString()
 
-                note.drawings = drawView.getDataList()
+                if (this::drawView.isInitialized) {
+                    note.drawings = drawView.getDataList()
+                }
+
                 note.text = text
                 note.title = title
 
@@ -221,14 +224,13 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    private fun save() {
+    fun save() {
         arguments?.let {
             val note = it.getSerializable(MainActivity.NOTE)
             if (note is Note && !deleted) {
                 FileHandler.save(requireContext(), DataProvider.getActiveSubDirectory(), note)
             }
         }
-        deleted = false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -263,7 +265,7 @@ class NoteDetailFragment : Fragment() {
      * Close NoteDetailFragment after deletion and open either the NoteListFragment (unspanned)
      * or the GetStartedFragment (spanned)
      */
-    private fun closeFragment() {
+    fun closeFragment() {
         activity?.let { activity ->
             if (ScreenHelper.isDualMode(activity)) {
                 // Tell NoteListFragment that list data has changed
@@ -281,7 +283,7 @@ class NoteDetailFragment : Fragment() {
                     .replace(
                         R.id.single_screen_container_id,
                         NoteListFragment(),
-                        null
+                        MainActivity.LIST_FRAGMENT
                     ).commit()
             }
         }
@@ -296,7 +298,7 @@ class NoteDetailFragment : Fragment() {
                     .commit()
             } else {
                 parentFragmentManager.beginTransaction()
-                    .replace(R.id.single_screen_container_id, NoteListFragment(), null)
+                    .replace(R.id.single_screen_container_id, NoteListFragment(), MainActivity.LIST_FRAGMENT)
                     .commit()
             }
         }
