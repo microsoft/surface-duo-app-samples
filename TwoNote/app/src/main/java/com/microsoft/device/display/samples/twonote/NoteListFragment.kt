@@ -76,8 +76,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
                     if (categories.isNotEmpty()) {
                         val text1 = view.findViewById<TextView>(android.R.id.text1)
-                        text1.text = ""//categories[position].title
-                        //text1.setTypeface(null, Typeface.BOLD)
+                        text1.text = ""
                     }
 
                     return view
@@ -86,7 +85,8 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
             dropDownAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
 
-         /*val cat = DataProvider.getCategories()
+        // uncomment this to clear record of all root entries (use for testing)
+         /* val cat = DataProvider.getCategories()
          for (nodes in cat.size - 1 downTo 0) {
              FileHandler.switchCategory(requireContext(), cat[0])
              val n = DataProvider.getINodes()
@@ -97,9 +97,8 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
              FileHandler.delete(requireContext(), ROOT, cat[nodes])
              cat.removeAt(nodes)
          }
-         FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry())  // uncomment this to clear record of all root entries (use for testing)
+         FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry())
          FileHandler.addCategory(requireContext())*/
-
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -292,7 +291,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
             if (ScreenHelper.isDualMode(it)) {
                 val fragment = parentFragmentManager.findFragmentByTag(MainActivity.DETAIL_FRAGMENT) as NoteDetailFragment?
 
-                fragment?.let {detail ->
+                fragment?.let { detail ->
                     if (!deleting) {
                         detail.updateNoteContents(fragment.view)
                         detail.save()
