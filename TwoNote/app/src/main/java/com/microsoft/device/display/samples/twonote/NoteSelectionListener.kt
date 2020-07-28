@@ -30,21 +30,8 @@ class NoteSelectionListener(
                     }
                 }
                 arrayAdapter.notifyDataSetChanged()
+                host.exitDetailFragment(true)
                 onDestroyActionMode(mode)
-
-                // If spanned, check if the displayed NoteDetailFragment has been deleted
-                if (ScreenHelper.isDualMode(host.requireActivity())) {
-                    // REVISIT: couldn't get findFragmentById to work but this needs to be changed to something more efficient eventually
-                    val inode = host.parentFragmentManager.fragments
-                        .find { frag -> frag is NoteDetailFragment }
-                        ?.arguments?.getSerializable(MainActivity.INODE) as? INode
-
-                    if (!DataProvider.getINodes().contains(inode)) {
-                        host.parentFragmentManager.beginTransaction()
-                            .replace(R.id.dual_screen_end_container_id, GetStartedFragment(), null)
-                            .commit()
-                    }
-                }
             }
         }
         return true
