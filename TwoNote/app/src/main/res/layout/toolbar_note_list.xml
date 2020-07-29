@@ -27,9 +27,9 @@
             android:id="@+id/dropdown_spinner"
             style="@style/Widget.AppCompat.Spinner"
             android:layout_width="wrap_content"
+            android:backgroundTint="?attr/colorOnPrimary"
             android:layout_height="wrap_content" />
 
     </com.google.android.material.appbar.MaterialToolbar>
-
 
 </com.google.android.material.appbar.AppBarLayout>

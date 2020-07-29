@@ -39,7 +39,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     private lateinit var categories: MutableList<INode>
     private lateinit var editText: TextInputEditText
     private val root = ""
-    private var selectedFlag = false    
+    private var selectedFlag = false
     private var noteSelectionListener: NoteSelectionListener? = null
 
     companion object {
@@ -86,19 +86,19 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         }
 
         // uncomment this to clear record of all root entries (use for testing)
-         /* val cat = DataProvider.getCategories()
-         for (nodes in cat.size - 1 downTo 0) {
-             FileHandler.switchCategory(requireContext(), cat[0])
-             val n = DataProvider.getINodes()
-             for (notes in n.size - 1 downTo 0) {
-                 FileHandler.delete(requireContext(), ROOT, n[notes])
-                 n.removeAt(notes)
-             }
-             FileHandler.delete(requireContext(), ROOT, cat[nodes])
-             cat.removeAt(nodes)
-         }
-         FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry())
-         FileHandler.addCategory(requireContext())*/
+        /* val cat = DataProvider.getCategories()
+        for (nodes in cat.size - 1 downTo 0) {
+            FileHandler.switchCategory(requireContext(), cat[0])
+            val n = DataProvider.getINodes()
+            for (notes in n.size - 1 downTo 0) {
+                FileHandler.delete(requireContext(), ROOT, n[notes])
+                n.removeAt(notes)
+            }
+            FileHandler.delete(requireContext(), ROOT, cat[nodes])
+            cat.removeAt(nodes)
+        }
+        FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry())
+        FileHandler.addCategory(requireContext())*/
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -287,8 +287,8 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         listView?.let {
             it.clearChoices()
             it.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
+            it.setItemChecked(position, true)
         }
-        setSelectedItem(position)
         return true
     }
 
