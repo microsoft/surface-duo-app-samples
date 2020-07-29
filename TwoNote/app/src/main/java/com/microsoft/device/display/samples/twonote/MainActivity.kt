@@ -89,6 +89,8 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
                 outState.clear()
             else
                 saveCurrentNote(outState, fragDual)
+        } else if (fragDual is GetStartedFragment) {
+            outState.clear()
         } else if (fragSingle is NoteDetailFragment) {
             if (fragSingle.deleted)
                 outState.clear()
