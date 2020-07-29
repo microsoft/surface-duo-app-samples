@@ -21,16 +21,20 @@ object DataProvider {
         inodes.add(0, inode)
         highestINodeId = max(inode.id, highestINodeId)
     }
+
     fun removeINode(inode: INode) {
         inodes.remove(inode)
     }
+
     fun getINodes(): MutableList<INode> {
         return inodes
     }
+
     fun moveINodeToTop(inode: INode) {
         if (inodes.remove(inode))
             inodes.add(0, inode)
     }
+
     fun getNextInodeId(): Int {
         return highestINodeId + 1
     }
@@ -39,36 +43,44 @@ object DataProvider {
         categories.add(0, inode)
         highestCategoryId = max(inode.id, highestCategoryId)
     }
+
     fun removeCategory(inode: INode) {
         categories.remove(inode)
     }
+
     fun getCategories(): MutableList<INode> {
         return categories
     }
+
     fun moveCategoryToTop(inode: INode) {
         if (categories.remove(inode))
             categories.add(0, inode)
     }
+
     fun getNextCategoryId(): Int {
         return highestCategoryId + 1
     }
+
     fun getActiveSubDirectory(): String {
-        var subDir = ""
-        if (categories.isNotEmpty()) {
-            subDir = "/c${categories[0].id}"
+        return if (categories.isNotEmpty()) {
+            "/c${categories[0].id}"
+        } else {
+            ""
         }
-        return subDir
     }
+
     fun getActiveCategoryName(): String {
-        if (categories.isNotEmpty())
-            return categories[0].title
+        return if (categories.isNotEmpty())
+            categories[0].title
         else
-            return ""
+            ""
     }
+
     fun setActiveCategoryName(title: String) {
         if (categories.isNotEmpty())
             categories[0].title = title
     }
+
     fun clearInodes() {
         for (inode in inodes.size - 1 downTo 0) {
             inodes.removeAt(inode)

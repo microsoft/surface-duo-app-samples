@@ -46,7 +46,6 @@ class NoteDetailFragment : Fragment() {
     }
 
     interface OnFragmentInteractionListener {
-        // TODO: add more fields (drawings? photos?) or create an object to encapsulate all the fields
         fun onINodeUpdate(inode: INode, title: String)
     }
 

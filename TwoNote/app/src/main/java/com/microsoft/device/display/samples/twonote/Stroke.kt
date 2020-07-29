@@ -38,8 +38,8 @@ class Stroke {
         color: Int
     ) {
         // need at least one path
-        if (x.size > 0 && x[0].size > 0) {
-            for (paths in 0 until x.size) {
+        if (x.isNotEmpty() && x[0].size > 0) {
+            for (paths in x.indices) {
                 for (coords in 0 until x[paths].size) {
                     if (paths == 0 && coords == 0)
                         initStroke(x[paths][coords], y[paths][coords], pressure[paths][coords], color)
@@ -52,14 +52,14 @@ class Stroke {
     }
 
     fun continueDrawing(x: Float, y: Float, pressure: Float) {
-        if (pressure == prevPressure && !pathList.isEmpty())
+        if (pressure == prevPressure && pathList.isNotEmpty())
             continueJoint(x, y)
         else
             addJoint(x, y, pressure)
     }
 
     fun finishStroke() {
-        if (!pathList.isEmpty()) {
+        if (pathList.isNotEmpty()) {
             val bounds = RectF()
             pathList[pathList.lastIndex].computeBounds(bounds, true)
             pathBounds.removeAt(pathBounds.lastIndex)
@@ -86,7 +86,7 @@ class Stroke {
     }
 
     private fun continueJoint(x: Float, y: Float) {
-        if (!pathList.isEmpty()) {
+        if (pathList.isNotEmpty()) {
             pathList[pathList.lastIndex].lineTo(x, y)
             updateValues(x, y, prevPressure)
         }
