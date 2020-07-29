@@ -15,10 +15,11 @@ import java.lang.Exception
 
 class FileHandler {
     companion object {
+        private const val FILE_HANDLER = "FILE HANDLER"
 
         // loads inode information from the current directory into the DataProvider
-        fun loadDirectory(context: Context, subDir: String) {
-            Log.d("FILE_HANDLER", "loading from directory $subDir")
+        private fun loadDirectory(context: Context, subDir: String) {
+            Log.d(FILE_HANDLER, "loading from directory $subDir")
             DataProvider.clearInodes()
             readDirEntry(context, subDir)?.let { notes ->
                 for (inode in notes.inodes.size - 1 downTo 0) {
@@ -35,7 +36,7 @@ class FileHandler {
                 inode.title = "Note " + inode.id
             }
             DataProvider.addINode(inode)
-            Log.d("FILE_HANDLER", "inode size: ${DataProvider.getINodes().size}")
+            Log.d(FILE_HANDLER, "inode size: ${DataProvider.getINodes().size}")
         }
 
         fun loadCategories(context: Context, subDir: String) {
@@ -48,13 +49,13 @@ class FileHandler {
 
                 // If no categories were found, make a new one
                 if (DataProvider.getCategories().isEmpty())
-                    addCategory(context)
+                    addCategory()
 
                 loadDirectory(context, DataProvider.getActiveSubDirectory())
             }
         }
 
-        fun addCategory(context: Context) {
+        private fun addCategory() {
             // TODO: put all of the default names in strings.xml for future localization
             val inode = INode(title = "Category 0", descriptor = "/c")
             if (DataProvider.getCategories().isNotEmpty()) {
@@ -67,7 +68,7 @@ class FileHandler {
         fun switchCategory(context: Context, inode: INode?) {
             var newNode = inode
             if (newNode == null) {
-                addCategory(context)
+                addCategory()
                 newNode = DataProvider.getCategories()[0]
             }
             DataProvider.moveCategoryToTop(newNode)
@@ -85,12 +86,12 @@ class FileHandler {
                 fileStream = FileInputStream(file)
                 objectStream = ObjectInputStream(fileStream)
                 val note = objectStream.readObject()
-                if (note is Note) {
-                    Log.d("FILE_HANDLER", "loading note $path$subDir$noteName")
-                    return note
+                return if (note is Note) {
+                    Log.d(FILE_HANDLER, "loading note $path$subDir$noteName")
+                    note
                 } else {
                     Log.e(this::class.java.toString(), context.resources.getString(R.string.load_error_note))
-                    return null
+                    null
                 }
             } catch (e: Exception) {
                 Log.e(this::class.java.toString(), e.message.toString())
@@ -102,9 +103,9 @@ class FileHandler {
         }
 
         // reads directory entry to get inodes
-        fun readDirEntry(context: Context, subDir: String): DirEntry? {
+        private fun readDirEntry(context: Context, subDir: String): DirEntry? {
             val path: String? = context.getExternalFilesDir(null)?.absolutePath
-            val file = File(path + subDir + "/dEntry")
+            val file = File("$path$subDir/dEntry")
             var fileStream: FileInputStream? = null
             var objectStream: ObjectInputStream? = null
 
@@ -112,11 +113,11 @@ class FileHandler {
                 fileStream = FileInputStream(file)
                 objectStream = ObjectInputStream(fileStream)
                 val entry = objectStream.readObject()
-                if (entry is DirEntry) {
-                    return entry
+                return if (entry is DirEntry) {
+                    entry
                 } else {
                     Log.e(this::class.java.toString(), context.resources.getString(R.string.load_error_dir))
-                    return null
+                    null
                 }
             } catch (e: Exception) {
                 val entry = DirEntry()
@@ -128,7 +129,7 @@ class FileHandler {
             }
         }
 
-        fun createDirectory(context: Context, subDir: String) {
+        private fun createDirectory(context: Context, subDir: String) {
             val path: String? = context.getExternalFilesDir(null)?.absolutePath
             val file = File(path + subDir)
             file.mkdirs()
@@ -138,7 +139,7 @@ class FileHandler {
         fun writeDirEntry(context: Context, subDir: String, entry: DirEntry) {
             val path: String? = context.getExternalFilesDir(null)?.absolutePath
             createDirectory(context, subDir)
-            val file = File(path + subDir + "/dEntry")
+            val file = File("$path$subDir/dEntry")
             val fileStream = FileOutputStream(file)
             val objectStream = ObjectOutputStream(fileStream)
             objectStream.writeObject(entry)
@@ -155,7 +156,7 @@ class FileHandler {
                 DataProvider.removeINode(inode)
 
                 if (file.isFile) {
-                    Log.d("FILE_HANDLER", "deleting note $path$subDir${inode.descriptor}${inode.id}")
+                    Log.d(FILE_HANDLER, "deleting note $path$subDir${inode.descriptor}${inode.id}")
                     return file.delete()
                 }
                 if (file.isDirectory) {

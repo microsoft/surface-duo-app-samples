@@ -38,11 +38,10 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     private lateinit var inodes: MutableList<INode>
     private lateinit var categories: MutableList<INode>
     private lateinit var editText: TextInputEditText
-    private val ROOT = ""
-    private var selected_flag = false
+    private val root = ""
+    private var selectedFlag = false
 
     companion object {
-        const val ACTION_MODE = "action mode"
         const val LIST_VIEW = "list view"
     }
 
@@ -50,7 +49,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         super.onCreate(savedInstanceState)
         inodes = DataProvider.getINodes()
         categories = DataProvider.getCategories()
-        FileHandler.loadCategories(requireContext(), ROOT)
+        FileHandler.loadCategories(requireContext(), root)
 
         activity?.let {
             arrayAdapter = object : ArrayAdapter<INode>(it, android.R.layout.simple_list_item_2, android.R.id.text1, inodes) {
@@ -150,7 +149,6 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         }
 
         context?.let {
-            // TODO: switch to colored icon
             toolbar.setNavigationIcon(R.drawable.ic_icon_unfilled)
             toolbar.navigationIcon?.setTint(it.getColor(R.color.colorOnPrimary))
         }
@@ -161,11 +159,11 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     override fun onPause() {
         super.onPause()
         FileHandler.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
-        FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry(categories))
+        FileHandler.writeDirEntry(requireContext(), root, DirEntry(categories))
     }
 
     override fun onItemSelected(adapterView: AdapterView<*>, item: View?, position: Int, id: Long) {
-        if (selected_flag) {
+        if (selectedFlag) {
             dropDownAdapter?.let {
                 it.getItem(position)?.let { inode ->
                     setNewCategory(inode, false)
@@ -173,7 +171,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                 }
             }
         }
-        selected_flag = !selected_flag
+        selectedFlag = !selectedFlag
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -259,7 +257,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                     setNewCategory(DataProvider.getCategories()[1], true)
 
                     val categoryToDelete = DataProvider.getCategories()[1]
-                    FileHandler.delete(requireContext(), ROOT, categoryToDelete)
+                    FileHandler.delete(requireContext(), root, categoryToDelete)
                     DataProvider.removeCategory(categoryToDelete)
 
                     editText.setText(DataProvider.getActiveCategoryName())
@@ -315,7 +313,8 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     fun updateArrayAdapter() {
         arrayAdapter?.notifyDataSetChanged()
     }
-    fun updateDropDown() {
+
+    private fun updateDropDown() {
         dropDownAdapter?.notifyDataSetChanged()
     }
 }
