@@ -34,7 +34,7 @@
             android:textSize="14sp"
             android:gravity="center_vertical"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/widgetLogo"
+            android:layout_toEndOf="@+id/widgetLogo"
             android:textAllCaps="true" />
 
         <ImageView

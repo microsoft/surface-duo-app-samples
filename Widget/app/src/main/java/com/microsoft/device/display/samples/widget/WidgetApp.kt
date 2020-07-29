@@ -61,8 +61,6 @@ class WidgetApp : AppWidgetProvider() {
                 getPendingSelfIntent(context, ACTION_UPDATE)
             )
 
-            val number = 10
-
             // Adding settings button logic for every widget instance
             views.setOnClickPendingIntent(
                 R.id.widgetSettingsButton,
