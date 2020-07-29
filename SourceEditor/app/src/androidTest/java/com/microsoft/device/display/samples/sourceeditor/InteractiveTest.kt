@@ -7,7 +7,8 @@
 package com.microsoft.device.display.samples.sourceeditor
 
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.web.assertion.WebViewAssertions.webMatches
 import androidx.test.espresso.web.sugar.Web.onWebView
@@ -52,7 +53,7 @@ class InteractiveTest {
 
     @Test
     fun textPreservedOnSpanTest() {
-        onView(withId(R.id.textinput_code)).perform(replaceText("<h1>" + testString +  "</h1>"))
+        onView(withId(R.id.textinput_code)).perform(replaceText("<h1>$testString</h1>"))
         spanFromLeft()
         assert(isSpanned())
         onWebView()
@@ -89,24 +90,31 @@ class InteractiveTest {
 
         const val testString = "Testing in a different browser"
     }
+
     private fun spanFromLeft() {
         device.swipe(leftX, bottomY, leftMiddleX, middleY, spanSteps)
     }
+
     private fun unspanToLeft() {
         device.swipe(rightX, bottomY, leftX, middleY, spanSteps)
     }
+
     private fun spanFromRight() {
         device.swipe(rightX, bottomY, rightMiddleX, middleY, spanSteps)
     }
+
     private fun unspanToRight() {
         device.swipe(leftX, bottomY, rightX, middleY, spanSteps)
     }
+
     private fun switchToLeft() {
         device.swipe(rightX, bottomY, leftX, middleY, switchSteps)
     }
+
     private fun switchToRight() {
         device.swipe(leftX, bottomY, rightX, middleY, switchSteps)
     }
+
     private fun isSpanned(): Boolean {
         return ScreenHelper.isDualMode(activityRule.activity)
     }
