@@ -43,7 +43,7 @@
         android:id="@+id/ink_mode"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/pen_tools"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar_layout">
@@ -101,17 +101,29 @@
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/button_clear"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/button_height"
+        <SeekBar
+            android:id="@+id/thickness_slider"
+            android:layout_width="@dimen/seekbar_width"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/edge_padding"
-            android:text="@string/clear"
+            android:max="6"
+            android:min="1"
+            android:progress="3"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include
+        android:id="@+id/pen_tools"
+        layout="@layout/pen_tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -25,9 +25,10 @@ class Stroke {
     private var xCoord: Float = 0f
     private var yCoord: Float = 0f
     private var prevPressure: Float = 0f
+    private var thicknessMultiplier: Int = 25
 
-    constructor(x: Float, y: Float, pressure: Float, color: Int) {
-        initStroke(x, y, pressure, color)
+    constructor(x: Float, y: Float, pressure: Float, color: Int, thickness: Int) {
+        initStroke(x, y, pressure, color, thickness)
     }
 
     // reconstruct serialized data
@@ -35,14 +36,15 @@ class Stroke {
         x: List<MutableList<Float>>,
         y: List<MutableList<Float>>,
         pressure: List<MutableList<Float>>,
-        color: Int
+        color: Int,
+        thickness: Int
     ) {
         // need at least one path
         if (x.isNotEmpty() && x[0].size > 0) {
             for (paths in x.indices) {
                 for (coords in 0 until x[paths].size) {
                     if (paths == 0 && coords == 0)
-                        initStroke(x[paths][coords], y[paths][coords], pressure[paths][coords], color)
+                        initStroke(x[paths][coords], y[paths][coords], pressure[paths][coords], color, thickness)
                     else
                         continueDrawing(x[paths][coords], y[paths][coords], pressure[paths][coords])
                 }
@@ -73,7 +75,7 @@ class Stroke {
 
         val paint = Paint()
         paint.color = paintColor
-        paint.strokeWidth = pressure * 25
+        paint.strokeWidth = pressure * thicknessMultiplier
 
         val path = Path()
         path.moveTo(xCoord, yCoord)
@@ -123,7 +125,7 @@ class Stroke {
         val y: List<MutableList<Float>> = yList.slice(range)
         val p: List<MutableList<Float>> = pressureList.slice(range)
 
-        val stroke = Stroke(x, y, p, paintColor)
+        val stroke = Stroke(x, y, p, paintColor, thicknessMultiplier)
 
         range = IntRange(0, i)
         xList = xList.slice(range).toMutableList()
@@ -159,11 +161,12 @@ class Stroke {
         pressureList[pressureList.lastIndex].add(pressure)
     }
 
-    private fun initStroke(x: Float, y: Float, pressure: Float, color: Int) {
+    private fun initStroke(x: Float, y: Float, pressure: Float, color: Int, thickness: Int) {
         xCoord = x
         yCoord = y
         prevPressure = pressure
         paintColor = color
+        thicknessMultiplier = thickness
 
         addJoint(x, y, pressure)
     }
@@ -175,6 +178,6 @@ class Stroke {
     }
 
     fun serializeData(): SerializedStroke {
-        return SerializedStroke(xList, yList, pressureList, paintColor)
+        return SerializedStroke(xList, yList, pressureList, paintColor, thicknessMultiplier)
     }
 }

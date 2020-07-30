@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/undo"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/button_height"
+        android:layout_weight="1"
+        android:minWidth="@dimen/button_width"
+        android:text="@string/action_undo" />
+
+    <View
+        android:layout_width="@dimen/spacing"
+        android:layout_height="match_parent"
+        android:background="?attr/colorBackground" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/color"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/button_height"
+        android:layout_weight="1"
+        android:minWidth="@dimen/button_width"
+        android:text="@string/action_color" />
+
+    <View
+        android:layout_width="@dimen/spacing"
+        android:layout_height="match_parent"
+        android:background="?attr/colorBackground" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/thickness"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/button_height"
+        android:layout_weight="1"
+        android:minWidth="@dimen/button_width"
+        android:text="@string/action_thickness" />
+
+    <View
+        android:layout_width="@dimen/spacing"
+        android:layout_height="match_parent"
+        android:background="?attr/colorOnPrimary" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/clear"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/button_height"
+        android:layout_weight="1"
+        android:minWidth="@dimen/button_width"
+        android:text="@string/action_clear" />
+
+</LinearLayout>

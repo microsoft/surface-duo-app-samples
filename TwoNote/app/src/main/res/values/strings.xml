@@ -23,4 +23,8 @@
     <string name="action_delete_category">Delete category</string>
     <string name="action_ink_on">Activate inking</string>
     <string name="action_ink_off">Deactivate inking</string>
+    <string name="action_undo">UNDO</string>
+    <string name="action_clear">CLEAR</string>
+    <string name="action_color">COLORS</string>
+    <string name="action_thickness">THICKNESS</string>
 </resources>
