@@ -6,5 +6,6 @@ data class SerializedStroke(
     val xList: List<MutableList<Float>> = listOf(),
     val yList: List<MutableList<Float>> = listOf(),
     val pressureList: List<MutableList<Float>> = listOf(),
-    val paintColor: Int = 0
+    val paintColor: Int = 0,
+    val thicknessMultiplier: Int = 25
 ) : Serializable

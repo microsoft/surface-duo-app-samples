@@ -16,11 +16,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import android.widget.SeekBar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.DrawViewModel
@@ -43,6 +45,13 @@ class NoteDetailFragment : Fragment() {
                 this.putSerializable(MainActivity.INODE, inode)
             }
         }
+
+        const val THICKNESS_1 = 5
+        const val THICKNESS_2 = 15
+        const val THICKNESS_DEFAULT = 25
+        const val THICKNESS_4 = 50
+        const val THICKNESS_5 = 75
+        const val THICKNESS_6 = 100
     }
 
     interface OnFragmentInteractionListener {
@@ -117,14 +126,51 @@ class NoteDetailFragment : Fragment() {
 
         toolbar.overflowIcon?.setTint(requireContext().getColor(R.color.colorOnPrimary))
 
+//        val penTools = view.findViewById<LinearLayout>(R.id.pen_tools)
+//        penTools.inflateMenu(R.menu.menu_pen_tools)
+//        penTools.setOnMenuItemClickListener {
+//            onOptionsItemSelected(it)
+//        }
+
         view.findViewById<ScrollView>(R.id.text_mode)?.bringToFront()
     }
 
     private fun setUpInkMode(view: View) {
         drawView = view.findViewById(R.id.draw_view)
 
-        val clearButton = view.findViewById<Button>(R.id.button_clear)
+        val clearButton = view.findViewById<MaterialButton>(R.id.clear)
         clearButton.setOnClickListener { clearDrawing() }
+
+        val undoButton = view.findViewById<MaterialButton>(R.id.undo)
+        undoButton.setOnClickListener { undoStroke() }
+
+        val colorButton = view.findViewById<MaterialButton>(R.id.color)
+        colorButton.setOnClickListener { toggleViewVisibility(view.findViewById(R.id.color_buttons)) }
+
+        val thickness = view.findViewById<SeekBar>(R.id.thickness_slider)
+        thickness.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
+                // Progress: [0, 6] (default 3), Thicknesses: [5, 100] (default 25)
+                val newThickness = when (progress) {
+                    1 -> THICKNESS_1
+                    2 -> THICKNESS_2
+                    3 -> THICKNESS_DEFAULT
+                    4 -> THICKNESS_4
+                    5 -> THICKNESS_5
+                    6 -> THICKNESS_6
+                    else -> THICKNESS_DEFAULT
+                }
+                drawView.changeThickness(newThickness)
+            }
+
+            override fun onStartTrackingTouch(seek: SeekBar) {}
+
+            override fun onStopTrackingTouch(seek: SeekBar) {}
+        })
+
+        val thicknessButton = view.findViewById<MaterialButton>(R.id.thickness)
+        thicknessButton.setOnClickListener { toggleViewVisibility(thickness) }
 
         val redButton = view.findViewById<Button>(R.id.button_red)
         redButton.setOnClickListener { chooseColor(PaintColors.Red.name) }
@@ -147,7 +193,7 @@ class NoteDetailFragment : Fragment() {
             if (note is Note) {
                 val strokeList: MutableList<Stroke> = mutableListOf()
                 for (s in note.drawings) {
-                    strokeList.add(Stroke(s.xList, s.yList, s.pressureList, s.paintColor))
+                    strokeList.add(Stroke(s.xList, s.yList, s.pressureList, s.paintColor, s.thicknessMultiplier))
                 }
                 viewModel.setStrokeList(strokeList)
             }
@@ -162,6 +208,18 @@ class NoteDetailFragment : Fragment() {
 
         // REVISIT: connect to savedInstanceState bundle
         drawView.disable()
+    }
+
+    private fun toggleViewVisibility(view: View?) {
+        if (view?.visibility == View.VISIBLE) {
+            view.visibility = View.INVISIBLE
+        } else {
+            view?.visibility = View.VISIBLE
+        }
+    }
+
+    private fun undoStroke() {
+        drawView.undo()
     }
 
     override fun onPause() {
@@ -246,23 +304,22 @@ class NoteDetailFragment : Fragment() {
                 true
             }
             R.id.action_ink -> {
-                val colors = view?.findViewById<LinearLayout>(R.id.color_buttons)
-                val clear = view?.findViewById<Button>(R.id.button_clear)
+                val penTools = view?.findViewById<LinearLayout>(R.id.pen_tools)
 
                 if (drawView.isDisabled()) {
                     drawView.enable()
-                    clear?.visibility = View.VISIBLE
-                    colors?.visibility = View.VISIBLE
                     view?.findViewById<ConstraintLayout>(R.id.ink_mode)?.bringToFront()
                     item.setIcon(R.drawable.ic_text)
                     item.title = getString(R.string.action_ink_off)
+                    penTools?.visibility = View.VISIBLE
+                    penTools?.bringToFront()
+
                 } else {
                     drawView.disable()
-                    clear?.visibility = View.INVISIBLE
-                    colors?.visibility = View.INVISIBLE
                     view?.findViewById<ScrollView>(R.id.text_mode)?.bringToFront()
                     item.setIcon(R.drawable.ic_fluent_calligraphy_pen_24_filled)
                     item.title = getString(R.string.action_ink_on)
+                    penTools?.visibility = View.INVISIBLE
                 }
 
                 true
