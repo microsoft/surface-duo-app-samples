@@ -23,12 +23,7 @@ class INode(
         return dateModified.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT))
     }
 
-    // REVISIT: this is no longer used for ListView display, so should we still keep it?
     override fun toString(): String {
-        return StringBuilder().apply {
-            append(title)
-            append(" - ")
-            append(dateModified.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)))
-        }.toString()
+        return title
     }
 }
