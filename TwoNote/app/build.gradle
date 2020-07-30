@@ -32,7 +32,8 @@ dependencies {
 
     implementation googleDependencies.material
 
-    implementation microsoftDependencies.dualScreenLayout
+    implementation microsoftDependencies.dualScreenLayouts
+    implementation microsoftDependencies.core
     implementation microsoftDependencies.fluent
 
     testImplementation testDependencies.junit

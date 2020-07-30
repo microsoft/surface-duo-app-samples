@@ -27,7 +27,7 @@ import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.DirEntry
 import com.microsoft.device.display.samples.twonote.model.INode
 import com.microsoft.device.display.samples.twonote.model.Note
-import com.microsoft.device.dualscreen.layout.ScreenHelper
+import com.microsoft.device.dualscreen.core.ScreenHelper
 import java.time.LocalDateTime
 
 class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, AdapterView.OnItemSelectedListener {
@@ -226,14 +226,14 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
             if (ScreenHelper.isDualMode(requireActivity())) {
                 parentFragmentManager.beginTransaction()
                     .replace(
-                        R.id.dual_screen_end_container_id,
+                        R.id.second_container_id,
                         NoteDetailFragment.newInstance(inode, note),
                         MainActivity.DETAIL_FRAGMENT
                     ).commit()
             } else {
                 parentFragmentManager.beginTransaction()
                     .replace(
-                        R.id.single_screen_container_id,
+                        R.id.first_container_id,
                         NoteDetailFragment.newInstance(inode, note),
                         MainActivity.DETAIL_FRAGMENT
                     ).addToBackStack(null)
