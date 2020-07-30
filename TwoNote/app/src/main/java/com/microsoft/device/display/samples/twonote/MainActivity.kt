@@ -10,7 +10,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.microsoft.device.display.samples.twonote.model.INode
 import com.microsoft.device.display.samples.twonote.model.Note
-import com.microsoft.device.dualscreen.layout.ScreenHelper
+import com.microsoft.device.dualscreen.core.ScreenHelper
 
 class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteractionListener {
     companion object {
@@ -30,25 +30,23 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
 
         if (!ScreenHelper.isDualMode(this)) {
             // Remove the dual screen container fragments if they exist
-            removeFragment(R.id.dual_screen_start_container_id)
-            removeFragment(R.id.dual_screen_end_container_id)
+            removeFragment(R.id.second_container_id)
 
             if (note is Note && inode is INode) {
-                startNoteDetailFragment(R.id.single_screen_container_id, note, inode)
+                startNoteDetailFragment(R.id.first_container_id, note, inode)
             } else {
-                startNoteListFragment(R.id.single_screen_container_id)
+                startNoteListFragment(R.id.first_container_id)
             }
         } else {
             // Remove the single screen container fragment if it exists
-            removeFragment(R.id.single_screen_container_id)
 
             if (note is Note && inode is INode) {
-                startNoteDetailFragment(R.id.dual_screen_end_container_id, note, inode)
+                startNoteDetailFragment(R.id.second_container_id, note, inode)
             } else {
                 startGetStartedFragment()
             }
 
-            startNoteListFragment(R.id.dual_screen_start_container_id)
+            startNoteListFragment(R.id.first_container_id)
         }
     }
 
@@ -72,15 +70,15 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
 
     private fun startGetStartedFragment() {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.dual_screen_end_container_id, GetStartedFragment(), null)
+            .replace(R.id.second_container_id, GetStartedFragment(), null)
             .commit()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        val fragDual = supportFragmentManager.findFragmentById(R.id.dual_screen_end_container_id)
-        val fragSingle = supportFragmentManager.findFragmentById(R.id.single_screen_container_id)
+        val fragDual = supportFragmentManager.findFragmentById(R.id.second_container_id)
+        val fragSingle = supportFragmentManager.findFragmentById(R.id.first_container_id)
 
         // REVISIT: couldn't really think of a cleaner way to do this (because using
         // ScreenHelper.isDualMode didn't return the expected values)

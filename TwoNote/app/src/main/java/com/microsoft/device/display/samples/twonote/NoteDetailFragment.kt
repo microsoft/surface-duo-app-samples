@@ -26,7 +26,7 @@ import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.DrawViewModel
 import com.microsoft.device.display.samples.twonote.model.INode
 import com.microsoft.device.display.samples.twonote.model.Note
-import com.microsoft.device.dualscreen.layout.ScreenHelper
+import com.microsoft.device.dualscreen.core.ScreenHelper
 import java.lang.ClassCastException
 
 class NoteDetailFragment : Fragment() {
@@ -286,14 +286,14 @@ class NoteDetailFragment : Fragment() {
 
                 parentFragmentManager.beginTransaction()
                     .replace(
-                        R.id.dual_screen_end_container_id,
+                        R.id.second_container_id,
                         GetStartedFragment(),
                         null
                     ).commit()
             } else {
                 parentFragmentManager.beginTransaction()
                     .replace(
-                        R.id.single_screen_container_id,
+                        R.id.first_container_id,
                         NoteListFragment(),
                         MainActivity.LIST_FRAGMENT
                     ).commit()
@@ -306,11 +306,11 @@ class NoteDetailFragment : Fragment() {
         activity?.let {
             if (ScreenHelper.isDualMode(it)) {
                 parentFragmentManager.beginTransaction()
-                    .replace(R.id.dual_screen_end_container_id, GetStartedFragment(), null)
+                    .replace(R.id.second_container_id, GetStartedFragment(), null)
                     .commit()
             } else {
                 parentFragmentManager.beginTransaction()
-                    .replace(R.id.single_screen_container_id, NoteListFragment(), MainActivity.LIST_FRAGMENT)
+                    .replace(R.id.first_container_id, NoteListFragment(), MainActivity.LIST_FRAGMENT)
                     .commit()
             }
         }
