@@ -29,6 +29,7 @@ class PenDrawView : View {
     private val eraser = RectF()
     private var prevPressure = 0f
     private var disabled = true
+    private var currentThickness: Int = 25
 
     constructor(context: Context) : super(context) {
         init()
@@ -109,7 +110,7 @@ class PenDrawView : View {
         } else {
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    val stroke = Stroke(event.x, event.y, event.pressure, currentColor)
+                    val stroke = Stroke(event.x, event.y, event.pressure, currentColor, currentThickness)
                     strokeList.add(stroke)
                     prevPressure = event.pressure
                 }
@@ -167,11 +168,22 @@ class PenDrawView : View {
         currentColor = color
     }
 
+    fun changeThickness(thickness: Int) {
+        currentThickness = thickness
+    }
+
     fun clearDrawing() {
         this.drawBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         strokeList.clear()
 
         invalidate()
+    }
+
+    fun undo() {
+        if (strokeList.isNotEmpty()) {
+            strokeList.removeAt(strokeList.lastIndex)
+            invalidate()
+        }
     }
 
     private fun takeScreenshotOfView(view: View, height: Int, width: Int): Bitmap {
