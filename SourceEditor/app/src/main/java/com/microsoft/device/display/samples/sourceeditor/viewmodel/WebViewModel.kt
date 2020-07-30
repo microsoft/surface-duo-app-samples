@@ -23,4 +23,3 @@ class WebViewModel : ViewModel() {
         return webFormState
     }
 }
-

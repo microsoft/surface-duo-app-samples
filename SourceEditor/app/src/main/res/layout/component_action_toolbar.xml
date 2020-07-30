@@ -10,7 +10,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -39,7 +38,7 @@
         android:id="@+id/btn_save"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:paddingRight="15dp"
+        android:paddingEnd="15dp"
         app:layout_constraintBottom_toBottomOf="@+id/list_toolbar"
         app:layout_constraintEnd_toStartOf="@+id/btn_file"
         app:layout_constraintTop_toTopOf="@+id/list_toolbar"

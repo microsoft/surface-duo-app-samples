@@ -19,11 +19,11 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import com.microsoft.device.dualscreen.layout.ScreenHelper
-import org.hamcrest.CoreMatchers.`is` as iz
 import org.hamcrest.CoreMatchers.not
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.hamcrest.CoreMatchers.`is` as iz
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -164,15 +164,15 @@ class PhotoEditorUITest {
         val device: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
         // Swipe constants
-        const val leftX: Int = 675          // middle of left screen
-        const val rightX: Int = 2109        // middle of right screen
-        const val middleX: Int = 1350       // hinge area
-        const val bottomY: Int = 1780       // bottom of screen
-        const val middleY: Int = 900        // middle of screen
-        const val spanSteps: Int = 400      // spanning swipe
-        const val unspanSteps: Int = 200    // unspanning swipe
-        const val switchSteps: Int = 100    // swipe to switch from one screen to the other
-        const val closeSteps: Int = 50      // swipe to close app
+        const val leftX: Int = 675 // middle of left screen
+        const val rightX: Int = 2109 // middle of right screen
+        const val middleX: Int = 1350 // hinge area
+        const val bottomY: Int = 1780 // bottom of screen
+        const val middleY: Int = 900 // middle of screen
+        const val spanSteps: Int = 400 // spanning swipe
+        const val unspanSteps: Int = 200 // unspanning swipe
+        const val switchSteps: Int = 100 // swipe to switch from one screen to the other
+        const val closeSteps: Int = 50 // swipe to close app
     }
 
     private fun spanFromLeft() {

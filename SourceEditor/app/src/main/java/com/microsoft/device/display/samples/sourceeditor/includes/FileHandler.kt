@@ -14,17 +14,25 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.core.app.ActivityCompat.startActivityForResult
 import com.microsoft.device.display.samples.sourceeditor.viewmodel.WebViewModel
-import java.io.*
+import java.io.BufferedReader
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.InputStreamReader
+import java.io.IOException
 import java.nio.charset.Charset
 
 /* Class used to make file read/write requests */
-class FileHandler (val activity: Activity,
-                   val webVM: WebViewModel,
-                   val contentResolver: ContentResolver) {
+class FileHandler(
+    private val activity: Activity,
+    private val webVM: WebViewModel,
+    private val contentResolver: ContentResolver
+) {
 
-    // intent request codes
-    val CREATE_FILE = 1
-    val PICK_TXT_FILE = 2
+    companion object {
+        // intent request codes
+        const val CREATE_FILE = 1
+        const val PICK_TXT_FILE = 2
+    }
 
     // create a window prompting user to save a new file
     // defaults to public Downloads folder if uri is empty
@@ -72,11 +80,11 @@ class FileHandler (val activity: Activity,
     fun alterDocument(uri: Uri) {
         try {
             contentResolver.openFileDescriptor(uri, "w")?.use {
-                FileOutputStream(it.fileDescriptor).use {
+                FileOutputStream(it.fileDescriptor).use { stream ->
                     val charset: Charset = Charsets.UTF_8
-                    it.write(
-                            webVM.getText().value.toString()
-                                    .toByteArray(charset)
+                    stream.write(
+                        webVM.getText().value.toString()
+                            .toByteArray(charset)
                     )
                 }
             }
@@ -95,7 +103,7 @@ class FileHandler (val activity: Activity,
         var initHeader = true
 
         val lines = str.split("<")
-        lines.forEach{
+        lines.forEach {
             if (initHeader) {
                 builder.append(it)
                 initHeader = false

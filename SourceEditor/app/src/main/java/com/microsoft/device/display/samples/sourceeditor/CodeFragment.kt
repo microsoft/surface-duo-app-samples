@@ -44,9 +44,9 @@ class CodeFragment : Fragment() {
     private lateinit var scrollVM: ScrollViewModel
     private lateinit var webVM: WebViewModel
 
-    private var scrollingBuffer : Int = Defines.DEFAULT_BUFFER_SIZE
-    private var scrollRange : Int = Defines.DEFAULT_RANGE
-    private var rangeFound : Boolean = false
+    private var scrollingBuffer: Int = Defines.DEFAULT_BUFFER_SIZE
+    private var scrollRange: Int = Defines.DEFAULT_RANGE
+    private var rangeFound: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -83,7 +83,7 @@ class CodeFragment : Fragment() {
     }
 
     // read from a base file in the assets folder
-    private fun readFile(file : String, context : Context?) : String {
+    private fun readFile(file: String, context: Context?): String {
         return BufferedReader(InputStreamReader(context?.assets?.open(file))).useLines { lines ->
             val results = StringBuilder()
             lines.forEach { results.append(it + System.getProperty("line.separator")) }
@@ -92,7 +92,7 @@ class CodeFragment : Fragment() {
     }
 
     // mirror scrolling logic
-    private fun handleScrolling (observing: Boolean, int: Int) {
+    private fun handleScrolling(observing: Boolean, int: Int) {
         if (!rangeFound) {
             calibrateScrollView()
         } else {
@@ -138,12 +138,12 @@ class CodeFragment : Fragment() {
         rangeFound = false
 
         // set event and data listeners
-        scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+        scrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
             handleScrolling(false, scrollY)
         }
 
         scrollVM.getScroll().observe(requireActivity(), Observer { state ->
-            if (!state.scrollKey.equals(Defines.CODE_KEY)) {
+            if (state.scrollKey != Defines.CODE_KEY) {
                 handleScrolling(true, state.scrollPercentage)
             }
         })
@@ -152,12 +152,12 @@ class CodeFragment : Fragment() {
     // method that triggers transition to preview fragment
     private fun startPreviewFragment() {
         parentFragmentManager.beginTransaction()
-                .replace(
-                        R.id.single_screen_container_id,
-                        PreviewFragment(),
-                        null
-                ).addToBackStack(null)
-                .commit()
+            .replace(
+                R.id.single_screen_container_id,
+                PreviewFragment(),
+                null
+            ).addToBackStack(null)
+            .commit()
     }
 
     // listener for changes to text in code editor
@@ -177,7 +177,7 @@ class CodeFragment : Fragment() {
     // get bounds of scroll window
     private fun calibrateScrollView() {
         if (scrollView.scrollY > Defines.MIN_RANGE_THRESHOLD) {
-            scrollRange = scrollView.scrollY  // successfully calibrated
+            scrollRange = scrollView.scrollY // successfully calibrated
             rangeFound = true
         } else {
             scrollView.fullScroll(View.FOCUS_DOWN)
@@ -208,13 +208,13 @@ class CodeFragment : Fragment() {
         val handler = DragHandler(requireActivity(), webVM, requireActivity().contentResolver)
 
         // Main target will trigger when textField has content
-        textField.setOnDragListener { v, event ->
-            handler.onDrag(v, event)
+        textField.setOnDragListener { _, event ->
+            handler.onDrag(event)
         }
 
         // Sub target will trigger when textField is empty
-        codeLayout.setOnDragListener { v, event ->
-            handler.onDrag(v, event)
+        codeLayout.setOnDragListener { _, event ->
+            handler.onDrag(event)
         }
     }
 }

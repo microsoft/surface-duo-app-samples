@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var fileHandler: FileHandler
     private lateinit var webVM: WebViewModel
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -48,20 +48,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onActivityResult(
-            requestCode: Int, resultCode: Int, resultData: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         super.onActivityResult(requestCode, resultCode, resultData)
 
         // request to save a file has been made, add data to newly created file
-        if (requestCode == fileHandler.CREATE_FILE
-            && resultCode == Activity.RESULT_OK) {
+        if (requestCode == FileHandler.CREATE_FILE && resultCode == Activity.RESULT_OK) {
             resultData?.data?.also { uri ->
                 fileHandler.alterDocument(uri)
             }
         }
         // request to load file contents has been made, process the file's contents
-        else if (requestCode == fileHandler.PICK_TXT_FILE
-                && resultCode == Activity.RESULT_OK) {
+        else if (requestCode == FileHandler.PICK_TXT_FILE && resultCode == Activity.RESULT_OK) {
             resultData?.data?.also { uri ->
                 fileHandler.processFileData(uri)
             }

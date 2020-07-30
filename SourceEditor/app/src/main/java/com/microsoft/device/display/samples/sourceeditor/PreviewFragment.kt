@@ -38,14 +38,14 @@ class PreviewFragment : Fragment() {
     private lateinit var scrollVM: ScrollViewModel
     private lateinit var webVM: WebViewModel
 
-    private var scrollingBuffer : Int = Defines.DEFAULT_BUFFER_SIZE
-    private var scrollRange : Int = Defines.DEFAULT_RANGE
-    private var rangeFound : Boolean = false
+    private var scrollingBuffer: Int = Defines.DEFAULT_BUFFER_SIZE
+    private var scrollRange: Int = Defines.DEFAULT_RANGE
+    private var rangeFound: Boolean = false
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_item_preview, container, false)
 
@@ -54,12 +54,12 @@ class PreviewFragment : Fragment() {
         webView.settings.javaScriptEnabled = true
         webView.webChromeClient = WebChromeClient()
 
-        activity?.let { activity ->
+        activity?.let {
             // initialize ViewModels (find existing or create a new one)
             scrollVM = ViewModelProvider(requireActivity()).get(ScrollViewModel::class.java)
             webVM = ViewModelProvider(requireActivity()).get(WebViewModel::class.java)
 
-            val str : String? = (webVM.getText().value)
+            val str: String? = (webVM.getText().value)
             webView.loadData(str, Defines.HTML_TYPE, Defines.ENCODING)
 
             handleSpannedModeSelection(view, webView)
@@ -69,11 +69,10 @@ class PreviewFragment : Fragment() {
     }
 
     // mirror scrolling logic
-    private fun handleScrolling (observing: Boolean, int: Int) {
+    private fun handleScrolling(observing: Boolean, int: Int) {
         if (!rangeFound) {
             calibrateScrollView()
-        }
-        else {
+        } else {
             // code window scrolled, auto scroll to match editor
             if (observing) {
                 autoScroll(int)
@@ -95,9 +94,8 @@ class PreviewFragment : Fragment() {
             })
 
             if (ScreenHelper.isDualMode(activity)) {
-                initializeDualScreen(view, webView)
-            }
-            else {
+                initializeDualScreen(view)
+            } else {
                 initializeSingleScreen()
             }
         }
@@ -114,7 +112,7 @@ class PreviewFragment : Fragment() {
     }
 
     // spanned selection helper
-    private fun initializeDualScreen(view: View, webView: WebView) {
+    private fun initializeDualScreen(view: View) {
         scrollingBuffer = Defines.DEFAULT_BUFFER_SIZE
         scrollRange = Defines.DEFAULT_RANGE
         rangeFound = false
@@ -123,12 +121,12 @@ class PreviewFragment : Fragment() {
 
         // set event and data listeners
         scrollView = view.findViewById(R.id.scrollview_preview)
-        scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+        scrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
             handleScrolling(false, scrollY)
         }
 
         scrollVM.getScroll().observe(requireActivity(), Observer { state ->
-            if (!state.scrollKey.equals(Defines.PREVIEW_KEY)) {
+            if (state.scrollKey != Defines.PREVIEW_KEY) {
                 handleScrolling(true, state.scrollPercentage)
             }
         })
@@ -137,18 +135,18 @@ class PreviewFragment : Fragment() {
     // method that triggers transition to code fragment
     private fun startCodeFragment() {
         parentFragmentManager.beginTransaction()
-                .replace(
-                        R.id.single_screen_container_id,
-                        CodeFragment(),
-                        null
-                ).addToBackStack(null)
-                .commit()
+            .replace(
+                R.id.single_screen_container_id,
+                CodeFragment(),
+                null
+            ).addToBackStack(null)
+            .commit()
     }
 
     // get bounds of scroll window
     private fun calibrateScrollView() {
         if (scrollView.scrollY > Defines.MIN_RANGE_THRESHOLD) {
-            scrollRange = scrollView.scrollY  // successfully calibrated
+            scrollRange = scrollView.scrollY // successfully calibrated
             rangeFound = true
         } else {
             scrollView.fullScroll(View.FOCUS_DOWN)
@@ -179,8 +177,8 @@ class PreviewFragment : Fragment() {
         val handler = DragHandler(requireActivity(), webVM, requireActivity().contentResolver)
         val target = webView
 
-        target.setOnDragListener { v, event ->
-            handler.onDrag(v, event)
+        target.setOnDragListener { _, event ->
+            handler.onDrag(event)
         }
     }
 }
