@@ -13,7 +13,7 @@ import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.lang.Exception
 
-class FileHandler {
+class FileSystem {
     companion object {
         private const val FILE_HANDLER = "FILE HANDLER"
 

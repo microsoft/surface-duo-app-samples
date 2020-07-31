@@ -6,8 +6,11 @@
 
 package com.microsoft.device.display.samples.twonote
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.microsoft.device.display.samples.twonote.includes.FileHandler
 import com.microsoft.device.display.samples.twonote.model.INode
 import com.microsoft.device.display.samples.twonote.model.Note
 import com.microsoft.device.dualscreen.core.ScreenHelper
@@ -109,5 +112,25 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
      */
     override fun onINodeUpdate(inode: INode, title: String) {
         (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as NoteListFragment).updateINode(inode, title)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
+        super.onActivityResult(requestCode, resultCode, resultData)
+
+        val fragment = supportFragmentManager.findFragmentByTag(DETAIL_FRAGMENT) as NoteDetailFragment
+        val fileHandler = FileHandler(this, fragment.noteText, contentResolver)
+
+        // request to save a file has been made, add data to newly created file
+        if (requestCode == FileHandler.CREATE_FILE && resultCode == Activity.RESULT_OK) {
+            resultData?.data?.also { uri ->
+                fileHandler.alterDocument(uri)
+            }
+        }
+        // request to load file contents has been made, process the file's contents
+        else if (requestCode == FileHandler.PICK_TXT_FILE && resultCode == Activity.RESULT_OK) {
+            resultData?.data?.also { uri ->
+                fileHandler.processFileData(uri, null)
+            }
+        }
     }
 }
