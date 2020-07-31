@@ -129,12 +129,6 @@ class NoteDetailFragment : Fragment() {
 
         toolbar.overflowIcon?.setTint(requireContext().getColor(R.color.colorOnPrimary))
 
-//        val penTools = view.findViewById<LinearLayout>(R.id.pen_tools)
-//        penTools.inflateMenu(R.menu.menu_pen_tools)
-//        penTools.setOnMenuItemClickListener {
-//            onOptionsItemSelected(it)
-//        }
-
         view.findViewById<ScrollView>(R.id.text_mode)?.bringToFront()
     }
 
