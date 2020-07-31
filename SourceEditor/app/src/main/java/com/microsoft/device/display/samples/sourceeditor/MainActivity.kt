@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         // request to load file contents has been made, process the file's contents
         else if (requestCode == FileHandler.PICK_TXT_FILE && resultCode == Activity.RESULT_OK) {
             resultData?.data?.also { uri ->
-                fileHandler.processFileData(uri)
+                fileHandler.processFileData(uri, null)
             }
         }
     }
