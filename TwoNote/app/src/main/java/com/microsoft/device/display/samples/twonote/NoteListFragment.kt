@@ -50,7 +50,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         super.onCreate(savedInstanceState)
         inodes = DataProvider.getINodes()
         categories = DataProvider.getCategories()
-        FileHandler.loadCategories(requireContext(), root)
+        FileSystem.loadCategories(requireContext(), root)
 
         activity?.let {
             arrayAdapter = object : ArrayAdapter<INode>(it, android.R.layout.simple_list_item_2, android.R.id.text1, inodes) {
@@ -136,7 +136,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
         view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
             // Set selected item to newly created note (first element in list)
-            FileHandler.addInode()
+            FileSystem.addInode()
             updateArrayAdapter()
             startNoteFragment(0)
         }
@@ -162,8 +162,8 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
     override fun onPause() {
         super.onPause()
-        FileHandler.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
-        FileHandler.writeDirEntry(requireContext(), root, DirEntry(categories))
+        FileSystem.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
+        FileSystem.writeDirEntry(requireContext(), root, DirEntry(categories))
     }
 
     override fun onItemSelected(adapterView: AdapterView<*>, item: View?, position: Int, id: Long) {
@@ -206,8 +206,8 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
     private fun setNewCategory(inode: INode?, deleting: Boolean) {
         exitDetailFragment(deleting)
-        FileHandler.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
-        FileHandler.switchCategory(requireContext(), inode)
+        FileSystem.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
+        FileSystem.switchCategory(requireContext(), inode)
         updateDropDown()
         updateArrayAdapter()
         categoryView?.setSelection(0)
@@ -219,7 +219,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
             updateArrayAdapter()
             listView?.setItemChecked(position, true)
 
-            var note = FileHandler.loadNote(requireContext(), DataProvider.getActiveSubDirectory(), inode.descriptor + inode.id)
+            var note = FileSystem.loadNote(requireContext(), DataProvider.getActiveSubDirectory(), inode.descriptor + inode.id)
             if (note == null)
                 note = Note(inode.id)
 
@@ -245,7 +245,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     fun updateINode(inode: INode, title: String) {
         inode.title = title
         inode.dateModified = LocalDateTime.now()
-        FileHandler.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
+        FileSystem.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -261,7 +261,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                     setNewCategory(DataProvider.getCategories()[1], true)
 
                     val categoryToDelete = DataProvider.getCategories()[1]
-                    FileHandler.delete(requireContext(), root, categoryToDelete)
+                    FileSystem.delete(requireContext(), root, categoryToDelete)
                     DataProvider.removeCategory(categoryToDelete)
 
                     editText.setText(DataProvider.getActiveCategoryName())

@@ -23,7 +23,7 @@ class NoteSelectionListener(
                     if (list.get(i)) {
                         arrayAdapter.getItem(i)?.let { inode ->
                             host.context?.let { cntx ->
-                                FileHandler.delete(cntx, DataProvider.getActiveSubDirectory(), inode)
+                                FileSystem.delete(cntx, DataProvider.getActiveSubDirectory(), inode)
                             }
                         }
                     }
