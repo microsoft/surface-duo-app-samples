@@ -9,7 +9,6 @@ package com.microsoft.device.display.samples.twonote
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.ColorFilter
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
