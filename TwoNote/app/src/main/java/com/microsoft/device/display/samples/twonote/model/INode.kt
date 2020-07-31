@@ -7,7 +7,6 @@
 package com.microsoft.device.display.samples.twonote.model
 
 import java.io.Serializable
-import java.lang.StringBuilder
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
