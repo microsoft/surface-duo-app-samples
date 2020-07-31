@@ -76,10 +76,10 @@
                 android:backgroundTint="@color/red" />
 
             <Button
-                android:id="@+id/button_blue"
+                android:id="@+id/button_yellow"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_height"
-                android:backgroundTint="@color/blue" />
+                android:backgroundTint="@color/yellow" />
 
             <Button
                 android:id="@+id/button_green"
@@ -88,16 +88,22 @@
                 android:backgroundTint="@color/green" />
 
             <Button
-                android:id="@+id/button_yellow"
+                android:id="@+id/button_blue"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_height"
-                android:backgroundTint="@color/yellow" />
+                android:backgroundTint="@color/blue" />
 
             <Button
                 android:id="@+id/button_purple"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_height"
                 android:backgroundTint="@color/purple" />
+
+            <ImageButton
+                android:id="@+id/button_choose"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height"
+                android:src="@drawable/ic_add" />
 
         </LinearLayout>
 
