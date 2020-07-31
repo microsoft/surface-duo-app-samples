@@ -9,6 +9,9 @@ package com.microsoft.device.display.samples.twonote
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -196,6 +199,9 @@ class NoteDetailFragment : Fragment() {
                     val result = stringToColor(textInput.text.toString())
                     if (result != -1) {
                         chooseColor("", result)
+                        chooseButton.background.colorFilter = PorterDuffColorFilter(result, PorterDuff.Mode.SRC)
+                    } else {
+                        chooseButton.background.clearColorFilter()
                     }
                     dialog.dismiss()
                 }

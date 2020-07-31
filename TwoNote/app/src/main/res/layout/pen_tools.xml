@@ -15,8 +15,7 @@
 
     <View
         android:layout_width="@dimen/spacing"
-        android:layout_height="match_parent"
-        android:background="?attr/colorSurface" />
+        android:layout_height="match_parent"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/color"
@@ -28,8 +27,7 @@
 
     <View
         android:layout_width="@dimen/spacing"
-        android:layout_height="match_parent"
-        android:background="?attr/colorSurface" />
+        android:layout_height="match_parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/thickness"
@@ -41,8 +39,7 @@
 
     <View
         android:layout_width="@dimen/spacing"
-        android:layout_height="match_parent"
-        android:background="?attr/colorSurface" />
+        android:layout_height="match_parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/clear"
