@@ -43,7 +43,7 @@ class NoteDetailFragment : Fragment() {
     private lateinit var drawView: PenDrawView
     lateinit var noteText: TextInputEditText
     private lateinit var noteTitle: TextInputEditText
-    private lateinit var inkLayout: ConstraintLayout
+    private lateinit var rootDetailLayout: ConstraintLayout
     var deleted = false
 
     companion object {
@@ -84,7 +84,7 @@ class NoteDetailFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_note_detail, container, false)
         noteTitle = view.findViewById(R.id.title_input)
         noteText = view.findViewById(R.id.text_input)
-        inkLayout = view.findViewById(R.id.ink_mode)
+        rootDetailLayout = view.findViewById(R.id.note_detail_layout)
 
         addNoteContents(view)
         setUpInkMode(view)
@@ -433,7 +433,7 @@ class NoteDetailFragment : Fragment() {
         }
 
         // Sub target will trigger when textField is empty
-        inkLayout.setOnDragListener { v, event ->
+        rootDetailLayout.setOnDragListener { v, event ->
             handler.onDrag(event)
         }
     }
