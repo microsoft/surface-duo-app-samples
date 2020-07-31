@@ -185,12 +185,4 @@ class PenDrawView : View {
             invalidate()
         }
     }
-
-    private fun takeScreenshotOfView(view: View, height: Int, width: Int): Bitmap {
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        view.draw(canvas)
-
-        return bitmap
-    }
 }

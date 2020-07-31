@@ -8,12 +8,16 @@
 package com.microsoft.device.display.samples.twonote
 
 import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
+import android.view.PixelCopy
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -24,6 +28,7 @@ import android.widget.SeekBar
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.MaterialToolbar
@@ -35,6 +40,9 @@ import com.microsoft.device.display.samples.twonote.model.DrawViewModel
 import com.microsoft.device.display.samples.twonote.model.INode
 import com.microsoft.device.display.samples.twonote.model.Note
 import com.microsoft.device.dualscreen.core.ScreenHelper
+import java.io.File
+import java.io.FileOutputStream
+import java.lang.ClassCastException
 import java.lang.IllegalArgumentException
 
 class NoteDetailFragment : Fragment() {
@@ -337,9 +345,31 @@ class NoteDetailFragment : Fragment() {
                 false
             }
             R.id.action_share -> {
-                // TODO: return true when implemented
-                // true
-                false
+                view?.let {
+                    // Create path for note image file
+                    val inode = arguments?.getSerializable(MainActivity.INODE) as? INode
+                    val path = requireContext().getExternalFilesDir(null)?.absolutePath + "/$inode.jpg"
+
+                    // Get location of NoteDetailFragment view within window
+                    val coords = IntArray(2)
+                    it.getLocationInWindow(coords)
+
+                    // Screenshot NoteDetailFragment and store it as a bitmap
+                    val bitmap = Bitmap.createBitmap(it.width, it.height, Bitmap.Config.ARGB_8888)
+                    PixelCopy.request(
+                        requireActivity().window,
+                        Rect(coords[0], coords[1], coords[0] + it.width, coords[1] + it.height),
+                        bitmap,
+                        { copyResult: Int ->
+                            // If stored successfully, open an Intent for sharing the note as an image
+                            if (copyResult == PixelCopy.SUCCESS) {
+                                openShareIntent(bitmap, path)
+                            }
+                        },
+                        it.handler
+                    )
+                }
+                true
             }
             R.id.action_delete -> {
                 arguments?.let {
@@ -355,6 +385,7 @@ class NoteDetailFragment : Fragment() {
             R.id.action_ink -> {
                 val penTools = view?.findViewById<LinearLayout>(R.id.pen_tools)
 
+                // Toggle between inking/text mode
                 if (drawView.isDisabled()) {
                     drawView.enable()
                     view?.findViewById<ConstraintLayout>(R.id.ink_mode)?.bringToFront()
@@ -371,13 +402,25 @@ class NoteDetailFragment : Fragment() {
                     toggleViewVisibility(view?.findViewById<SeekBar>(R.id.thickness_slider), true)
                     toggleViewVisibility(view?.findViewById<LinearLayout>(R.id.color_buttons), true)
                 }
-
                 true
             }
             else -> {
                 super.onOptionsItemSelected(item)
             }
         }
+    }
+
+    private fun openShareIntent(bitmap: Bitmap, path: String) {
+        val outputStream = FileOutputStream(path)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+        outputStream.close()
+
+        val file = File(path)
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "image/*"
+        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(requireContext(), BuildConfig.APPLICATION_ID + ".provider", file))
+        startActivity(Intent.createChooser(intent, resources.getString(R.string.share_intent)))
     }
 
     /**
