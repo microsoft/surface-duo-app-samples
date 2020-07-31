@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.microsoft.device.display.samples.twonote.includes.DragHandler
 import com.microsoft.device.display.samples.twonote.model.DataProvider
 import com.microsoft.device.display.samples.twonote.model.DrawViewModel
 import com.microsoft.device.display.samples.twonote.model.INode
@@ -40,6 +41,9 @@ class NoteDetailFragment : Fragment() {
     enum class PaintColors { Red, Blue, Green, Yellow, Purple }
 
     private lateinit var drawView: PenDrawView
+    lateinit var noteText: TextInputEditText
+    private lateinit var noteTitle: TextInputEditText
+    private lateinit var inkLayout: ConstraintLayout
     var deleted = false
 
     companion object {
@@ -78,10 +82,14 @@ class NoteDetailFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_note_detail, container, false)
+        noteTitle = view.findViewById(R.id.title_input)
+        noteText = view.findViewById(R.id.text_input)
+        inkLayout = view.findViewById(R.id.ink_mode)
 
         addNoteContents(view)
         setUpInkMode(view)
         setUpTools(view)
+        initializeDragListener()
 
         return view
     }
@@ -93,8 +101,8 @@ class NoteDetailFragment : Fragment() {
             if (note is Note) note
             else null
         }
-        view.findViewById<TextInputEditText>(R.id.title_input).setText(note?.title)
-        view.findViewById<TextInputEditText>(R.id.text_input).setText(note?.text)
+        noteTitle.setText(note?.title)
+        noteText.setText(note?.text)
     }
 
     fun updateNoteContents(view: View?) {
@@ -102,8 +110,8 @@ class NoteDetailFragment : Fragment() {
             val note = it.getSerializable(MainActivity.NOTE)
             val inode = it.getSerializable(MainActivity.INODE)
             if (note is Note && inode is INode && !deleted) {
-                val text = view?.findViewById<TextInputEditText>(R.id.text_input)?.text.toString()
-                val title = view?.findViewById<TextInputEditText>(R.id.title_input)?.text.toString()
+                val text = noteText.text.toString()
+                val title = noteTitle.text.toString()
 
                 if (this::drawView.isInitialized) {
                     note.drawings = drawView.getDataList()
@@ -317,7 +325,7 @@ class NoteDetailFragment : Fragment() {
         arguments?.let {
             val note = it.getSerializable(MainActivity.NOTE)
             if (note is Note && !deleted) {
-                FileHandler.save(requireContext(), DataProvider.getActiveSubDirectory(), note)
+                FileSystem.save(requireContext(), DataProvider.getActiveSubDirectory(), note)
             }
         }
     }
@@ -337,7 +345,7 @@ class NoteDetailFragment : Fragment() {
                 arguments?.let {
                     val inode = it.getSerializable(MainActivity.INODE)
                     if (inode is INode) {
-                        FileHandler.delete(requireContext(), DataProvider.getActiveSubDirectory(), inode)
+                        FileSystem.delete(requireContext(), DataProvider.getActiveSubDirectory(), inode)
                         deleted = true
                     }
                 }
@@ -412,6 +420,21 @@ class NoteDetailFragment : Fragment() {
                     .replace(R.id.first_container_id, NoteListFragment(), MainActivity.LIST_FRAGMENT)
                     .commit()
             }
+        }
+    }
+
+    // create drop targets for the editor screen
+    private fun initializeDragListener() {
+        val handler = DragHandler(requireActivity(), noteText, requireActivity().contentResolver)
+
+        // Main target will trigger when textField has content
+        noteText.setOnDragListener { v, event ->
+            handler.onDrag(event)
+        }
+
+        // Sub target will trigger when textField is empty
+        inkLayout.setOnDragListener { v, event ->
+            handler.onDrag(event)
         }
     }
 }
