@@ -44,6 +44,6 @@ class DragHandler(activity: Activity, webVM: WebViewModel, contentResolver: Cont
     private fun handleTextDrop(event: DragEvent) {
         val item = event.clipData.getItemAt(0)
         val uri = item.uri
-        fileHandler.processFileData(uri)
+        fileHandler.processFileData(uri, event)
     }
 }

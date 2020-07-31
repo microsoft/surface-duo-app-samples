@@ -12,6 +12,8 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
+import android.view.DragEvent
+import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.startActivityForResult
 import com.microsoft.device.display.samples.sourceeditor.viewmodel.WebViewModel
 import java.io.BufferedReader
@@ -62,8 +64,9 @@ class FileHandler(
 
     // read text from file specified in uri path
     @Throws(IOException::class)
-    private fun readTextFromUri(uri: Uri): String {
+    private fun readTextFromUri(uri: Uri, event: DragEvent?): String {
         val stringBuilder = StringBuilder()
+        ActivityCompat.requestDragAndDropPermissions(activity, event)
         contentResolver.openInputStream(uri)?.use { inputStream ->
             BufferedReader(InputStreamReader(inputStream)).use { reader ->
                 var line: String? = reader.readLine()
@@ -96,8 +99,8 @@ class FileHandler(
     }
 
     // format text for readability (newline chars are dropped in saving/grabbing process)
-    fun processFileData(uri: Uri) {
-        val str: String = readTextFromUri(uri)
+    fun processFileData(uri: Uri, event: DragEvent?) {
+        val str: String = readTextFromUri(uri, event)
 
         val builder = StringBuilder()
         var initHeader = true
