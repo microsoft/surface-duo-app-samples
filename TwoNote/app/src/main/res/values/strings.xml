@@ -30,4 +30,5 @@
     <string name="choose_color">Choose color</string>
     <string name="choose_color_message">Enter color name or hexadecimal value (with #).</string>
     <string name="ok">OK</string>
+    <string name="share_intent">Share Note</string>
 </resources>
