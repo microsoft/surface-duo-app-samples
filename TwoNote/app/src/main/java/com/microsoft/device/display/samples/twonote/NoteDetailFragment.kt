@@ -8,15 +8,18 @@
 package com.microsoft.device.display.samples.twonote
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.SeekBar
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -29,7 +32,7 @@ import com.microsoft.device.display.samples.twonote.model.DrawViewModel
 import com.microsoft.device.display.samples.twonote.model.INode
 import com.microsoft.device.display.samples.twonote.model.Note
 import com.microsoft.device.dualscreen.core.ScreenHelper
-import java.lang.ClassCastException
+import java.lang.IllegalArgumentException
 
 class NoteDetailFragment : Fragment() {
     enum class PaintColors { Red, Blue, Green, Yellow, Purple }
@@ -148,19 +151,19 @@ class NoteDetailFragment : Fragment() {
         colorButton.setOnClickListener { toggleViewVisibility(view.findViewById(R.id.color_buttons)) }
 
         val thickness = view.findViewById<SeekBar>(R.id.thickness_slider)
-        thickness.setOnSeekBarChangeListener(object :
-            SeekBar.OnSeekBarChangeListener {
+        thickness.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
                 // Progress: [0, 6] (default 3), Thicknesses: [5, 100] (default 25)
-                val newThickness = when (progress) {
-                    1 -> THICKNESS_1
-                    2 -> THICKNESS_2
-                    3 -> THICKNESS_DEFAULT
-                    4 -> THICKNESS_4
-                    5 -> THICKNESS_5
-                    6 -> THICKNESS_6
-                    else -> THICKNESS_DEFAULT
-                }
+                val newThickness =
+                    when (progress) {
+                        1 -> THICKNESS_1
+                        2 -> THICKNESS_2
+                        3 -> THICKNESS_DEFAULT
+                        4 -> THICKNESS_4
+                        5 -> THICKNESS_5
+                        6 -> THICKNESS_6
+                        else -> THICKNESS_DEFAULT
+                    }
                 drawView.changeThickness(newThickness)
             }
 
@@ -187,6 +190,26 @@ class NoteDetailFragment : Fragment() {
         val purpleButton = view.findViewById<Button>(R.id.button_purple)
         purpleButton.setOnClickListener { chooseColor(PaintColors.Purple.name) }
 
+        val chooseButton = view.findViewById<ImageButton>(R.id.button_choose)
+        chooseButton.setOnClickListener {
+            val textInput = TextInputEditText(requireContext())
+
+            AlertDialog.Builder(requireContext())
+                .setMessage(resources.getString(R.string.choose_color_message))
+                .setView(textInput)
+                .setCancelable(true)
+                .setPositiveButton(resources.getString(R.string.ok)) { dialog, _ ->
+                    val result = stringToColor(textInput.text.toString())
+                    if (result != -1) {
+                        chooseColor("", result)
+                    }
+                    dialog.dismiss()
+                }
+                .setTitle(resources.getString(R.string.choose_color))
+                .create()
+                .show()
+        }
+
         arguments?.let {
             val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
             val note = it.getSerializable(MainActivity.NOTE)
@@ -210,9 +233,27 @@ class NoteDetailFragment : Fragment() {
         drawView.disable()
     }
 
-    private fun toggleViewVisibility(view: View?) {
-        if (view?.visibility == View.VISIBLE) {
-            view.visibility = View.INVISIBLE
+    /**
+     * Converts user-inputted color to Color object using parseColor method
+     *
+     * Accepted hexadecimal color formats: #RRGGBB or #AARRGGBB
+     *
+     * Accepted color names: red, blue, green, black, white, gray, cyan, magenta, yellow,
+     * lightgray, darkgray, grey, lightgrey, darkgrey, aqua, fuchsia, lime, maroon,
+     * navy, olive, purple, silver, and teal.
+     *
+     */
+    private fun stringToColor(string: String): Int {
+        return try {
+            Color.parseColor(string)
+        } catch (e: IllegalArgumentException) {
+            -1
+        }
+    }
+
+    private fun toggleViewVisibility(view: View?, hide: Boolean = false) {
+        if (view?.visibility == View.VISIBLE || hide) {
+            view?.visibility = View.INVISIBLE
         } else {
             view?.visibility = View.VISIBLE
         }
@@ -235,13 +276,14 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    private fun chooseColor(color: String) {
+    private fun chooseColor(color: String, colorInt: Int? = null) {
         when (color) {
             PaintColors.Red.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.red))
             PaintColors.Blue.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.blue))
             PaintColors.Green.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.green))
             PaintColors.Yellow.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.yellow))
             PaintColors.Purple.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.purple))
+            else -> if (colorInt != null) drawView.changePaintColor(colorInt)
         }
     }
 
@@ -313,13 +355,14 @@ class NoteDetailFragment : Fragment() {
                     item.title = getString(R.string.action_ink_off)
                     penTools?.visibility = View.VISIBLE
                     penTools?.bringToFront()
-
                 } else {
                     drawView.disable()
                     view?.findViewById<ScrollView>(R.id.text_mode)?.bringToFront()
                     item.setIcon(R.drawable.ic_fluent_calligraphy_pen_24_filled)
                     item.title = getString(R.string.action_ink_on)
                     penTools?.visibility = View.INVISIBLE
+                    toggleViewVisibility(view?.findViewById<SeekBar>(R.id.thickness_slider), true)
+                    toggleViewVisibility(view?.findViewById<LinearLayout>(R.id.color_buttons), true)
                 }
 
                 true
