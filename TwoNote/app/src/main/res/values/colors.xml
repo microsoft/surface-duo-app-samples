@@ -10,7 +10,6 @@
     <color name="colorSecondary">#90A4AE</color>
     <color name="colorSecondaryVariant">#62757F</color>
     <color name="colorBackground">#F5F5F5</color>
-    <color name="colorBackgroundVariant">#BBBBBB</color>
     <color name="colorOnPrimary">#FFFFFF</color>
     <color name="colorOnSecondary">#000000</color>
     <color name="colorOnBackground">#000000</color>

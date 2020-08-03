@@ -458,7 +458,7 @@ class NoteDetailFragment : Fragment() {
     // TODO: back gesture does not get overridden by this (connected to activity's onBackPressed)
     private fun onBackPressed() {
         activity?.let {
-            if (!ScreenHelper.isDualMode(it) ||(ScreenHelper.isDualMode(it) && MainActivity.isRotated(requireContext()))) {
+            if (!ScreenHelper.isDualMode(it) || (ScreenHelper.isDualMode(it) && MainActivity.isRotated(requireContext()))) {
                 // If unspanned, or spanned and rotated (extended view), show NoteListFragment in first container
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.first_container_id, NoteListFragment(), MainActivity.LIST_FRAGMENT)
