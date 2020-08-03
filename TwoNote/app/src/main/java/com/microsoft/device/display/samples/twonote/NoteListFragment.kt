@@ -225,12 +225,21 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                 note = Note(inode.id)
 
             if (ScreenHelper.isDualMode(requireActivity())) {
-                parentFragmentManager.beginTransaction()
-                    .replace(
-                        R.id.second_container_id,
-                        NoteDetailFragment.newInstance(inode, note),
-                        MainActivity.DETAIL_FRAGMENT
-                    ).commit()
+                if (MainActivity.isRotated(requireContext())) {
+                    parentFragmentManager.beginTransaction()
+                        .replace(
+                            R.id.first_container_id,
+                            NoteDetailFragment.newInstance(inode, note),
+                            MainActivity.DETAIL_FRAGMENT
+                        ).commit()
+                } else {
+                    parentFragmentManager.beginTransaction()
+                        .replace(
+                            R.id.second_container_id,
+                            NoteDetailFragment.newInstance(inode, note),
+                            MainActivity.DETAIL_FRAGMENT
+                        ).commit()
+                }
             } else {
                 parentFragmentManager.beginTransaction()
                     .replace(

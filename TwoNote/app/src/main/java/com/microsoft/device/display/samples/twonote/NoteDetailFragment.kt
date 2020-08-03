@@ -455,13 +455,15 @@ class NoteDetailFragment : Fragment() {
     // TODO: back gesture does not get overridden by this (connected to activity's onBackPressed)
     private fun onBackPressed() {
         activity?.let {
-            if (ScreenHelper.isDualMode(it)) {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.second_container_id, GetStartedFragment(), null)
-                    .commit()
-            } else {
+            if (!ScreenHelper.isDualMode(it) ||(ScreenHelper.isDualMode(it) && MainActivity.isRotated(requireContext()))) {
+                // If unspanned, or spanned and rotated (extended view), show NoteListFragment in first container
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.first_container_id, NoteListFragment(), MainActivity.LIST_FRAGMENT)
+                    .commit()
+            } else {
+                // If spanned and not rotated (list/detail view), show GetStartedFragmnet in second container
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.second_container_id, GetStartedFragment(), null)
                     .commit()
             }
         }
