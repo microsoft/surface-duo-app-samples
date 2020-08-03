@@ -43,6 +43,7 @@ import com.microsoft.device.dualscreen.core.ScreenHelper
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.ClassCastException
+import java.time.LocalDateTime
 
 class NoteDetailFragment : Fragment() {
     enum class PaintColors { Red, Blue, Green, Yellow, Purple }
@@ -71,7 +72,7 @@ class NoteDetailFragment : Fragment() {
     }
 
     interface OnFragmentInteractionListener {
-        fun onINodeUpdate(inode: INode, title: String)
+        fun onINodeUpdate()
     }
 
     /**
@@ -126,8 +127,10 @@ class NoteDetailFragment : Fragment() {
 
                 note.text = text
                 note.title = title
+                inode.title = title
+                inode.dateModified = LocalDateTime.now()
 
-                mListener.onINodeUpdate(inode, title)
+                mListener.onINodeUpdate()
             }
         }
     }

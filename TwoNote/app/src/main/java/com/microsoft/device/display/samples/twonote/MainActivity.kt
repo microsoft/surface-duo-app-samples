@@ -13,6 +13,8 @@ import android.os.Bundle
 import android.view.Surface
 import androidx.appcompat.app.AppCompatActivity
 import com.microsoft.device.display.samples.twonote.includes.FileHandler
+import com.microsoft.device.display.samples.twonote.model.DataProvider
+import com.microsoft.device.display.samples.twonote.model.DirEntry
 import com.microsoft.device.display.samples.twonote.model.INode
 import com.microsoft.device.display.samples.twonote.model.Note
 import com.microsoft.device.dualscreen.core.ScreenHelper
@@ -118,12 +120,15 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
     }
 
     /**
-     * Send data from NoteFragment to NoteListFragment after note contents have been edited
+     * Communicate from NoteFragment to NoteListFragment that a note/inode has been edited
      *
-     * @param title: updated note/inode title
      */
-    override fun onINodeUpdate(inode: INode, title: String) {
-        (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as NoteListFragment).updateINode(inode, title)
+    override fun onINodeUpdate() {
+        // Write change to file system
+        FileSystem.writeDirEntry(applicationContext, DataProvider.getActiveSubDirectory(), DirEntry(DataProvider.getINodes()))
+
+        // Notify NoteListFragment (if it exists)
+        (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as? NoteListFragment)?.updateArrayAdapter()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
