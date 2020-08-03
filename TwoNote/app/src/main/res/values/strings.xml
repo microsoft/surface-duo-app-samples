@@ -6,13 +6,11 @@
 
 <resources>
     <string name="app_name">TwoNote</string>
-    <string name="items_list">Items List</string>
-    <string name="clear">Clear</string>
     <string name="exception_message">must implement OnFragmentInteractionListener</string>
     <string name="action_delete">Delete</string>
     <string name="action_move">Move to</string>
     <string name="action_share">Share</string>
-    <string name="action_select">Select notes</string>
+    <string name="action_select">Select all</string>
     <string name="selected">selected</string>
     <string name="load_error_note">Error: loaded file is not of type Note</string>
     <string name="load_error_dir">Error: loaded file is not of type DirEntry</string>
@@ -31,4 +29,5 @@
     <string name="choose_color_message">Enter color name or hexadecimal value (with #).</string>
     <string name="ok">OK</string>
     <string name="share_intent">Share Note</string>
+    <string name="choose_color_button_description">Choose custom color</string>
 </resources>
