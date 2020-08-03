@@ -19,7 +19,6 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Spinner
 import android.widget.TextView
-import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -250,12 +249,6 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                     .commit()
             }
         }
-    }
-
-    fun updateINode(inode: INode, title: String) {
-        inode.title = title
-        inode.dateModified = LocalDateTime.now()
-        FileSystem.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
