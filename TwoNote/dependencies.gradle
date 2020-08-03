@@ -59,11 +59,13 @@ ext {
     dualScreenLayoutsVersion = "1.0.0-alpha02"
     coreVersion = "1.0.0-alpha01"
     fluentVersion = "1.1.33"
+    fragmentsHandlerVersion = "1.0.0-alpha02"
 
     microsoftDependencies = [
             dualScreenLayouts: "com.microsoft.device.dualscreen:layouts:$dualScreenLayoutsVersion",
             core: "com.microsoft.device.dualscreen:core:$coreVersion",
             fluent: "com.microsoft.design:fluent-system-icons:$fluentVersion",
+            fragmentsHandler: "com.microsoft.device.dualscreen:fragmentshandler:$fragmentsHandlerVersion",
     ]
 
     //Network dependencies version
