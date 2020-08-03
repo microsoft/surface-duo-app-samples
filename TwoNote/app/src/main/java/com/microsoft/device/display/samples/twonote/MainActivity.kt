@@ -7,8 +7,10 @@
 package com.microsoft.device.display.samples.twonote
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Surface
 import androidx.appcompat.app.AppCompatActivity
 import com.microsoft.device.display.samples.twonote.includes.FileHandler
 import com.microsoft.device.display.samples.twonote.model.INode
@@ -21,6 +23,11 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
         const val DETAIL_FRAGMENT = "detail fragment"
         const val NOTE = "note"
         const val INODE = "inode"
+
+        fun isRotated(context: Context): Boolean {
+            return ScreenHelper.getCurrentRotation(context) == Surface.ROTATION_90 ||
+                ScreenHelper.getCurrentRotation(context) == Surface.ROTATION_270
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,28 +35,34 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
         setContentView(R.layout.activity_main)
 
         // Get data from previously selected note (if available)
-        val note = savedInstanceState?.getSerializable(NOTE)
-        val inode = savedInstanceState?.getSerializable(INODE)
+        val note = savedInstanceState?.getSerializable(NOTE) as? Note
+        val inode = savedInstanceState?.getSerializable(INODE) as? INode
+        val noteSelected = note != null && inode != null
 
         if (!ScreenHelper.isDualMode(this)) {
             // Remove the dual screen container fragments if they exist
             removeFragment(R.id.second_container_id)
 
-            if (note is Note && inode is INode) {
-                startNoteDetailFragment(R.id.first_container_id, note, inode)
+            if (noteSelected) {
+                startNoteDetailFragment(R.id.first_container_id, note!!, inode!!)
             } else {
                 startNoteListFragment(R.id.first_container_id)
             }
         } else {
-            // Remove the single screen container fragment if it exists
-
-            if (note is Note && inode is INode) {
-                startNoteDetailFragment(R.id.second_container_id, note, inode)
+            if (isRotated()) {
+                if (noteSelected) {
+                    startNoteDetailFragment(R.id.first_container_id, note!!, inode!!)
+                } else {
+                    startNoteListFragment(R.id.first_container_id)
+                }
             } else {
-                startGetStartedFragment()
+                if (noteSelected) {
+                    startNoteDetailFragment(R.id.second_container_id, note!!, inode!!)
+                } else {
+                    startGetStartedFragment()
+                }
+                startNoteListFragment(R.id.first_container_id)
             }
-
-            startNoteListFragment(R.id.first_container_id)
         }
     }
 
@@ -80,23 +93,22 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        val fragDual = supportFragmentManager.findFragmentById(R.id.second_container_id)
-        val fragSingle = supportFragmentManager.findFragmentById(R.id.first_container_id)
+        val secondFrag = supportFragmentManager.findFragmentById(R.id.second_container_id)
+        val firstFrag = supportFragmentManager.findFragmentById(R.id.first_container_id)
 
-        // REVISIT: couldn't really think of a cleaner way to do this (because using
-        // ScreenHelper.isDualMode didn't return the expected values)
-        if (fragDual is NoteDetailFragment) {
-            if (fragDual.deleted)
+
+        if (secondFrag is NoteDetailFragment) {
+            if (secondFrag.deleted)
                 outState.clear()
             else
-                saveCurrentNote(outState, fragDual)
-        } else if (fragDual is GetStartedFragment) {
+                saveCurrentNote(outState, secondFrag)
+        } else if (secondFrag is GetStartedFragment) {
             outState.clear()
-        } else if (fragSingle is NoteDetailFragment) {
-            if (fragSingle.deleted)
+        } else if (firstFrag is NoteDetailFragment) {
+            if (firstFrag.deleted)
                 outState.clear()
             else
-                saveCurrentNote(outState, fragSingle)
+                saveCurrentNote(outState, firstFrag)
         }
     }
 
