@@ -105,7 +105,6 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
         val secondFrag = supportFragmentManager.findFragmentById(R.id.second_container_id)
         val firstFrag = supportFragmentManager.findFragmentById(R.id.first_container_id)
 
-
         if (secondFrag is NoteDetailFragment) {
             if (secondFrag.deleted)
                 outState.clear()
