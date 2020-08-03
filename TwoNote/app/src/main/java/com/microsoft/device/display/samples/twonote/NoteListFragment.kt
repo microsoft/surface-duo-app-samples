@@ -28,7 +28,6 @@ import com.microsoft.device.display.samples.twonote.model.DirEntry
 import com.microsoft.device.display.samples.twonote.model.INode
 import com.microsoft.device.display.samples.twonote.model.Note
 import com.microsoft.device.dualscreen.core.ScreenHelper
-import java.time.LocalDateTime
 
 class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, AdapterView.OnItemSelectedListener {
     private var arrayAdapter: ArrayAdapter<INode>? = null
