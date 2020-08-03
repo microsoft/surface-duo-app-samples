@@ -35,6 +35,7 @@ dependencies {
     implementation microsoftDependencies.dualScreenLayouts
     implementation microsoftDependencies.core
     implementation microsoftDependencies.fluent
+    implementation microsoftDependencies.fragmentsHandler
 
     testImplementation testDependencies.junit
     androidTestImplementation instrumentationTestDependencies.junit

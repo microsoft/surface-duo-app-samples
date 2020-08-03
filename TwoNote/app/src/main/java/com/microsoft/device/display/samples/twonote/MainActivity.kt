@@ -18,6 +18,7 @@ import com.microsoft.device.display.samples.twonote.model.DirEntry
 import com.microsoft.device.display.samples.twonote.model.INode
 import com.microsoft.device.display.samples.twonote.model.Note
 import com.microsoft.device.dualscreen.core.ScreenHelper
+import com.microsoft.device.dualscreen.core.ScreenMode
 
 class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteractionListener {
     companion object {
@@ -41,29 +42,35 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
         val inode = savedInstanceState?.getSerializable(INODE) as? INode
         val noteSelected = note != null && inode != null
 
-        if (!ScreenHelper.isDualMode(this)) {
-            // Remove the dual screen container fragments if they exist
-            removeFragment(R.id.second_container_id)
+        when ((application as TwoNote).surfaceDuoScreenManager.screenMode) {
+            ScreenMode.SINGLE_SCREEN -> {
+                // Remove fragment from second container if it exists
+                removeFragment(R.id.second_container_id)
 
-            if (noteSelected) {
-                startNoteDetailFragment(R.id.first_container_id, note!!, inode!!)
-            } else {
-                startNoteListFragment(R.id.first_container_id)
-            }
-        } else {
-            if (isRotated()) {
                 if (noteSelected) {
                     startNoteDetailFragment(R.id.first_container_id, note!!, inode!!)
                 } else {
                     startNoteListFragment(R.id.first_container_id)
                 }
-            } else {
-                if (noteSelected) {
-                    startNoteDetailFragment(R.id.second_container_id, note!!, inode!!)
+            }
+            ScreenMode.DUAL_SCREEN -> {
+                if (isRotated(applicationContext)) {
+                    // Remove fragment from second container if it exists
+                    removeFragment(R.id.second_container_id)
+
+                    if (noteSelected) {
+                        startNoteDetailFragment(R.id.first_container_id, note!!, inode!!)
+                    } else {
+                        startNoteListFragment(R.id.first_container_id)
+                    }
                 } else {
-                    startGetStartedFragment()
+                    if (noteSelected) {
+                        startNoteDetailFragment(R.id.second_container_id, note!!, inode!!)
+                    } else {
+                        startGetStartedFragment()
+                    }
+                    startNoteListFragment(R.id.first_container_id)
                 }
-                startNoteListFragment(R.id.first_container_id)
             }
         }
     }

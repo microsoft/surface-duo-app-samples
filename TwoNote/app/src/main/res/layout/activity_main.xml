@@ -9,8 +9,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:is_dual_landscape_single_container="true"
-    app:dual_screen_end_layout_id="@layout/fragment_get_started"
-    app:dual_screen_start_layout_id="@layout/fragment_note_list"
     app:show_in_dual_landscape_single_container="@layout/fragment_note_detail"
     app:show_in_dual_screen_end="@layout/fragment_note_detail"
     app:show_in_dual_screen_start="@layout/fragment_note_list"
