@@ -43,7 +43,6 @@ import com.microsoft.device.dualscreen.core.ScreenHelper
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.ClassCastException
-import java.lang.IllegalArgumentException
 
 class NoteDetailFragment : Fragment() {
     enum class PaintColors { Red, Blue, Green, Yellow, Purple }
@@ -261,7 +260,7 @@ class NoteDetailFragment : Fragment() {
     private fun stringToColor(string: String): Int {
         return try {
             Color.parseColor(string)
-        } catch (e: IllegalArgumentException) {
+        } catch (e: Exception) {
             -1
         }
     }
