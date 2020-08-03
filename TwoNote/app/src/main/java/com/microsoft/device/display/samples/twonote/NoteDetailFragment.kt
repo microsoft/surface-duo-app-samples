@@ -464,7 +464,7 @@ class NoteDetailFragment : Fragment() {
                     .replace(R.id.first_container_id, NoteListFragment(), MainActivity.LIST_FRAGMENT)
                     .commit()
             } else {
-                // If spanned and not rotated (list/detail view), show GetStartedFragmnet in second container
+                // If spanned and not rotated (list/detail view), show GetStartedFragment in second container
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.second_container_id, GetStartedFragment(), null)
                     .commit()
