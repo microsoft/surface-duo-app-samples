@@ -410,10 +410,12 @@ class NoteDetailFragment : Fragment() {
     }
 
     private fun openShareIntent(bitmap: Bitmap, path: String) {
+        // Write bitmap to file (with parameter 100 for max quality)
         val outputStream = FileOutputStream(path)
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
         outputStream.close()
 
+        // Open Intent for sharing the image
         val file = File(path)
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "image/*"
