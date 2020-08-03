@@ -81,7 +81,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_height"
                 android:backgroundTint="@color/yellow" />
-            
+
             <Button
                 android:id="@+id/button_green"
                 android:layout_width="match_parent"
@@ -104,6 +104,7 @@
                 android:id="@+id/button_choose"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_height"
+                android:contentDescription="@string/choose_color_button_description"
                 android:src="@drawable/ic_add" />
 
         </LinearLayout>
