@@ -94,7 +94,7 @@ class NoteDetailFragment : Fragment() {
         noteText = view.findViewById(R.id.text_input)
         rootDetailLayout = view.findViewById(R.id.note_detail_layout)
 
-        addNoteContents(view)
+        addNoteContents()
         setUpInkMode(view)
         setUpTools(view)
         initializeDragListener()
@@ -102,7 +102,7 @@ class NoteDetailFragment : Fragment() {
         return view
     }
 
-    private fun addNoteContents(view: View) {
+    private fun addNoteContents() {
         val note: Note? = arguments?.let {
             val note = it.getSerializable(MainActivity.NOTE)
 
@@ -113,7 +113,7 @@ class NoteDetailFragment : Fragment() {
         noteText.setText(note?.text)
     }
 
-    fun updateNoteContents(view: View?) {
+    fun updateNoteContents() {
         arguments?.let {
             val note = it.getSerializable(MainActivity.NOTE)
             val inode = it.getSerializable(MainActivity.INODE)
@@ -280,7 +280,7 @@ class NoteDetailFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        updateNoteContents(view)
+        updateNoteContents()
         save()
     }
 
@@ -471,12 +471,12 @@ class NoteDetailFragment : Fragment() {
         val handler = DragHandler(requireActivity(), noteText, requireActivity().contentResolver)
 
         // Main target will trigger when textField has content
-        noteText.setOnDragListener { v, event ->
+        noteText.setOnDragListener { _, event ->
             handler.onDrag(event)
         }
 
         // Sub target will trigger when textField is empty
-        rootDetailLayout.setOnDragListener { v, event ->
+        rootDetailLayout.setOnDragListener { _, event ->
             handler.onDrag(event)
         }
     }

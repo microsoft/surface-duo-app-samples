@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -270,10 +271,12 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                 true
             }
             R.id.action_select -> {
-                // TODO: toolbar doesn't show up at first, add selection bubbles/visual indication
+                // Select all notes
                 listView?.let {
-                    it.clearChoices()
                     it.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
+                    for (i in 0 until it.count) {
+                        it.setItemChecked(i, true)
+                    }
                 }
                 true
             }
@@ -299,7 +302,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
                 fragment?.let { detail ->
                     if (!deleting) {
-                        detail.updateNoteContents(fragment.view)
+                        detail.updateNoteContents()
                         detail.save()
                     }
                     detail.deleted = true // set flag so file isn't resaved on destroy
