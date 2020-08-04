@@ -11,7 +11,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.util.Log
@@ -30,6 +32,19 @@ class PenDrawView : View {
     private var prevPressure = 0f
     private var disabled = true
     private var currentThickness: Int = 25
+    var rotated = false
+
+    companion object {
+        // Attributes used for scaling drawings after rotation
+        private val porToLand: Matrix = Matrix().apply {
+            // Each screen is 1800 by 1350 px --> 1800/1350 = 4/3
+            postScale(4f / 3, 4f / 3)
+        }
+        val landToPor: Matrix = Matrix().apply {
+            postScale(3f / 4, 3f / 4)
+        }
+        private val scaledPath = Path()
+    }
 
     constructor(context: Context) : super(context) {
         init()
@@ -55,7 +70,7 @@ class PenDrawView : View {
             var line = 0
             while (line < strokeList.size && line >= 0) {
                 val stroke = strokeList[line]
-                val pathList = stroke.getPathList()
+                val pathList = stroke.pathList
                 val paints = stroke.getPaints()
                 val bounds = stroke.getBounds()
 
@@ -78,7 +93,12 @@ class PenDrawView : View {
                             }
                         } else {
                             val configuredPaint = configurePaint(paint)
-                            canvas.drawPath(path, configuredPaint)
+//                            if (rotated) {
+//                                path.transform(porToLand, scaledPath)
+//                                canvas.drawPath(scaledPath, configuredPaint)
+//                            } else {
+                                canvas.drawPath(path, configuredPaint)
+//                            }
                         }
                         section++
                     }
@@ -86,18 +106,6 @@ class PenDrawView : View {
                 line++
             }
         }
-    }
-
-    fun disable() {
-        disabled = true
-    }
-
-    fun enable() {
-        disabled = false
-    }
-
-    fun isDisabled(): Boolean {
-        return disabled
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -192,6 +200,32 @@ class PenDrawView : View {
         if (strokeList.isNotEmpty()) {
             strokeList.removeAt(strokeList.lastIndex)
             invalidate()
+        }
+    }
+
+    fun disable() {
+        disabled = true
+    }
+
+    fun enable() {
+        disabled = false
+    }
+
+    fun isDisabled(): Boolean {
+        return disabled
+    }
+
+    fun rotateStrokes() {
+        if (rotated) {
+            for (stroke in strokeList) {
+                stroke.rotateStroke(porToLand)
+            }
+            Log.e("KRISTEN", "theoretically rotated por to land")
+        } else {
+            for (stroke in strokeList) {
+                stroke.rotateStroke(landToPor)
+            }
+            Log.e("KRISTEN", "theoretically rotated land to por")
         }
     }
 }
