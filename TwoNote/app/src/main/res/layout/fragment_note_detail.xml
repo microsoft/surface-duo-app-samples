@@ -120,6 +120,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <ImageView
+            android:id="@+id/image_testing_thing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/thickness_slider"
+            app:layout_constraintEnd_toEndOf="@+id/draw_view"
+            app:layout_constraintStart_toStartOf="@+id/draw_view"
+            app:layout_constraintTop_toTopOf="@+id/draw_view"
+            android:src="@drawable/ic_delete"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include

@@ -22,6 +22,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.SeekBar
@@ -53,6 +54,8 @@ class NoteDetailFragment : Fragment() {
     private lateinit var noteTitle: TextInputEditText
     private lateinit var rootDetailLayout: ConstraintLayout
     var deleted = false
+
+    lateinit var picturePicture: ImageView
 
     companion object {
         lateinit var mListener: OnFragmentInteractionListener
@@ -93,6 +96,8 @@ class NoteDetailFragment : Fragment() {
         noteTitle = view.findViewById(R.id.title_input)
         noteText = view.findViewById(R.id.text_input)
         rootDetailLayout = view.findViewById(R.id.note_detail_layout)
+
+        picturePicture = view.findViewById(R.id.image_testing_thing)
 
         addNoteContents()
         setUpInkMode(view)
@@ -459,7 +464,8 @@ class NoteDetailFragment : Fragment() {
 
     // create drop targets for the editor screen
     private fun initializeDragListener() {
-        val handler = DragHandler(requireActivity(), noteText, requireActivity().contentResolver)
+        val handler = DragHandler(this)
+        val image: ImageView? = view?.findViewById(R.id.image_testing_thing)
 
         // Main target will trigger when textField has content
         noteText.setOnDragListener { _, event ->
