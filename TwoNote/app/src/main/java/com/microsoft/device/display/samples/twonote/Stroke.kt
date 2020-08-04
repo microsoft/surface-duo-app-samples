@@ -7,6 +7,7 @@
 
 package com.microsoft.device.display.samples.twonote
 
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
@@ -18,7 +19,7 @@ class Stroke {
     private var pressureList: MutableList<MutableList<Float>> = mutableListOf()
     private var paintColor: Int = 0
 
-    private var pathList: MutableList<Path> = mutableListOf()
+    var pathList: MutableList<Path> = mutableListOf()
     private var paints: MutableList<Paint> = mutableListOf()
     private var pathBounds: MutableList<RectF> = mutableListOf()
 
@@ -53,7 +54,7 @@ class Stroke {
         }
     }
 
-    fun continueDrawing(x: Float, y: Float, pressure: Float) {
+    fun continueDrawing(x: Float, y: Float, pressure: Float, rotated: Boolean = false) {
         if (pressure == prevPressure && pathList.isNotEmpty())
             continueJoint(x, y)
         else
@@ -98,9 +99,9 @@ class Stroke {
         return pathBounds
     }
 
-    fun getPathList(): MutableList<Path> {
-        return pathList
-    }
+//    fun getPathList(): MutableList<Path> {
+//        return pathList
+//    }
 
     fun getPaints(): MutableList<Paint> {
         return paints
@@ -148,6 +149,7 @@ class Stroke {
     }
 
     fun getSize(): Int {
+        // REVISIT TODO
         return pathList.size
     }
 
@@ -179,5 +181,11 @@ class Stroke {
 
     fun serializeData(): SerializedStroke {
         return SerializedStroke(xList, yList, pressureList, paintColor, thicknessMultiplier)
+    }
+
+    fun rotateStroke(matrix: Matrix) {
+        for (path in pathList) {
+            path.transform(matrix)
+        }
     }
 }

@@ -15,6 +15,7 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.PixelCopy
@@ -55,6 +56,7 @@ class NoteDetailFragment : Fragment() {
     lateinit var noteText: TextInputEditText
     private lateinit var noteTitle: TextInputEditText
     var deleted = false
+    private var rotation: Int? = null
 
     lateinit var rootDetailLayout: ConstraintLayout
     lateinit var imageContainer: RelativeLayout
@@ -105,6 +107,11 @@ class NoteDetailFragment : Fragment() {
         rootDetailLayout = view.findViewById(R.id.note_detail_layout)
         imageContainer = view.findViewById(R.id.image_container)
 
+        savedInstanceState?.let {
+            rotation = it.getInt(MainActivity.ROTATION)
+            Log.e("KRISTEN", "onCreateView rotation $rotation")
+        }
+
         addNoteContents()
         setUpInkMode(view)
         setUpTools(view)
@@ -133,6 +140,7 @@ class NoteDetailFragment : Fragment() {
                 val title = noteTitle.text.toString()
 
                 if (this::drawView.isInitialized) {
+                    // TODO
                     note.drawings = drawView.getDataList()
                 }
 
@@ -182,6 +190,7 @@ class NoteDetailFragment : Fragment() {
 
     private fun setUpInkMode(view: View) {
         drawView = view.findViewById(R.id.draw_view)
+        Log.e("KRISTEN", "inside set up ink mode")
 
         val clearButton = view.findViewById<MaterialButton>(R.id.clear)
         clearButton.setOnClickListener { clearDrawing() }
@@ -268,6 +277,17 @@ class NoteDetailFragment : Fragment() {
         }
 
         recoverDrawing()
+        drawView.rotated = MainActivity.isRotated(requireActivity())
+
+        val currentRotation = ScreenHelper.getCurrentRotation(requireActivity())
+        Log.e("KRISTEN", "old: $rotation current: $currentRotation")
+        if (rotation == null) {
+            rotation = currentRotation
+        } else if (currentRotation != rotation) {
+            Log.e("KRISTEN", "ROTATIONS NOT EQUAL")
+            drawView.rotateStrokes()
+            rotation = currentRotation
+        }
 
         drawView.viewTreeObserver.addOnDrawListener {
             copyDrawingIfAdded()
@@ -276,6 +296,15 @@ class NoteDetailFragment : Fragment() {
 
         // REVISIT: connect to savedInstanceState bundle
         drawView.disable()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        rotation?.let {
+            outState.putInt(MainActivity.ROTATION, it)
+        }
+        Log.e("KRISTEN", "onSaveInstanceState")
     }
 
     /**
@@ -485,7 +514,7 @@ class NoteDetailFragment : Fragment() {
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "image/*"
         intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(requireContext(), BuildConfig.APPLICATION_ID + ".provider", file))
+        //intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(requireContext(), BuildConfig.APPLICATION_ID + ".provider", file))
         startActivity(Intent.createChooser(intent, resources.getString(R.string.share_intent)))
     }
 
@@ -533,4 +562,17 @@ class NoteDetailFragment : Fragment() {
             handler.onDrag(event)
         }
     }
+
+//    override fun onOrientationChanged(orientation: Int) {
+//        val newRotation = when {
+//            orientation < 90 -> Surface.ROTATION_0
+//            orientation < 180 -> Surface.ROTATION_90
+//            orientation < 270 -> Surface.ROTATION_180
+//            else -> Surface.ROTATION_270
+//        }
+//
+//        if (newRotation != rotation) {
+//            drawView.rotateStrokes(MainActivity.isRotated(requireActivity()))
+//        }
+//    }
 }
