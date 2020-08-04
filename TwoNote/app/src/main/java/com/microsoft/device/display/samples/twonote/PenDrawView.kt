@@ -52,29 +52,38 @@ class PenDrawView : View {
         super.onDraw(canvas)
 
         if (strokeList.isNotEmpty()) {
-            for (line in strokeList.size - 1 downTo 0) {
+            var line = 0
+            while (line < strokeList.size && line >= 0) {
                 val stroke = strokeList[line]
                 val pathList = stroke.getPathList()
                 val paints = stroke.getPaints()
                 val bounds = stroke.getBounds()
 
                 if (pathList.isNotEmpty()) {
-                    for (section in pathList.size - 1 downTo 0) {
+                    var section = 0
+                    while (section < stroke.getSize() && section >= 0) {
                         val bound = bounds[section]
                         val path = pathList[section]
                         val paint = paints[section]
 
+                        // If a stroke or path is removed, decrease the index so the next stroke/path doesn't get skipped
                         if (isErasing && bound.intersects(eraser.left, eraser.top, eraser.right, eraser.bottom)) {
                             val newStroke = stroke.removeItem(section)
-                            newStroke?.let { strokeList.add(newStroke) }
-                            if (stroke.getSize() == 0)
+                            section--
+                            // Add split stroke to next position in stroke list to maintain chronological order of strokes for undo
+                            newStroke?.let { strokeList.add(line + 1, newStroke) }
+                            if (stroke.getSize() == 0) {
                                 strokeList.removeAt(line)
+                                line--
+                            }
                         } else {
                             val configuredPaint = configurePaint(paint)
                             canvas.drawPath(path, configuredPaint)
                         }
+                        section++
                     }
                 }
+                line++
             }
         }
     }
