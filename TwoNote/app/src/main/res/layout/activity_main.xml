@@ -13,5 +13,4 @@
     app:show_in_dual_screen_end="@layout/fragment_note_detail"
     app:show_in_dual_screen_start="@layout/fragment_note_list"
     app:show_in_single_screen="@layout/fragment_note_list"
-    app:single_screen_layout_id="@layout/fragment_note_list"
     app:tools_screen_mode="dual_screen" />
