@@ -145,7 +145,7 @@ class NoteDetailFragment : Fragment() {
         }
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
-        toolbar.setNavigationOnClickListener { onBackPressed() }
+        toolbar.setNavigationOnClickListener { closeFragment() }
 
         toolbar.overflowIcon?.setTint(requireContext().getColor(R.color.colorOnPrimary))
 
@@ -433,11 +433,12 @@ class NoteDetailFragment : Fragment() {
      */
     fun closeFragment() {
         activity?.let { activity ->
-            if (ScreenHelper.isDualMode(activity)) {
+            if (ScreenHelper.isDualMode(activity) && !MainActivity.isRotated(activity)) {
                 // Tell NoteListFragment that list data has changed
-                (parentFragmentManager.findFragmentByTag(MainActivity.LIST_FRAGMENT) as NoteListFragment)
-                    .updateArrayAdapter()
+                (parentFragmentManager.findFragmentByTag(MainActivity.LIST_FRAGMENT) as? NoteListFragment)
+                    ?.updateArrayAdapter()
 
+                // If spanned and not rotated (list/detail view), show GetStartedFragment in second container
                 parentFragmentManager.beginTransaction()
                     .replace(
                         R.id.second_container_id,
@@ -445,29 +446,13 @@ class NoteDetailFragment : Fragment() {
                         null
                     ).commit()
             } else {
+                // If unspanned, or spanned and rotated (extended view), show NoteListFragment in first container
                 parentFragmentManager.beginTransaction()
                     .replace(
                         R.id.first_container_id,
                         NoteListFragment(),
                         MainActivity.LIST_FRAGMENT
                     ).commit()
-            }
-        }
-    }
-
-    // TODO: back gesture does not get overridden by this (connected to activity's onBackPressed)
-    private fun onBackPressed() {
-        activity?.let {
-            if (!ScreenHelper.isDualMode(it) || (ScreenHelper.isDualMode(it) && MainActivity.isRotated(requireContext()))) {
-                // If unspanned, or spanned and rotated (extended view), show NoteListFragment in first container
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.first_container_id, NoteListFragment(), MainActivity.LIST_FRAGMENT)
-                    .commit()
-            } else {
-                // If spanned and not rotated (list/detail view), show GetStartedFragment in second container
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.second_container_id, GetStartedFragment(), null)
-                    .commit()
             }
         }
     }

@@ -222,23 +222,16 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
             if (note == null)
                 note = Note(inode.id)
 
-            if (ScreenHelper.isDualMode(requireActivity())) {
-                if (MainActivity.isRotated(requireContext())) {
-                    parentFragmentManager.beginTransaction()
-                        .replace(
-                            R.id.first_container_id,
-                            NoteDetailFragment.newInstance(inode, note),
-                            MainActivity.DETAIL_FRAGMENT
-                        ).commit()
-                } else {
-                    parentFragmentManager.beginTransaction()
-                        .replace(
-                            R.id.second_container_id,
-                            NoteDetailFragment.newInstance(inode, note),
-                            MainActivity.DETAIL_FRAGMENT
-                        ).commit()
-                }
+            if (ScreenHelper.isDualMode(requireActivity()) && !MainActivity.isRotated(requireActivity())) {
+                // If spanned and not rotated (list view), open NoteDetailFragment in second container
+                parentFragmentManager.beginTransaction()
+                    .replace(
+                        R.id.second_container_id,
+                        NoteDetailFragment.newInstance(inode, note),
+                        MainActivity.DETAIL_FRAGMENT
+                    ).commit()
             } else {
+                // If unspanned or spanned and rotated (extended view), open NoteDetailFragment in first container
                 parentFragmentManager.beginTransaction()
                     .replace(
                         R.id.first_container_id,
@@ -299,7 +292,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     fun exitDetailFragment(deleting: Boolean) {
         activity?.let {
             if (ScreenHelper.isDualMode(it)) {
-                val fragment = parentFragmentManager.findFragmentByTag(MainActivity.DETAIL_FRAGMENT) as NoteDetailFragment?
+                val fragment = parentFragmentManager.findFragmentByTag(MainActivity.DETAIL_FRAGMENT) as? NoteDetailFragment
 
                 fragment?.let { detail ->
                     if (!deleting) {
