@@ -9,5 +9,6 @@ object Defines {
     // Handler references //
     const val DEFAULT_FILE_NAME = "drawing"
     const val TEXT_PREFIX = "text/"
+    const val IMAGE_PREFIX = "image/"
     const val PLAIN_TEXT = "text/plain"
 }
