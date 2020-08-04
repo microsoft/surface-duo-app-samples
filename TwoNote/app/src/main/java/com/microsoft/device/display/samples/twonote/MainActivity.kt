@@ -141,18 +141,18 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
         super.onActivityResult(requestCode, resultCode, resultData)
 
         val fragment = supportFragmentManager.findFragmentByTag(DETAIL_FRAGMENT) as NoteDetailFragment
-        val fileHandler = FileHandler(this, fragment.noteText, contentResolver)
+        val fileHandler = FileHandler(this)
 
         // request to save a file has been made, add data to newly created file
         if (requestCode == FileHandler.CREATE_FILE && resultCode == Activity.RESULT_OK) {
             resultData?.data?.also { uri ->
-                fileHandler.alterDocument(uri)
+                fileHandler.alterDocument(uri, fragment.noteText)
             }
         }
         // request to load file contents has been made, process the file's contents
         else if (requestCode == FileHandler.PICK_TXT_FILE && resultCode == Activity.RESULT_OK) {
             resultData?.data?.also { uri ->
-                fileHandler.processFileData(uri, null)
+                fileHandler.processTextFileData(uri, fragment.noteText, null)
             }
         }
     }

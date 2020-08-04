@@ -13,6 +13,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
 import android.view.DragEvent
+import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.startActivityForResult
 import com.google.android.material.textfield.TextInputEditText
@@ -24,11 +25,7 @@ import java.io.InputStreamReader
 import java.nio.charset.Charset
 
 /* Class used to make file read/write requests */
-class FileHandler(
-    private val activity: Activity,
-    internal val textField: TextInputEditText,
-    private val contentResolver: ContentResolver
-) {
+class FileHandler(private val activity: Activity) {
 
     companion object {
         // intent request codes
@@ -66,8 +63,7 @@ class FileHandler(
     @Throws(IOException::class)
     private fun readTextFromUri(uri: Uri, event: DragEvent?): String {
         val stringBuilder = StringBuilder()
-        ActivityCompat.requestDragAndDropPermissions(activity, event)
-        contentResolver.openInputStream(uri)?.use { inputStream ->
+        activity.contentResolver.openInputStream(uri)?.use { inputStream ->
             BufferedReader(InputStreamReader(inputStream)).use { reader ->
                 var line: String? = reader.readLine()
                 while (line != null) {
@@ -80,9 +76,9 @@ class FileHandler(
     }
 
     // overwrite text from file specified in uri path
-    fun alterDocument(uri: Uri) {
+    fun alterDocument(uri: Uri, textField: TextInputEditText) {
         try {
-            contentResolver.openFileDescriptor(uri, "w")?.use {
+            activity.contentResolver.openFileDescriptor(uri, "w")?.use {
                 FileOutputStream(it.fileDescriptor).use { stream ->
                     val charset: Charset = Charsets.UTF_8
                     stream.write(
@@ -99,7 +95,7 @@ class FileHandler(
     }
 
     // format text for readability (newline chars are dropped in saving/grabbing process)
-    fun processFileData(uri: Uri, event: DragEvent?) {
+    fun processTextFileData(uri: Uri, textField: TextInputEditText, event: DragEvent?) {
         val str: String = readTextFromUri(uri, event)
 
         val builder = StringBuilder()
@@ -115,5 +111,9 @@ class FileHandler(
             }
         }
         textField.setText(builder.toString())
+    }
+
+    fun processImageData(uri: Uri, image: ImageView) {
+        image.setImageURI(uri)
     }
 }
