@@ -1,25 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~
+  ~  Copyright (c) Microsoft Corporation. All rights reserved.
+  ~  Licensed under the MIT License.
+  ~
+  -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/action_ink"
-        android:title="@string/action_ink_on"
+    <item
+        android:id="@+id/action_ink"
         android:icon="@drawable/ic_fluent_calligraphy_pen_24_filled"
+        android:title="@string/action_ink_on"
         app:iconTint="?attr/colorOnPrimary"
-        app:showAsAction="ifRoom"
-        />
+        app:showAsAction="ifRoom" />
 
     <!-- overflow/options menu items -->
-    <item android:id="@+id/action_move"
+    <item
+        android:id="@+id/action_move"
         android:title="@string/action_move"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
-    <item android:id="@+id/action_share"
+    <item
+        android:id="@+id/action_share"
         android:title="@string/action_share"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
-    <item android:id="@+id/action_delete"
+    <item
+        android:id="@+id/action_delete"
         android:title="@string/action_delete"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
 </menu>
