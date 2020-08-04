@@ -291,8 +291,8 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
     fun exitDetailFragment(deleting: Boolean) {
         activity?.let {
-            if (ScreenHelper.isDualMode(it)) {
-                val fragment = parentFragmentManager.findFragmentByTag(MainActivity.DETAIL_FRAGMENT) as? NoteDetailFragment
+            if (ScreenHelper.isDualMode(it) && !MainActivity.isRotated(it)) {
+                val fragment = parentFragmentManager.findFragmentById(R.id.second_container_id) as? NoteDetailFragment
 
                 fragment?.let { detail ->
                     if (!deleting) {
