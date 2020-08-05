@@ -39,6 +39,16 @@
 
     </ScrollView>
 
+    <RelativeLayout
+        android:id="@+id/image_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+    </RelativeLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ink_mode"
         android:layout_width="0dp"
@@ -47,6 +57,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar_layout">
+
 
         <com.microsoft.device.display.samples.twonote.PenDrawView
             android:id="@+id/draw_view"
@@ -119,16 +130,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
-
-        <ImageView
-            android:id="@+id/image_testing_thing"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/thickness_slider"
-            app:layout_constraintEnd_toEndOf="@+id/draw_view"
-            app:layout_constraintStart_toStartOf="@+id/draw_view"
-            app:layout_constraintTop_toTopOf="@+id/draw_view"
-            android:src="@drawable/ic_delete"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
