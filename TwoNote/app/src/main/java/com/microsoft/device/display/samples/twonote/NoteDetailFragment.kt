@@ -24,6 +24,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.ScrollView
 import android.widget.SeekBar
 import androidx.appcompat.app.AlertDialog
@@ -50,12 +51,13 @@ class NoteDetailFragment : Fragment() {
     enum class PaintColors { Red, Blue, Green, Yellow, Purple }
 
     private lateinit var drawView: PenDrawView
+
     lateinit var noteText: TextInputEditText
     private lateinit var noteTitle: TextInputEditText
-    private lateinit var rootDetailLayout: ConstraintLayout
     var deleted = false
 
-    lateinit var picturePicture: ImageView
+    lateinit var rootDetailLayout: ConstraintLayout
+    lateinit var imageContainer: RelativeLayout
 
     companion object {
         lateinit var mListener: OnFragmentInteractionListener
@@ -95,9 +97,9 @@ class NoteDetailFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_note_detail, container, false)
         noteTitle = view.findViewById(R.id.title_input)
         noteText = view.findViewById(R.id.text_input)
-        rootDetailLayout = view.findViewById(R.id.note_detail_layout)
 
-        picturePicture = view.findViewById(R.id.image_testing_thing)
+        rootDetailLayout = view.findViewById(R.id.note_detail_layout)
+        imageContainer = view.findViewById(R.id.image_container)
 
         addNoteContents()
         setUpInkMode(view)
@@ -465,7 +467,6 @@ class NoteDetailFragment : Fragment() {
     // create drop targets for the editor screen
     private fun initializeDragListener() {
         val handler = DragHandler(this)
-        val image: ImageView? = view?.findViewById(R.id.image_testing_thing)
 
         // Main target will trigger when textField has content
         noteText.setOnDragListener { _, event ->
