@@ -53,6 +53,7 @@ class NoteDetailFragment : Fragment() {
     enum class PaintColors { Red, Blue, Green, Yellow, Purple }
 
     private lateinit var drawView: PenDrawView
+    private lateinit var dragHandler: DragHandler
 
     lateinit var noteText: TextInputEditText
     private lateinit var noteTitle: TextInputEditText
@@ -136,6 +137,9 @@ class NoteDetailFragment : Fragment() {
 
                 if (this::drawView.isInitialized) {
                     note.drawings = drawView.getDataList()
+                }
+                if (this::dragHandler.isInitialized) {
+                    note.images = dragHandler.getImageList()
                 }
 
                 note.text = text
@@ -574,16 +578,24 @@ class NoteDetailFragment : Fragment() {
 
     // create drop targets for the editor screen
     private fun initializeDragListener() {
-        val handler = DragHandler(this)
+        dragHandler = DragHandler(this)
+
+        arguments?.let {
+            val note = it.getSerializable(MainActivity.NOTE)
+            if (note is Note) {
+                val imageList = note.images
+                dragHandler.setImageList(imageList)
+            }
+        }
 
         // Main target will trigger when textField has content
         noteText.setOnDragListener { _, event ->
-            handler.onDrag(event)
+            dragHandler.onDrag(event)
         }
 
         // Sub target will trigger when textField is empty
         rootDetailLayout.setOnDragListener { _, event ->
-            handler.onDrag(event)
+            dragHandler.onDrag(event)
         }
     }
 }
