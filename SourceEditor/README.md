@@ -1,12 +1,12 @@
 ---
 page_type: sample
-name: Surface Duo - SourceEditor
+name: "Surface Duo - SourceEditor"
 description: "Uses the Dual View layout pattern and external storage capabilities to create a source-editing app for the Surface Duo."
 languages:
 - kotlin
 products:
 - surface-duo
-urlFragment: SourceEditor
+urlFragment: source-editor
 ---
 
 # Introduction

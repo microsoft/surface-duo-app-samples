@@ -1,12 +1,12 @@
 ---
 page_type: sample
-name: Surface Duo - PhotoEditor
+name: "Surface Duo - PhotoEditor"
 description: "Uses the Companion Pane dual-screen pattern and drag/drop features in a photo editing app for the Surface Duo."
 languages:
 - kotlin
 products:
 - surface-duo
-urlFragment: PhotoEditor
+urlFragment: photo-editor
 ---
 
 # Photo Editor

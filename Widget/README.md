@@ -1,17 +1,17 @@
 ---
 page_type: sample
-name: Surface Duo - Widget
+name: "Surface Duo - Widget"
 description: "Widget example pulling RSS data from the Surface Duo blog or other sources."
 languages:
 - kotlin
 products:
 - surface-duo
-urlFragment: Widget
+urlFragment: widget
 ---
 
 # Widget
 
-This repo contains the samples for Surface Duo 
+This sample contains a Kotlin application designed for Surface Duo. The application provide a widget that can be added to the Android home screen, presenting a list of blog posts. Tapping a blog post entry opens it in the web browser.
 
 ## Get Started
 
