@@ -16,7 +16,6 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.graphics.ColorUtils
@@ -37,15 +36,16 @@ class PenDrawView : View {
     private var highlightMode = false
 
     companion object {
-        // Attributes used for scaling drawings after rotation
-        private val porToLand: Matrix = Matrix().apply {
+        // Attributes used for scaling drawings based on rotation
+        private val portToLand: Matrix = Matrix().apply {
             // Each screen is 1800 by 1350 px --> 1800/1350 = 4/3
-            postScale(4f / 3, 4f / 3)
+            postScale(Defines.PORT_TO_LAND, Defines.PORT_TO_LAND)
         }
-        val landToPor: Matrix = Matrix().apply {
-            postScale(3f / 4, 3f / 4)
+        val landToPort: Matrix = Matrix().apply {
+            postScale(Defines.LAND_TO_PORT, Defines.LAND_TO_PORT)
         }
-        private val scaledPath = Path()
+        private var scaledPath = Path()
+        private var scaledBound = RectF()
     }
 
     constructor(context: Context) : super(context) {
@@ -72,7 +72,7 @@ class PenDrawView : View {
             var line = 0
             while (line < strokeList.size && line >= 0) {
                 val stroke = strokeList[line]
-                val pathList = stroke.pathList
+                val pathList = stroke.getPathList()
                 val paints = stroke.getPaints()
                 val bounds = stroke.getBounds()
 
@@ -82,9 +82,21 @@ class PenDrawView : View {
                         val bound = bounds[section]
                         val path = pathList[section]
                         val paint = paints[section]
+                        val diffRotations = rotated != stroke.getRotation()
+                        val matrix = when (rotated) {
+                            true -> portToLand
+                            false -> landToPort
+                        }
+
+                        // If strokes were drawn in a different rotation state than is currently displayed,
+                        // transform their paths and bounds to match the current rotation state
+                        if (diffRotations) {
+                            matrix.mapRect(scaledBound, bound)
+                            path.transform(matrix, scaledPath)
+                        }
 
                         // If a stroke or path is removed, decrease the index so the next stroke/path doesn't get skipped
-                        if (isErasing && bound.intersects(eraser.left, eraser.top, eraser.right, eraser.bottom)) {
+                        if (isErasing && ((!diffRotations && bound.intersect(eraser)) || (diffRotations && scaledBound.intersect(eraser)))) {
                             val newStroke = stroke.removeItem(section)
                             section--
                             // Add split stroke to next position in stroke list to maintain chronological order of strokes for undo
@@ -94,13 +106,9 @@ class PenDrawView : View {
                                 line--
                             }
                         } else {
-                            val configuredPaint = configurePaint(paint, stroke.highlightStroke)
-//                            if (rotated) {
-//                                path.transform(porToLand, scaledPath)
-//                                canvas.drawPath(scaledPath, configuredPaint)
-//                            } else {
-                            canvas.drawPath(path, configuredPaint)
-//                            }
+                            val configurePaint = configurePaint(paint, stroke.getHighlight())
+                            val pathToDraw = if (diffRotations) scaledPath else path
+                            canvas.drawPath(pathToDraw, configurePaint)
                         }
                         section++
                     }
@@ -111,7 +119,7 @@ class PenDrawView : View {
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (isDisabled())
+        if (disabled)
             return true
 
         isErasing = false
@@ -127,20 +135,18 @@ class PenDrawView : View {
                 eraser.set(left, top, right, bottom)
             }
         } else {
+            // Keep constant pressure if in highlight mode (1 = normal pressure)
             val pressure = if (highlightMode) 1f else event.pressure
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    val stroke = Stroke(event.x, event.y, pressure, currentColor, currentThickness, highlightMode)
+                    val stroke = Stroke(event.x, event.y, pressure, currentColor, currentThickness, rotated, highlightMode)
                     strokeList.add(stroke)
                     prevPressure = pressure
                 }
-
                 MotionEvent.ACTION_MOVE -> {
-                    Log.d("draw_debugging", "pressure $pressure")
                     if (strokeList.isNotEmpty())
                         strokeList[strokeList.lastIndex].continueDrawing(event.x, event.y, pressure)
                 }
-
                 MotionEvent.ACTION_UP -> {
                     if (strokeList.isNotEmpty())
                         strokeList[strokeList.lastIndex].finishStroke()
@@ -160,16 +166,13 @@ class PenDrawView : View {
         configuredPaint.strokeCap = if (highlight) Paint.Cap.SQUARE else Paint.Cap.ROUND
         configuredPaint.strokeWidth = paint.strokeWidth + radius / 3
         configuredPaint.color = paint.color + radius / 4
+
         return configuredPaint
     }
 
-    fun toggleHighlightMode(forceFalse: Boolean = false): Boolean {
-        highlightMode = if (forceFalse) false else !highlightMode
+    fun toggleHighlightMode(force: Boolean? = null): Boolean {
+        highlightMode = force ?: !highlightMode
         changePaintColor(currentColor)
-        return highlightMode
-    }
-
-    fun getHighlightMode(): Boolean {
         return highlightMode
     }
 
@@ -196,6 +199,7 @@ class PenDrawView : View {
 
     fun changePaintColor(color: Int) {
         // TODO: adjust highlight for dark theme
+        // alpha values range from 0 (transparent) to 255 (opaque)
         currentColor = if (highlightMode)
             ColorUtils.setAlphaComponent(color, 100)
         else
@@ -226,23 +230,5 @@ class PenDrawView : View {
 
     fun enable() {
         disabled = false
-    }
-
-    fun isDisabled(): Boolean {
-        return disabled
-    }
-
-    fun rotateStrokes() {
-        if (rotated) {
-            for (stroke in strokeList) {
-                stroke.rotateStroke(porToLand)
-            }
-            Log.e("KRISTEN", "theoretically rotated por to land")
-        } else {
-            for (stroke in strokeList) {
-                stroke.rotateStroke(landToPor)
-            }
-            Log.e("KRISTEN", "theoretically rotated land to por")
-        }
     }
 }
