@@ -11,7 +11,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
-import android.view.DragEvent
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat.startActivityForResult
 import com.google.android.material.textfield.TextInputEditText
@@ -59,7 +58,7 @@ class FileHandler(private val activity: Activity) {
 
     // read text from file specified in uri path
     @Throws(IOException::class)
-    private fun readTextFromUri(uri: Uri, event: DragEvent?): String {
+    private fun readTextFromUri(uri: Uri): String {
         val stringBuilder = StringBuilder()
         activity.contentResolver.openInputStream(uri)?.use { inputStream ->
             BufferedReader(InputStreamReader(inputStream)).use { reader ->
@@ -93,8 +92,8 @@ class FileHandler(private val activity: Activity) {
     }
 
     // format text for readability (newline chars are dropped in saving/grabbing process)
-    fun processTextFileData(uri: Uri, textField: TextInputEditText, event: DragEvent?) {
-        val str: String = readTextFromUri(uri, event)
+    fun processTextFileData(uri: Uri, textField: TextInputEditText) {
+        val str: String = readTextFromUri(uri)
 
         val builder = StringBuilder()
         var initHeader = true
