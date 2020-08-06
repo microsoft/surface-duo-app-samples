@@ -6,6 +6,10 @@
 
 package com.microsoft.device.display.samples.twonote
 
+import Defines.DETAIL_FRAGMENT
+import Defines.INODE
+import Defines.LIST_FRAGMENT
+import Defines.NOTE
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -22,11 +26,6 @@ import com.microsoft.device.dualscreen.core.ScreenMode
 
 class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteractionListener {
     companion object {
-        const val LIST_FRAGMENT = "list fragment"
-        const val DETAIL_FRAGMENT = "detail fragment"
-        const val NOTE = "note"
-        const val INODE = "inode"
-
         fun isRotated(context: Context): Boolean {
             return ScreenHelper.getCurrentRotation(context) == Surface.ROTATION_90 ||
                 ScreenHelper.getCurrentRotation(context) == Surface.ROTATION_270

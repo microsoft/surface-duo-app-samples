@@ -7,6 +7,9 @@
 
 package com.microsoft.device.display.samples.twonote
 
+import Defines.INODE
+import Defines.LIST_FRAGMENT
+import Defines.NOTE
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -67,8 +70,8 @@ class NoteDetailFragment : Fragment() {
         lateinit var mListener: OnFragmentInteractionListener
         internal fun newInstance(inode: INode, note: Note) = NoteDetailFragment().apply {
             arguments = Bundle().apply {
-                this.putSerializable(MainActivity.NOTE, note)
-                this.putSerializable(MainActivity.INODE, inode)
+                this.putSerializable(NOTE, note)
+                this.putSerializable(INODE, inode)
             }
         }
 
@@ -115,7 +118,7 @@ class NoteDetailFragment : Fragment() {
 
     private fun addNoteContents() {
         val note: Note? = arguments?.let {
-            val note = it.getSerializable(MainActivity.NOTE)
+            val note = it.getSerializable(NOTE)
 
             if (note is Note) note
             else null
@@ -126,8 +129,8 @@ class NoteDetailFragment : Fragment() {
 
     fun updateNoteContents() {
         arguments?.let {
-            val note = it.getSerializable(MainActivity.NOTE)
-            val inode = it.getSerializable(MainActivity.INODE)
+            val note = it.getSerializable(NOTE)
+            val inode = it.getSerializable(INODE)
             if (note is Note && inode is INode && !deleted) {
                 val text = noteText.text.toString()
                 val title = noteTitle.text.toString()
@@ -265,7 +268,7 @@ class NoteDetailFragment : Fragment() {
 
         arguments?.let {
             val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
-            val note = it.getSerializable(MainActivity.NOTE)
+            val note = it.getSerializable(NOTE)
             if (note is Note) {
                 val strokeList: MutableList<Stroke> = mutableListOf()
                 for (s in note.drawings) {
@@ -376,7 +379,7 @@ class NoteDetailFragment : Fragment() {
 
     fun save() {
         arguments?.let {
-            val note = it.getSerializable(MainActivity.NOTE)
+            val note = it.getSerializable(NOTE)
             if (note is Note && !deleted) {
                 FileSystem.save(requireContext(), DataProvider.getActiveSubDirectory(), note)
             }
@@ -392,7 +395,7 @@ class NoteDetailFragment : Fragment() {
             R.id.action_share -> {
                 view?.let {
                     // Create path for note image file
-                    val inode = arguments?.getSerializable(MainActivity.INODE) as? INode
+                    val inode = arguments?.getSerializable(INODE) as? INode
                     val path = requireContext().getExternalFilesDir(null)?.absolutePath + "/$inode.jpg"
 
                     // Get location of NoteDetailFragment view within window
@@ -418,7 +421,7 @@ class NoteDetailFragment : Fragment() {
             }
             R.id.action_delete -> {
                 arguments?.let {
-                    val inode = it.getSerializable(MainActivity.INODE)
+                    val inode = it.getSerializable(INODE)
                     if (inode is INode) {
                         FileSystem.delete(requireContext(), DataProvider.getActiveSubDirectory(), inode)
                         deleted = true
@@ -518,7 +521,7 @@ class NoteDetailFragment : Fragment() {
         activity?.let { activity ->
             if (ScreenHelper.isDualMode(activity) && !MainActivity.isRotated(activity)) {
                 // Tell NoteListFragment that list data has changed
-                (parentFragmentManager.findFragmentByTag(MainActivity.LIST_FRAGMENT) as? NoteListFragment)
+                (parentFragmentManager.findFragmentByTag(LIST_FRAGMENT) as? NoteListFragment)
                     ?.updateArrayAdapter()
 
                 // If spanned and not rotated (list/detail view), show GetStartedFragment in second container
@@ -534,7 +537,7 @@ class NoteDetailFragment : Fragment() {
                     .replace(
                         R.id.first_container_id,
                         NoteListFragment(),
-                        MainActivity.LIST_FRAGMENT
+                        LIST_FRAGMENT
                     ).commit()
             }
         }
