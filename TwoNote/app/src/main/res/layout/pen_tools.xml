@@ -7,51 +7,74 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="@dimen/edge_padding"
     android:gravity="center_horizontal"
     android:orientation="horizontal">
 
-    <com.google.android.material.button.MaterialButton
+    <ImageButton
         android:id="@+id/undo"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/button_height"
         android:layout_weight="1"
         android:minWidth="@dimen/button_width"
-        android:text="@string/action_undo" />
+        android:src="@drawable/ic_fluent_arrow_undo_20_filled"
+        android:text="@string/action_undo"
+        android:tint="?attr/colorOnBackground" />
 
     <View
         android:layout_width="@dimen/spacing"
         android:layout_height="match_parent" />
 
-    <com.google.android.material.button.MaterialButton
+    <ImageButton
         android:id="@+id/color"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/button_height"
         android:layout_weight="1"
         android:minWidth="@dimen/button_width"
-        android:text="@string/action_color" />
+        android:src="@drawable/ic_fluent_color_20_filled"
+        android:text="@string/action_color"
+        android:tint="?attr/colorOnBackground" />
 
     <View
         android:layout_width="@dimen/spacing"
         android:layout_height="match_parent" />
 
-    <com.google.android.material.button.MaterialButton
+    <ImageButton
         android:id="@+id/thickness"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/button_height"
         android:layout_weight="1"
         android:minWidth="@dimen/button_width"
-        android:text="@string/action_thickness" />
+        android:src="@drawable/ic_fluent_line_horizontal_3_20_filled"
+        android:text="@string/action_thickness"
+        android:tint="?attr/colorOnBackground" />
 
     <View
         android:layout_width="@dimen/spacing"
         android:layout_height="match_parent" />
 
-    <com.google.android.material.button.MaterialButton
+    <ImageButton
+        android:id="@+id/highlight"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/button_height"
+        android:layout_weight="1"
+        android:minWidth="@dimen/button_width"
+        android:src="@drawable/ic_fluent_highlight_20_filled"
+        android:text="@string/action_highlight_on"
+        android:tint="?attr/colorOnBackground" />
+
+    <View
+        android:layout_width="@dimen/spacing"
+        android:layout_height="match_parent" />
+
+    <ImageButton
         android:id="@+id/clear"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/button_height"
         android:layout_weight="1"
         android:minWidth="@dimen/button_width"
-        android:text="@string/action_clear" />
+        android:src="@drawable/ic_fluent_delete_20_filled"
+        android:text="@string/action_clear"
+        android:tint="?attr/colorOnBackground" />
 
 </LinearLayout>

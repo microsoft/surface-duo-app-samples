@@ -35,7 +35,6 @@ import androidx.core.view.iterator
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.microsoft.device.display.samples.twonote.includes.DragHandler
 import com.microsoft.device.display.samples.twonote.model.DataProvider
@@ -192,14 +191,18 @@ class NoteDetailFragment : Fragment() {
         drawView = view.findViewById(R.id.draw_view)
         Log.e("KRISTEN", "inside set up ink mode")
 
-        val clearButton = view.findViewById<MaterialButton>(R.id.clear)
+        val clearButton = view.findViewById<ImageButton>(R.id.clear)
         clearButton.setOnClickListener { clearDrawing() }
 
-        val undoButton = view.findViewById<MaterialButton>(R.id.undo)
+        val undoButton = view.findViewById<ImageButton>(R.id.undo)
         undoButton.setOnClickListener { undoStroke() }
 
-        val colorButton = view.findViewById<MaterialButton>(R.id.color)
-        colorButton.setOnClickListener { toggleViewVisibility(view.findViewById(R.id.color_buttons)) }
+        val colorButton = view.findViewById<ImageButton>(R.id.color)
+        colorButton.setOnClickListener {
+            val colorButtonsLayout = view.findViewById<LinearLayout>(R.id.color_buttons)
+            toggleViewVisibility(colorButtonsLayout)
+            toggleButtonColor(colorButton, colorButtonsLayout?.visibility == View.VISIBLE)
+        }
 
         val thickness = view.findViewById<SeekBar>(R.id.thickness_slider)
         thickness.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -223,8 +226,14 @@ class NoteDetailFragment : Fragment() {
             override fun onStopTrackingTouch(seek: SeekBar) {}
         })
 
-        val thicknessButton = view.findViewById<MaterialButton>(R.id.thickness)
-        thicknessButton.setOnClickListener { toggleViewVisibility(thickness) }
+        val thicknessButton = view.findViewById<ImageButton>(R.id.thickness)
+        thicknessButton.setOnClickListener {
+            toggleViewVisibility(thickness)
+            toggleButtonColor(thicknessButton, thickness?.visibility == View.VISIBLE)
+        }
+
+        val highlightButton = view.findViewById<ImageButton>(R.id.highlight)
+        highlightButton.setOnClickListener { toggleButtonColor(highlightButton, drawView.toggleHighlightMode()) }
 
         val redButton = view.findViewById<Button>(R.id.button_red)
         redButton.setOnClickListener { chooseColor(PaintColors.Red.name) }
@@ -277,7 +286,6 @@ class NoteDetailFragment : Fragment() {
         }
 
         recoverDrawing()
-        drawView.rotated = MainActivity.isRotated(requireActivity())
 
         val currentRotation = ScreenHelper.getCurrentRotation(requireActivity())
         Log.e("KRISTEN", "old: $rotation current: $currentRotation")
@@ -330,6 +338,14 @@ class NoteDetailFragment : Fragment() {
             view?.visibility = View.INVISIBLE
         } else {
             view?.visibility = View.VISIBLE
+        }
+    }
+
+    private fun toggleButtonColor(button: ImageButton?, activated: Boolean) {
+        if (activated) {
+            button?.background?.colorFilter = PorterDuffColorFilter(resources.getColor(R.color.colorPrimary, requireActivity().theme), PorterDuff.Mode.SRC)
+        } else {
+            button?.background?.clearColorFilter()
         }
     }
 
@@ -487,19 +503,22 @@ class NoteDetailFragment : Fragment() {
     private fun activateInk(active: Boolean) {
         val penTools = view?.findViewById<LinearLayout>(R.id.pen_tools)
         if (active) {
-            inkItem?.setIcon(R.drawable.ic_fluent_calligraphy_pen_24_filled)
+            inkItem?.setIcon(R.drawable.ic_fluent_inking_tool_24_filled)
             inkItem?.title = getString(R.string.action_ink_off)
             drawView.enable()
             view?.findViewById<ConstraintLayout>(R.id.ink_mode)?.bringToFront()
             penTools?.visibility = View.VISIBLE
             penTools?.bringToFront()
         } else {
-            inkItem?.setIcon(R.drawable.ic_fluent_calligraphy_pen_24_regular)
+            inkItem?.setIcon(R.drawable.ic_fluent_inking_tool_24_regular)
             inkItem?.title = getString(R.string.action_ink_on)
             drawView.disable()
             penTools?.visibility = View.INVISIBLE
             toggleViewVisibility(view?.findViewById<SeekBar>(R.id.thickness_slider), true)
             toggleViewVisibility(view?.findViewById<LinearLayout>(R.id.color_buttons), true)
+            toggleButtonColor(view?.findViewById<ImageButton>(R.id.thickness), false)
+            toggleButtonColor(view?.findViewById<ImageButton>(R.id.color), false)
+            toggleButtonColor(view?.findViewById<ImageButton>(R.id.highlight), drawView.toggleHighlightMode(false))
         }
     }
 

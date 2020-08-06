@@ -19,6 +19,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.graphics.ColorUtils
 import java.lang.Math.max
 import kotlin.math.min
 
@@ -33,6 +34,7 @@ class PenDrawView : View {
     private var disabled = true
     private var currentThickness: Int = 25
     var rotated = false
+    private var highlightMode = false
 
     companion object {
         // Attributes used for scaling drawings after rotation
@@ -92,12 +94,12 @@ class PenDrawView : View {
                                 line--
                             }
                         } else {
-                            val configuredPaint = configurePaint(paint)
+                            val configuredPaint = configurePaint(paint, stroke.highlightStroke)
 //                            if (rotated) {
 //                                path.transform(porToLand, scaledPath)
 //                                canvas.drawPath(scaledPath, configuredPaint)
 //                            } else {
-                                canvas.drawPath(path, configuredPaint)
+                            canvas.drawPath(path, configuredPaint)
 //                            }
                         }
                         section++
@@ -125,17 +127,18 @@ class PenDrawView : View {
                 eraser.set(left, top, right, bottom)
             }
         } else {
+            val pressure = if (highlightMode) 1f else event.pressure
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    val stroke = Stroke(event.x, event.y, event.pressure, currentColor, currentThickness)
+                    val stroke = Stroke(event.x, event.y, pressure, currentColor, currentThickness, highlightMode)
                     strokeList.add(stroke)
-                    prevPressure = event.pressure
+                    prevPressure = pressure
                 }
 
                 MotionEvent.ACTION_MOVE -> {
-                    Log.d("draw_debugging", "pressure " + event.pressure)
+                    Log.d("draw_debugging", "pressure $pressure")
                     if (strokeList.isNotEmpty())
-                        strokeList[strokeList.lastIndex].continueDrawing(event.x, event.y, event.pressure)
+                        strokeList[strokeList.lastIndex].continueDrawing(event.x, event.y, pressure)
                 }
 
                 MotionEvent.ACTION_UP -> {
@@ -149,15 +152,25 @@ class PenDrawView : View {
         return true
     }
 
-    private fun configurePaint(paint: Paint): Paint {
+    private fun configurePaint(paint: Paint, highlight: Boolean = false): Paint {
         val configuredPaint = Paint()
 
         configuredPaint.style = Paint.Style.STROKE
         configuredPaint.isAntiAlias = true
-        configuredPaint.strokeCap = Paint.Cap.ROUND
+        configuredPaint.strokeCap = if (highlight) Paint.Cap.SQUARE else Paint.Cap.ROUND
         configuredPaint.strokeWidth = paint.strokeWidth + radius / 3
         configuredPaint.color = paint.color + radius / 4
         return configuredPaint
+    }
+
+    fun toggleHighlightMode(forceFalse: Boolean = false): Boolean {
+        highlightMode = if (forceFalse) false else !highlightMode
+        changePaintColor(currentColor)
+        return highlightMode
+    }
+
+    fun getHighlightMode(): Boolean {
+        return highlightMode
     }
 
     fun setPaintRadius(radius: Int) {
@@ -182,7 +195,11 @@ class PenDrawView : View {
     }
 
     fun changePaintColor(color: Int) {
-        currentColor = color
+        // TODO: adjust highlight for dark theme
+        currentColor = if (highlightMode)
+            ColorUtils.setAlphaComponent(color, 100)
+        else
+            ColorUtils.setAlphaComponent(color, 255)
     }
 
     fun changeThickness(thickness: Int) {
