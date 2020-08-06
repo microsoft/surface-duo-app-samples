@@ -26,14 +26,11 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
         const val DETAIL_FRAGMENT = "detail fragment"
         const val NOTE = "note"
         const val INODE = "inode"
-        const val ROTATION = "rotation"
 
         fun isRotated(context: Context): Boolean {
             return ScreenHelper.getCurrentRotation(context) == Surface.ROTATION_90 ||
                 ScreenHelper.getCurrentRotation(context) == Surface.ROTATION_270
         }
-
-        private var currentRotation: Int? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,15 +41,6 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
         val note = savedInstanceState?.getSerializable(NOTE) as? Note
         val inode = savedInstanceState?.getSerializable(INODE) as? INode
         val noteSelected = note != null && inode != null
-
-        // Check if rotation has changed
-//        if (currentRotation == null) {
-//            currentRotation = ScreenHelper.getCurrentRotation(this)
-//        } else {
-//            savedInstanceState?.let {
-//
-//            }
-//        }
 
         when ((application as TwoNote).surfaceDuoScreenManager.screenMode) {
             ScreenMode.SINGLE_SCREEN -> {

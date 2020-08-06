@@ -55,7 +55,6 @@ class NoteDetailFragment : Fragment() {
     lateinit var noteText: TextInputEditText
     private lateinit var noteTitle: TextInputEditText
     var deleted = false
-    private var rotation: Int? = null
 
     lateinit var rootDetailLayout: ConstraintLayout
     lateinit var imageContainer: RelativeLayout
@@ -106,11 +105,6 @@ class NoteDetailFragment : Fragment() {
         rootDetailLayout = view.findViewById(R.id.note_detail_layout)
         imageContainer = view.findViewById(R.id.image_container)
 
-        savedInstanceState?.let {
-            rotation = it.getInt(MainActivity.ROTATION)
-            Log.e("KRISTEN", "onCreateView rotation $rotation")
-        }
-
         addNoteContents()
         setUpInkMode(view)
         setUpTools(view)
@@ -139,7 +133,6 @@ class NoteDetailFragment : Fragment() {
                 val title = noteTitle.text.toString()
 
                 if (this::drawView.isInitialized) {
-                    // TODO
                     note.drawings = drawView.getDataList()
                 }
 
@@ -167,12 +160,10 @@ class NoteDetailFragment : Fragment() {
                 item.title == getString(R.string.action_ink_off)
             )
                 inkItem = item
-
             else if (item.title == getString(R.string.action_text_on) ||
                 item.title == getString(R.string.action_text_off)
             )
                 textItem = item
-
             else if (item.title == getString(R.string.action_image_on) ||
                 item.title == getString(R.string.action_image_off)
             )
@@ -189,7 +180,6 @@ class NoteDetailFragment : Fragment() {
 
     private fun setUpInkMode(view: View) {
         drawView = view.findViewById(R.id.draw_view)
-        Log.e("KRISTEN", "inside set up ink mode")
 
         val clearButton = view.findViewById<ImageButton>(R.id.clear)
         clearButton.setOnClickListener { clearDrawing() }
@@ -279,7 +269,7 @@ class NoteDetailFragment : Fragment() {
             if (note is Note) {
                 val strokeList: MutableList<Stroke> = mutableListOf()
                 for (s in note.drawings) {
-                    strokeList.add(Stroke(s.xList, s.yList, s.pressureList, s.paintColor, s.thicknessMultiplier))
+                    strokeList.add(Stroke(s.xList, s.yList, s.pressureList, s.paintColor, s.thicknessMultiplier, s.rotated, s.highlightStroke))
                 }
                 viewModel.setStrokeList(strokeList)
             }
@@ -287,32 +277,13 @@ class NoteDetailFragment : Fragment() {
 
         recoverDrawing()
 
-        val currentRotation = ScreenHelper.getCurrentRotation(requireActivity())
-        Log.e("KRISTEN", "old: $rotation current: $currentRotation")
-        if (rotation == null) {
-            rotation = currentRotation
-        } else if (currentRotation != rotation) {
-            Log.e("KRISTEN", "ROTATIONS NOT EQUAL")
-            drawView.rotateStrokes()
-            rotation = currentRotation
-        }
-
         drawView.viewTreeObserver.addOnDrawListener {
             copyDrawingIfAdded()
         }
+
         drawView.setPaintRadius(0)
-
-        // REVISIT: connect to savedInstanceState bundle
+        drawView.rotated = MainActivity.isRotated(requireActivity())
         drawView.disable()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        rotation?.let {
-            outState.putInt(MainActivity.ROTATION, it)
-        }
-        Log.e("KRISTEN", "onSaveInstanceState")
     }
 
     /**
@@ -391,7 +362,6 @@ class NoteDetailFragment : Fragment() {
 
     private fun copyDrawing() {
         val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
-
         val strokeList = drawView.getStrokeList()
         if (strokeList.isNotEmpty()) {
             viewModel.setStrokeList(strokeList)
@@ -480,6 +450,7 @@ class NoteDetailFragment : Fragment() {
             }
         }
     }
+
     private fun activateText(active: Boolean) {
         if (active) {
             textItem?.setIcon(R.drawable.ic_fluent_text_field_24_filled)
@@ -490,6 +461,7 @@ class NoteDetailFragment : Fragment() {
             textItem?.title = getString(R.string.action_text_on)
         }
     }
+
     private fun activateImage(active: Boolean) {
         if (active) {
             imageItem?.setIcon(R.drawable.ic_fluent_image_24_filled)
@@ -500,6 +472,7 @@ class NoteDetailFragment : Fragment() {
             imageItem?.title = getString(R.string.action_image_on)
         }
     }
+
     private fun activateInk(active: Boolean) {
         val penTools = view?.findViewById<LinearLayout>(R.id.pen_tools)
         if (active) {
@@ -516,9 +489,9 @@ class NoteDetailFragment : Fragment() {
             penTools?.visibility = View.INVISIBLE
             toggleViewVisibility(view?.findViewById<SeekBar>(R.id.thickness_slider), true)
             toggleViewVisibility(view?.findViewById<LinearLayout>(R.id.color_buttons), true)
-            toggleButtonColor(view?.findViewById<ImageButton>(R.id.thickness), false)
-            toggleButtonColor(view?.findViewById<ImageButton>(R.id.color), false)
-            toggleButtonColor(view?.findViewById<ImageButton>(R.id.highlight), drawView.toggleHighlightMode(false))
+            toggleButtonColor(view?.findViewById(R.id.thickness), false)
+            toggleButtonColor(view?.findViewById(R.id.color), false)
+            toggleButtonColor(view?.findViewById(R.id.highlight), drawView.toggleHighlightMode(false))
         }
     }
 
@@ -533,7 +506,7 @@ class NoteDetailFragment : Fragment() {
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "image/*"
         intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        //intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(requireContext(), BuildConfig.APPLICATION_ID + ".provider", file))
+        intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(requireContext(), BuildConfig.APPLICATION_ID + ".provider", file))
         startActivity(Intent.createChooser(intent, resources.getString(R.string.share_intent)))
     }
 
@@ -581,17 +554,4 @@ class NoteDetailFragment : Fragment() {
             handler.onDrag(event)
         }
     }
-
-//    override fun onOrientationChanged(orientation: Int) {
-//        val newRotation = when {
-//            orientation < 90 -> Surface.ROTATION_0
-//            orientation < 180 -> Surface.ROTATION_90
-//            orientation < 270 -> Surface.ROTATION_180
-//            else -> Surface.ROTATION_270
-//        }
-//
-//        if (newRotation != rotation) {
-//            drawView.rotateStrokes(MainActivity.isRotated(requireActivity()))
-//        }
-//    }
 }

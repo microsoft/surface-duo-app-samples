@@ -6,7 +6,7 @@
  */
 
 object Defines {
-    // Handler references //
+    // File Handler references //
     const val DEFAULT_FILE_NAME = "drawing"
     const val TEXT_PREFIX = "text/"
     const val IMAGE_PREFIX = "image/"
@@ -16,4 +16,10 @@ object Defines {
     const val RESIZE_SPEED = 15
     const val MIN_DIMEN = 250
     const val THRESHOLD = 0.2
+
+    // Inking scaling constants //
+    const val PORT_TO_LAND = 4f / 3
+    const val LAND_TO_PORT = 3f/ 4
+
+    // Fragment name constants //
 }

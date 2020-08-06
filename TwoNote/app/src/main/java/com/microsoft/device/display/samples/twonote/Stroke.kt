@@ -7,30 +7,30 @@
 
 package com.microsoft.device.display.samples.twonote
 
-import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
 
 class Stroke {
-
+    // Serialized fields
     private var xList: MutableList<MutableList<Float>> = mutableListOf()
     private var yList: MutableList<MutableList<Float>> = mutableListOf()
     private var pressureList: MutableList<MutableList<Float>> = mutableListOf()
     private var paintColor: Int = 0
+    private var thicknessMultiplier: Int = 25
+    private var rotated = false
+    private var highlightStroke = false
 
-    var pathList: MutableList<Path> = mutableListOf()
+    private var pathList: MutableList<Path> = mutableListOf()
     private var paints: MutableList<Paint> = mutableListOf()
     private var pathBounds: MutableList<RectF> = mutableListOf()
 
     private var xCoord: Float = 0f
     private var yCoord: Float = 0f
     private var prevPressure: Float = 0f
-    private var thicknessMultiplier: Int = 25
-    var highlightStroke = false
 
-    constructor(x: Float, y: Float, pressure: Float, color: Int, thickness: Int, highlight: Boolean = false) {
-        initStroke(x, y, pressure, color, thickness, highlight)
+    constructor(x: Float, y: Float, pressure: Float, color: Int, thickness: Int, rotation: Boolean, highlight: Boolean = false) {
+        initStroke(x, y, pressure, color, thickness, rotation, highlight)
     }
 
     // reconstruct serialized data
@@ -39,14 +39,16 @@ class Stroke {
         y: List<MutableList<Float>>,
         pressure: List<MutableList<Float>>,
         color: Int,
-        thickness: Int
+        thickness: Int,
+        rotation: Boolean,
+        highlight: Boolean
     ) {
         // need at least one path
         if (x.isNotEmpty() && x[0].size > 0) {
             for (paths in x.indices) {
                 for (coords in 0 until x[paths].size) {
                     if (paths == 0 && coords == 0)
-                        initStroke(x[paths][coords], y[paths][coords], pressure[paths][coords], color, thickness)
+                        initStroke(x[paths][coords], y[paths][coords], pressure[paths][coords], color, thickness, rotation, highlight)
                     else
                         continueDrawing(x[paths][coords], y[paths][coords], pressure[paths][coords])
                 }
@@ -55,7 +57,7 @@ class Stroke {
         }
     }
 
-    fun continueDrawing(x: Float, y: Float, pressure: Float, rotated: Boolean = false) {
+    fun continueDrawing(x: Float, y: Float, pressure: Float) {
         if (pressure == prevPressure && pathList.isNotEmpty())
             continueJoint(x, y)
         else
@@ -100,9 +102,9 @@ class Stroke {
         return pathBounds
     }
 
-//    fun getPathList(): MutableList<Path> {
-//        return pathList
-//    }
+    fun getPathList(): MutableList<Path> {
+        return pathList
+    }
 
     fun getPaints(): MutableList<Paint> {
         return paints
@@ -127,7 +129,7 @@ class Stroke {
         val y: List<MutableList<Float>> = yList.slice(range)
         val p: List<MutableList<Float>> = pressureList.slice(range)
 
-        val stroke = Stroke(x, y, p, paintColor, thicknessMultiplier)
+        val stroke = Stroke(x, y, p, paintColor, thicknessMultiplier, rotated, highlightStroke)
 
         range = IntRange(0, i)
         xList = xList.slice(range).toMutableList()
@@ -150,7 +152,6 @@ class Stroke {
     }
 
     fun getSize(): Int {
-        // REVISIT TODO
         return pathList.size
     }
 
@@ -164,12 +165,13 @@ class Stroke {
         pressureList[pressureList.lastIndex].add(pressure)
     }
 
-    private fun initStroke(x: Float, y: Float, pressure: Float, color: Int, thickness: Int, highlight: Boolean = false) {
+    private fun initStroke(x: Float, y: Float, pressure: Float, color: Int, thickness: Int, rotation: Boolean, highlight: Boolean = false) {
         xCoord = x
         yCoord = y
         prevPressure = pressure
         paintColor = color
         thicknessMultiplier = thickness
+        rotated = rotation
         highlightStroke = highlight
 
         addJoint(x, y, pressure)
@@ -182,12 +184,14 @@ class Stroke {
     }
 
     fun serializeData(): SerializedStroke {
-        return SerializedStroke(xList, yList, pressureList, paintColor, thicknessMultiplier)
+        return SerializedStroke(xList, yList, pressureList, paintColor, thicknessMultiplier, rotated, highlightStroke)
     }
 
-    fun rotateStroke(matrix: Matrix) {
-        for (path in pathList) {
-            path.transform(matrix)
-        }
+    fun getRotation(): Boolean {
+        return rotated
+    }
+
+    fun getHighlight(): Boolean {
+        return highlightStroke
     }
 }
