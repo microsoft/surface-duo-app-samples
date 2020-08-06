@@ -23,6 +23,8 @@
     <string name="action_ink_off">Deactivate inking</string>
     <string name="action_text_on">Activate text editing</string>
     <string name="action_text_off">Deactivate text editing</string>
+    <string name="action_image_on">Activate image editing</string>
+    <string name="action_image_off">Deactivate image editing</string>
     <string name="action_undo">UNDO</string>
     <string name="action_clear">CLEAR</string>
     <string name="action_color">COLORS</string>
