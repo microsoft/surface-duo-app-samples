@@ -59,6 +59,10 @@ class NoteDetailFragment : Fragment() {
     lateinit var rootDetailLayout: ConstraintLayout
     lateinit var imageContainer: RelativeLayout
 
+    private var inkItem: MenuItem? = null
+    private var textItem: MenuItem? = null
+    private var imageItem: MenuItem? = null
+
     companion object {
         lateinit var mListener: OnFragmentInteractionListener
         internal fun newInstance(inode: INode, note: Note) = NoteDetailFragment().apply {
@@ -142,8 +146,6 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    private var inkItem: MenuItem? = null
-    private var textItem: MenuItem? = null
     private fun setUpTools(view: View) {
         // Set up toolbar icons and actions
         val toolbar = view.findViewById<MaterialToolbar>(R.id.toolbar)
@@ -158,10 +160,16 @@ class NoteDetailFragment : Fragment() {
                 item.title == getString(R.string.action_ink_off)
             )
                 inkItem = item
+
             else if (item.title == getString(R.string.action_text_on) ||
                 item.title == getString(R.string.action_text_off)
             )
                 textItem = item
+
+            else if (item.title == getString(R.string.action_image_on) ||
+                item.title == getString(R.string.action_image_off)
+            )
+                imageItem = item
         }
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
@@ -404,48 +412,22 @@ class NoteDetailFragment : Fragment() {
                 closeFragment()
                 true
             }
-            R.id.action_ink -> {
-                val penTools = view?.findViewById<LinearLayout>(R.id.pen_tools)
-
-                // Toggle between inking/text mode
-                if (item.title == getString(R.string.action_ink_on)) {
-                    // Draw icon pressed
-                    drawView.enable()
-                    item.setIcon(R.drawable.ic_picture)
-                    item.title = getString(R.string.action_ink_off)
-                    view?.findViewById<ConstraintLayout>(R.id.ink_mode)?.bringToFront()
-                    penTools?.visibility = View.VISIBLE
-                    penTools?.bringToFront()
-                } else {
-                    // Picture icon pressed
-                    disableInkMode(penTools)
-                    imageContainer.bringToFront()
-                }
-                if (textItem?.title == getString(R.string.action_text_off)) {
-                    // Disable ink mode
-                    textItem?.setIcon(R.drawable.ic_text)
-                    textItem?.title = getString(R.string.action_text_on)
-                }
+            R.id.action_text -> {
+                activateText(true)
+                activateImage(false)
+                activateInk(false)
                 true
             }
-            R.id.action_text -> {
-                val penTools = view?.findViewById<LinearLayout>(R.id.pen_tools)
-
-                if (item.title == getString(R.string.action_text_on)) {
-                    // Text icon pressed
-                    item.setIcon(R.drawable.ic_picture)
-                    item.title = getString(R.string.action_text_off)
-                    view?.findViewById<ScrollView>(R.id.text_mode)?.bringToFront()
-                } else {
-                    // Picture icon pressed
-                    item.setIcon(R.drawable.ic_text)
-                    item.title = getString(R.string.action_text_on)
-                    imageContainer.bringToFront()
-                }
-
-                if (inkItem?.title == getString(R.string.action_ink_off)) {
-                    disableInkMode(penTools)
-                }
+            R.id.action_image -> {
+                activateText(false)
+                activateImage(true)
+                activateInk(false)
+                true
+            }
+            R.id.action_ink -> {
+                activateText(false)
+                activateImage(false)
+                activateInk(true)
                 true
             }
             else -> {
@@ -453,15 +435,43 @@ class NoteDetailFragment : Fragment() {
             }
         }
     }
-
-    private fun disableInkMode(penTools: LinearLayout?) {
-        // Disable ink mode
-        drawView.disable()
-        inkItem?.setIcon(R.drawable.ic_fluent_calligraphy_pen_24_filled)
-        inkItem?.title = getString(R.string.action_ink_on)
-        penTools?.visibility = View.INVISIBLE
-        toggleViewVisibility(view?.findViewById<SeekBar>(R.id.thickness_slider), true)
-        toggleViewVisibility(view?.findViewById<LinearLayout>(R.id.color_buttons), true)
+    private fun activateText(active: Boolean) {
+        if (active) {
+            textItem?.setIcon(R.drawable.ic_fluent_text_field_24_filled)
+            textItem?.title = getString(R.string.action_text_off)
+            view?.findViewById<ScrollView>(R.id.text_mode)?.bringToFront()
+        } else {
+            textItem?.setIcon(R.drawable.ic_fluent_text_field_24_regular)
+            textItem?.title = getString(R.string.action_text_on)
+        }
+    }
+    private fun activateImage(active: Boolean) {
+        if (active) {
+            imageItem?.setIcon(R.drawable.ic_fluent_image_24_filled)
+            imageItem?.title = getString(R.string.action_image_off)
+            imageContainer.bringToFront()
+        } else {
+            imageItem?.setIcon(R.drawable.ic_fluent_image_24_regular)
+            imageItem?.title = getString(R.string.action_image_on)
+        }
+    }
+    private fun activateInk(active: Boolean) {
+        val penTools = view?.findViewById<LinearLayout>(R.id.pen_tools)
+        if (active) {
+            inkItem?.setIcon(R.drawable.ic_fluent_calligraphy_pen_24_filled)
+            inkItem?.title = getString(R.string.action_ink_off)
+            drawView.enable()
+            view?.findViewById<ConstraintLayout>(R.id.ink_mode)?.bringToFront()
+            penTools?.visibility = View.VISIBLE
+            penTools?.bringToFront()
+        } else {
+            inkItem?.setIcon(R.drawable.ic_fluent_calligraphy_pen_24_regular)
+            inkItem?.title = getString(R.string.action_ink_on)
+            drawView.disable()
+            penTools?.visibility = View.INVISIBLE
+            toggleViewVisibility(view?.findViewById<SeekBar>(R.id.thickness_slider), true)
+            toggleViewVisibility(view?.findViewById<LinearLayout>(R.id.color_buttons), true)
+        }
     }
 
     private fun openShareIntent(bitmap: Bitmap, path: String) {

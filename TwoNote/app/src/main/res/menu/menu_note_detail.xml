@@ -9,13 +9,21 @@
 
     <item
         android:id="@+id/action_text"
-        android:icon="@drawable/ic_picture"
+        android:icon="@drawable/ic_fluent_text_field_24_filled"
         android:title="@string/action_text_off"
+        app:iconTint="?attr/colorOnPrimary"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_image"
+        android:icon="@drawable/ic_fluent_image_24_regular"
+        android:title="@string/action_image_on"
+        app:iconTint="?attr/colorOnPrimary"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_ink"
-        android:icon="@drawable/ic_fluent_calligraphy_pen_24_filled"
+        android:icon="@drawable/ic_fluent_calligraphy_pen_24_regular"
         android:title="@string/action_ink_on"
         app:iconTint="?attr/colorOnPrimary"
         app:showAsAction="ifRoom" />
