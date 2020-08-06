@@ -27,9 +27,10 @@ class Stroke {
     private var yCoord: Float = 0f
     private var prevPressure: Float = 0f
     private var thicknessMultiplier: Int = 25
+    var highlightStroke = false
 
-    constructor(x: Float, y: Float, pressure: Float, color: Int, thickness: Int) {
-        initStroke(x, y, pressure, color, thickness)
+    constructor(x: Float, y: Float, pressure: Float, color: Int, thickness: Int, highlight: Boolean = false) {
+        initStroke(x, y, pressure, color, thickness, highlight)
     }
 
     // reconstruct serialized data
@@ -163,12 +164,13 @@ class Stroke {
         pressureList[pressureList.lastIndex].add(pressure)
     }
 
-    private fun initStroke(x: Float, y: Float, pressure: Float, color: Int, thickness: Int) {
+    private fun initStroke(x: Float, y: Float, pressure: Float, color: Int, thickness: Int, highlight: Boolean = false) {
         xCoord = x
         yCoord = y
         prevPressure = pressure
         paintColor = color
         thicknessMultiplier = thickness
+        highlightStroke = highlight
 
         addJoint(x, y, pressure)
     }
