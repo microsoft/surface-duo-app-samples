@@ -12,6 +12,7 @@ import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ContentResolver
 import android.net.Uri
+import android.net.Uri.fromFile
 import android.view.DragEvent
 import android.view.MotionEvent
 import android.view.View
@@ -19,7 +20,10 @@ import android.view.ViewConfiguration
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
 import com.microsoft.device.display.samples.twonote.NoteDetailFragment
+import com.microsoft.device.display.samples.twonote.SerializedImage
+import java.io.File
 import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.max
@@ -29,6 +33,8 @@ import kotlin.math.sqrt
 class DragHandler(val fragment: NoteDetailFragment) {
 
     private val fileHandler = FileHandler(fragment.requireActivity())
+    private val images: MutableList<ImageView> = mutableListOf()
+    private val uris: MutableList<Uri> = mutableListOf()
     private var space = 0f
     private var prevHeight = 0
     private var prevWidth = 0
@@ -84,18 +90,20 @@ class DragHandler(val fragment: NoteDetailFragment) {
         return false
     }
 
-    private fun addImageToView(uri: Uri) {
+    private fun addImageToView(uri: Uri): ImageView {
         // Define our ImageView and add it to layout
         val imageView = ImageView(fragment.requireContext())
         imageView.id = View.generateViewId()
         fileHandler.processImageData(uri, imageView)
 
         fragment.view?.let {
-            imageView.adjustViewBounds = true
+            images.add(imageView)
+            uris.add(uri)
             fragment.imageContainer.addView(imageView)
         }
 
         createShadowDragListener(imageView)
+        return imageView
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -188,5 +196,62 @@ class DragHandler(val fragment: NoteDetailFragment) {
         val yDist = abs(pointer0.y - pointer1.y)
 
         return sqrt((xDist * xDist) + (yDist * yDist))
+    }
+
+    private fun getImageCoords(index: Int): List<Float> {
+        val list: MutableList<Float> = mutableListOf()
+
+        list.add(images[index].x)
+        list.add(images[index].y)
+
+        return list.toList()
+    }
+
+    private fun getImageDimen(index: Int): List<Int> {
+        val list: MutableList<Int> = mutableListOf()
+
+        list.add(images[index].layoutParams.width)
+        list.add(images[index].layoutParams.height)
+
+        return list.toList()
+    }
+
+    fun getImageList(): List<SerializedImage> {
+        val list: MutableList<SerializedImage> = mutableListOf()
+
+        if (images.size != uris.size)
+            return list.toList()
+
+        for (index in images.indices) {
+            if (images[index].visibility == View.VISIBLE) {
+                uris[index].authority?.let { authority ->
+                    uris[index].path?.let { path ->
+                        list.add(
+                            SerializedImage(
+                                authority,
+                                path,
+                                getImageCoords(index),
+                                getImageDimen(index)
+                            )
+                        )
+                    }
+                }
+            }
+        }
+        return list.toList()
+    }
+
+    fun setImageList(list: List<SerializedImage>) {
+        for (serialized in list) {
+            fromFile(File(serialized.path))?.let {
+                val permissions: MutableList<String> = mutableListOf()
+                permissions.add(android.Manifest.permission.ACCESS_MEDIA_LOCATION)
+                ActivityCompat.requestPermissions(fragment.requireActivity(), permissions.toTypedArray(), 100)
+                val image = addImageToView(it)
+                //image.layoutParams = RelativeLayout.LayoutParams(serialized.dimens[0], serialized.dimens[1])
+                //image.x = serialized.coords[0]
+                //image.y = serialized.coords[1]
+            }
+        }
     }
 }
