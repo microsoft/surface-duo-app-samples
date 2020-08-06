@@ -188,11 +188,11 @@ class NoteDetailFragment : Fragment() {
         view.findViewById<ImageButton>(R.id.clear).setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setMessage(resources.getString(R.string.confirm_clear_message))
-                .setPositiveButton(resources.getString(R.string.ok)) { dialog, _ ->
+                .setPositiveButton(resources.getString(android.R.string.ok)) { dialog, _ ->
                     clearDrawing()
                     dialog.dismiss()
                 }
-                .setNegativeButton(resources.getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
+                .setNegativeButton(resources.getString(android.R.string.cancel)) { dialog, _ -> dialog.dismiss() }
                 .setTitle(resources.getString(R.string.confirm_clear))
                 .create()
                 .show()
@@ -243,6 +243,9 @@ class NoteDetailFragment : Fragment() {
             // Turn off eraser mode if activating highlighting mode
             if (activate) {
                 toggleButtonColor(eraseButton, drawView.toggleEraserMode(false))
+                it.contentDescription = resources.getString(R.string.action_highlight_off)
+            } else {
+                it.contentDescription = resources.getString(R.string.action_highlight_on)
             }
         }
 
@@ -250,11 +253,12 @@ class NoteDetailFragment : Fragment() {
             val activate = drawView.toggleEraserMode()
             toggleButtonColor(eraseButton, activate)
 
-            // Turn off all inking-related buttons if activating eraser mode
+            // Turn off highlight button if activating eraser mode
             if (activate) {
                 toggleButtonColor(highlightButton, drawView.toggleHighlightMode(false))
-                toggleButtonColor(thicknessButton, false)
-                toggleButtonColor(colorButton, false)
+                it.contentDescription = resources.getString(R.string.action_erase_off)
+            } else {
+                it.contentDescription = resources.getString(R.string.action_erase_on)
             }
         }
 
@@ -272,7 +276,7 @@ class NoteDetailFragment : Fragment() {
             AlertDialog.Builder(requireContext())
                 .setMessage(resources.getString(R.string.choose_color_message))
                 .setView(textInput)
-                .setPositiveButton(resources.getString(R.string.ok)) { dialog, _ ->
+                .setPositiveButton(resources.getString(android.R.string.ok)) { dialog, _ ->
                     val result = stringToColor(textInput.text.toString())
                     if (result != -1) {
                         chooseColor("", result)
@@ -282,7 +286,7 @@ class NoteDetailFragment : Fragment() {
                     }
                     dialog.dismiss()
                 }
-                .setNegativeButton(resources.getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
+                .setNegativeButton(resources.getString(android.R.string.cancel)) { dialog, _ -> dialog.dismiss() }
                 .setTitle(resources.getString(R.string.choose_color))
                 .create()
                 .show()
@@ -534,7 +538,7 @@ class NoteDetailFragment : Fragment() {
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "image/*"
         intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(requireContext(), BuildConfig.APPLICATION_ID + ".provider", file))
+        intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(requireContext(), requireContext().packageName + ".provider", file))
         startActivity(Intent.createChooser(intent, resources.getString(R.string.share_intent)))
     }
 

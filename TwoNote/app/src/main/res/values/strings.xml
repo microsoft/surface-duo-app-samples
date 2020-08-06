@@ -31,14 +31,12 @@
     <string name="action_thickness">Change ink thickness</string>
     <string name="choose_color">Choose color</string>
     <string name="choose_color_message">Enter color name or hexadecimal value (with #).</string>
-    <string name="ok">OK</string>
     <string name="share_intent">Share Note</string>
     <string name="choose_color_button_description">Choose custom ink color</string>
     <string name="action_highlight_on">Activate highlighting</string>
     <string name="action_highlight_off">Deactivate highlighting</string>
     <string name="action_erase_on">Activate erasing</string>
-    <string name="action_erase_ff">Deactivate erasing</string>
+    <string name="action_erase_off">Deactivate erasing</string>
     <string name="confirm_clear_message">Are you sure you want to erase all ink?</string>
     <string name="confirm_clear">Confirm clear</string>
-    <string name="cancel">CANCEL</string>
 </resources>
