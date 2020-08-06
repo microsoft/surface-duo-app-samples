@@ -8,6 +8,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_text"
+        android:icon="@drawable/ic_picture"
+        android:title="@string/action_text_off"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_ink"
         android:icon="@drawable/ic_fluent_calligraphy_pen_24_filled"
         android:title="@string/action_ink_on"
