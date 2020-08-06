@@ -6,6 +6,7 @@
 
 package com.microsoft.device.display.samples.twonote
 
+import Defines.DETAIL_FRAGMENT
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Editable
@@ -228,7 +229,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                     .replace(
                         R.id.second_container_id,
                         NoteDetailFragment.newInstance(inode, note),
-                        MainActivity.DETAIL_FRAGMENT
+                        DETAIL_FRAGMENT
                     ).commit()
             } else {
                 // If unspanned or spanned and rotated (extended view), open NoteDetailFragment in first container
@@ -236,7 +237,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                     .replace(
                         R.id.first_container_id,
                         NoteDetailFragment.newInstance(inode, note),
-                        MainActivity.DETAIL_FRAGMENT
+                        DETAIL_FRAGMENT
                     ).addToBackStack(null)
                     .commit()
             }
