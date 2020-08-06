@@ -8,13 +8,11 @@
 package com.microsoft.device.display.samples.twonote.includes
 
 import android.app.Activity
-import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
 import android.view.DragEvent
 import android.widget.ImageView
-import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.startActivityForResult
 import com.google.android.material.textfield.TextInputEditText
 import java.io.BufferedReader

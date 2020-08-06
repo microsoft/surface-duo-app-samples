@@ -12,7 +12,6 @@ import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ContentResolver
 import android.net.Uri
-import android.util.Log
 import android.view.DragEvent
 import android.view.MotionEvent
 import android.view.View
@@ -21,7 +20,7 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.core.app.ActivityCompat
 import com.microsoft.device.display.samples.twonote.NoteDetailFragment
-import java.util.*
+import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.sqrt
@@ -42,7 +41,7 @@ class DragHandler(val fragment: NoteDetailFragment) {
         val isImage = event.clipDescription?.getMimeType(0)
             .toString().startsWith(Defines.IMAGE_PREFIX)
 
-        return when (event.action and MotionEvent.ACTION_MASK) {
+        return when (event.action) {
             DragEvent.ACTION_DRAG_STARTED -> true
 
             DragEvent.ACTION_DROP -> processDrop(event, isText, isImage)
@@ -56,7 +55,7 @@ class DragHandler(val fragment: NoteDetailFragment) {
         }
     }
 
-    private fun processDrop(event: DragEvent, isText: Boolean, isImage: Boolean) : Boolean {
+    private fun processDrop(event: DragEvent, isText: Boolean, isImage: Boolean): Boolean {
         val item: ClipData.Item? = event.clipData?.getItemAt(0)
 
         item?.let {
@@ -64,6 +63,7 @@ class DragHandler(val fragment: NoteDetailFragment) {
 
             if (uri != null) {
                 if (ContentResolver.SCHEME_CONTENT == uri.scheme) {
+                    // Request permission to read file if it is outside the scope of the project
                     ActivityCompat.requestDragAndDropPermissions(fragment.activity, event)
                 }
                 if (isText) {
@@ -73,9 +73,11 @@ class DragHandler(val fragment: NoteDetailFragment) {
                     addImageToView(uri)
                     return true
                 } else {
+                    // Dropped item type not supported
                     return false
                 }
             } else {
+                // Item from inside the app was dragged and dropped
                 return handleReposition(event)
             }
         }
@@ -91,8 +93,6 @@ class DragHandler(val fragment: NoteDetailFragment) {
         fragment.view?.let {
             imageView.adjustViewBounds = true
             fragment.imageContainer.addView(imageView)
-            fragment.imageContainer.bringToFront()
-            imageView.bringToFront()
         }
 
         createShadowDragListener(imageView)
@@ -103,60 +103,35 @@ class DragHandler(val fragment: NoteDetailFragment) {
         imageView.setOnTouchListener { v, e ->
             when (e.action and MotionEvent.ACTION_MASK) {
                 MotionEvent.ACTION_POINTER_DOWN -> {
-                    space = spacing(e)
-                    prevHeight = imageView.height
-                    prevWidth = imageView.width
-                    imageView.layoutParams = RelativeLayout.LayoutParams(prevWidth, prevHeight)
+                    // Initialize image resize
+                    initResize(e, imageView)
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
                     if (e.pointerCount > 1) {
-                        clickStartTime = 0
-
-                        var percentage: Float = (spacing(e) / space) - 1
-                        if (percentage < 0.2 && percentage > -0.2) percentage = 0f
-
-                        prevHeight = max((prevHeight + (15 * percentage)).toInt(),250)
-                        prevWidth = max((prevWidth + (15 * percentage)).toInt(),250)
-
-                        imageView.layoutParams = RelativeLayout.LayoutParams(prevWidth, prevHeight)
-
-                        Log.d("IMGDRGGNG", "${imageView.maxHeight}")
+                        // Resize image on pinch gesture
+                        handleResize(e, imageView)
                     } else {
-                        val clickDuration = Calendar.getInstance().timeInMillis - clickStartTime
-                        if (clickStartTime > 0 && clickDuration >= ViewConfiguration.getLongPressTimeout()) {
-                            val data = ClipData.newPlainText("", "")
-                            val shadowBuilder = View.DragShadowBuilder(v)
-                            v.startDragAndDrop(data, shadowBuilder, v, 0)
-                            v.visibility = View.INVISIBLE
-                        }
+                        // Start dragging image on long click gesture
+                        handleLongClick(v)
                     }
                     true
                 }
                 MotionEvent.ACTION_DOWN -> {
+                    // Start long click timer
                     clickStartTime = Calendar.getInstance().timeInMillis
                     true
-                }/*MotionEvent.ACTION_DOWN -> {
-                    val data = ClipData.newPlainText("", "")
-                    val shadowBuilder = DragShadowBuilder(v)
-                    v.startDragAndDrop(data, shadowBuilder, v, 0)
-                    v.visibility = View.INVISIBLE
-                    true
-                }*/
+                }
                 else -> true
             }
         }
     }
 
     private fun handleReposition(event: DragEvent): Boolean {
-        when (event.action and MotionEvent.ACTION_MASK) {
+        when (event.action) {
             DragEvent.ACTION_DROP -> {
                 val view: View? = event.localState as View?
-                //val owner = view?.parent as ViewGroup?
-                //owner?.removeView(view)
-                //val container = fragment.imageContainer
-                //container.addView(view)
-                view?.let {v ->
+                view?.let { v ->
                     v.x = event.x - (v.width / 2)
                     v.y = event.y - (v.height / 2)
                     v.visibility = View.VISIBLE
@@ -170,6 +145,38 @@ class DragHandler(val fragment: NoteDetailFragment) {
         }
     }
 
+    private fun initResize(e: MotionEvent, imageView: ImageView) {
+        space = spacing(e)
+        prevHeight = imageView.height
+        prevWidth = imageView.width
+        imageView.layoutParams = RelativeLayout.LayoutParams(prevWidth, prevHeight)
+    }
+
+    private fun handleResize(e: MotionEvent, imageView: ImageView) {
+        clickStartTime = 0
+
+        // formula reasoning    -> "spread out" will result in positive percentage (add pixels to dimen)
+        //                      -> "pinch in" will result in negative percentage (sub pixels from dimen)
+        var percentage: Float = (spacing(e) / space) - 1
+        if (percentage < Defines.THRESHOLD && percentage > -Defines.THRESHOLD) percentage = 0f
+
+        prevHeight = max((prevHeight + (Defines.RESIZE_SPEED * percentage)).toInt(), Defines.MIN_DIMEN)
+        prevWidth = max((prevWidth + (Defines.RESIZE_SPEED * percentage)).toInt(), Defines.MIN_DIMEN)
+
+        imageView.layoutParams = RelativeLayout.LayoutParams(prevWidth, prevHeight)
+    }
+
+    private fun handleLongClick(v: View) {
+        val clickDuration = Calendar.getInstance().timeInMillis - clickStartTime
+        if (clickStartTime > 0 && clickDuration >= ViewConfiguration.getLongPressTimeout()) {
+            val data = ClipData.newPlainText("", "")
+            val shadowBuilder = View.DragShadowBuilder(v)
+            v.startDragAndDrop(data, shadowBuilder, v, 0)
+            v.visibility = View.INVISIBLE
+        }
+    }
+
+    // returns the distance between two points on the screen
     private fun spacing(e: MotionEvent): Float {
         val pointer0 = MotionEvent.PointerCoords()
         e.getPointerCoords(0, pointer0)
@@ -179,6 +186,7 @@ class DragHandler(val fragment: NoteDetailFragment) {
 
         val xDist = abs(pointer0.x - pointer1.x)
         val yDist = abs(pointer0.y - pointer1.y)
-        return sqrt((xDist*xDist) + (yDist*yDist))
+
+        return sqrt((xDist * xDist) + (yDist * yDist))
     }
 }
