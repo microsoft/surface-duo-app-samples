@@ -18,7 +18,6 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.Rect
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.PixelCopy
@@ -184,11 +183,20 @@ class NoteDetailFragment : Fragment() {
     private fun setUpInkMode(view: View) {
         drawView = view.findViewById(R.id.draw_view)
 
-        val clearButton = view.findViewById<ImageButton>(R.id.clear)
-        clearButton.setOnClickListener { clearDrawing() }
-
-        val undoButton = view.findViewById<ImageButton>(R.id.undo)
-        undoButton.setOnClickListener { undoStroke() }
+        // Set up pen tools buttons
+        view.findViewById<ImageButton>(R.id.undo).setOnClickListener { undoStroke() }
+        view.findViewById<ImageButton>(R.id.clear).setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setMessage(resources.getString(R.string.confirm_clear_message))
+                .setPositiveButton(resources.getString(R.string.ok)) { dialog, _ ->
+                    clearDrawing()
+                    dialog.dismiss()
+                }
+                .setNegativeButton(resources.getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
+                .setTitle(resources.getString(R.string.confirm_clear))
+                .create()
+                .show()
+        }
 
         val colorButton = view.findViewById<ImageButton>(R.id.color)
         colorButton.setOnClickListener {
@@ -226,22 +234,36 @@ class NoteDetailFragment : Fragment() {
         }
 
         val highlightButton = view.findViewById<ImageButton>(R.id.highlight)
-        highlightButton.setOnClickListener { toggleButtonColor(highlightButton, drawView.toggleHighlightMode()) }
+        val eraseButton = view.findViewById<ImageButton>(R.id.erase)
 
-        val redButton = view.findViewById<Button>(R.id.button_red)
-        redButton.setOnClickListener { chooseColor(PaintColors.Red.name) }
+        highlightButton.setOnClickListener {
+            val activate = drawView.toggleHighlightMode()
+            toggleButtonColor(highlightButton, activate)
 
-        val blueButton = view.findViewById<Button>(R.id.button_blue)
-        blueButton.setOnClickListener { chooseColor(PaintColors.Blue.name) }
+            // Turn off eraser mode if activating highlighting mode
+            if (activate) {
+                toggleButtonColor(eraseButton, drawView.toggleEraserMode(false))
+            }
+        }
 
-        val greenButton = view.findViewById<Button>(R.id.button_green)
-        greenButton.setOnClickListener { chooseColor(PaintColors.Green.name) }
+        eraseButton.setOnClickListener {
+            val activate = drawView.toggleEraserMode()
+            toggleButtonColor(eraseButton, activate)
 
-        val yellowButton = view.findViewById<Button>(R.id.button_yellow)
-        yellowButton.setOnClickListener { chooseColor(PaintColors.Yellow.name) }
+            // Turn off all inking-related buttons if activating eraser mode
+            if (activate) {
+                toggleButtonColor(highlightButton, drawView.toggleHighlightMode(false))
+                toggleButtonColor(thicknessButton, false)
+                toggleButtonColor(colorButton, false)
+            }
+        }
 
-        val purpleButton = view.findViewById<Button>(R.id.button_purple)
-        purpleButton.setOnClickListener { chooseColor(PaintColors.Purple.name) }
+        // Set up color buttons
+        view.findViewById<Button>(R.id.button_red).setOnClickListener { chooseColor(PaintColors.Red.name) }
+        view.findViewById<Button>(R.id.button_blue).setOnClickListener { chooseColor(PaintColors.Blue.name) }
+        view.findViewById<Button>(R.id.button_green).setOnClickListener { chooseColor(PaintColors.Green.name) }
+        view.findViewById<Button>(R.id.button_yellow).setOnClickListener { chooseColor(PaintColors.Yellow.name) }
+        view.findViewById<Button>(R.id.button_purple).setOnClickListener { chooseColor(PaintColors.Purple.name) }
 
         val chooseButton = view.findViewById<ImageButton>(R.id.button_choose)
         chooseButton.setOnClickListener {
@@ -250,7 +272,6 @@ class NoteDetailFragment : Fragment() {
             AlertDialog.Builder(requireContext())
                 .setMessage(resources.getString(R.string.choose_color_message))
                 .setView(textInput)
-                .setCancelable(true)
                 .setPositiveButton(resources.getString(R.string.ok)) { dialog, _ ->
                     val result = stringToColor(textInput.text.toString())
                     if (result != -1) {
@@ -261,11 +282,13 @@ class NoteDetailFragment : Fragment() {
                     }
                     dialog.dismiss()
                 }
+                .setNegativeButton(resources.getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
                 .setTitle(resources.getString(R.string.choose_color))
                 .create()
                 .show()
         }
 
+        // Set up draw view
         arguments?.let {
             val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
             val note = it.getSerializable(NOTE)
@@ -301,7 +324,7 @@ class NoteDetailFragment : Fragment() {
      */
     private fun stringToColor(string: String): Int {
         return try {
-            Color.parseColor(string)
+            Color.parseColor(string.trim())
         } catch (e: Exception) {
             -1
         }
@@ -489,12 +512,14 @@ class NoteDetailFragment : Fragment() {
             inkItem?.setIcon(R.drawable.ic_fluent_inking_tool_24_regular)
             inkItem?.title = getString(R.string.action_ink_on)
             drawView.disable()
+            // Close pen tools and reset button states
             penTools?.visibility = View.INVISIBLE
             toggleViewVisibility(view?.findViewById<SeekBar>(R.id.thickness_slider), true)
             toggleViewVisibility(view?.findViewById<LinearLayout>(R.id.color_buttons), true)
             toggleButtonColor(view?.findViewById(R.id.thickness), false)
             toggleButtonColor(view?.findViewById(R.id.color), false)
             toggleButtonColor(view?.findViewById(R.id.highlight), drawView.toggleHighlightMode(false))
+            toggleButtonColor(view?.findViewById(R.id.erase), drawView.toggleEraserMode(false))
         }
     }
 

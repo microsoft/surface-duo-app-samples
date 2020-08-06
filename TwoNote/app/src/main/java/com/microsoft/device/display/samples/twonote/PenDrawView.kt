@@ -36,6 +36,7 @@ class PenDrawView : View {
     private var currentThickness: Int = 25
     var rotated = false
     private var highlightMode = false
+    private var eraserMode = false
 
     companion object {
         // Attributes used for scaling drawings based on rotation
@@ -127,7 +128,7 @@ class PenDrawView : View {
             return true
 
         isErasing = false
-        if (event.getToolType(0) == MotionEvent.TOOL_TYPE_ERASER) {
+        if (event.getToolType(0) == MotionEvent.TOOL_TYPE_ERASER || eraserMode) {
             if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
                 isErasing = true
 
@@ -178,6 +179,11 @@ class PenDrawView : View {
         highlightMode = force ?: !highlightMode
         changePaintColor(currentColor)
         return highlightMode
+    }
+
+    fun toggleEraserMode(force: Boolean? = null): Boolean {
+        eraserMode = force ?: !eraserMode
+        return eraserMode
     }
 
     fun setPaintRadius(radius: Int) {
