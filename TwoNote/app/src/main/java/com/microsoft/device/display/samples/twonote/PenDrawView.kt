@@ -7,6 +7,8 @@
 
 package com.microsoft.device.display.samples.twonote
 
+import Defines.LAND_TO_PORT
+import Defines.PORT_TO_LAND
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -37,12 +39,14 @@ class PenDrawView : View {
 
     companion object {
         // Attributes used for scaling drawings based on rotation
+        // Each screen is 1800 by 1350 px:
+        // --> PORT_TO_LAND = 1800 / 1350 = 4/3
+        // --> LAND_TO_PORT = 1350 / 1800 = 3/4
         private val portToLand: Matrix = Matrix().apply {
-            // Each screen is 1800 by 1350 px --> 1800/1350 = 4/3
-            postScale(Defines.PORT_TO_LAND, Defines.PORT_TO_LAND)
+            postScale(PORT_TO_LAND, PORT_TO_LAND)
         }
-        val landToPort: Matrix = Matrix().apply {
-            postScale(Defines.LAND_TO_PORT, Defines.LAND_TO_PORT)
+        private val landToPort: Matrix = Matrix().apply {
+            postScale(LAND_TO_PORT, LAND_TO_PORT)
         }
         private var scaledPath = Path()
         private var scaledBound = RectF()

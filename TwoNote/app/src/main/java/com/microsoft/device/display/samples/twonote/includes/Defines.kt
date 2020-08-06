@@ -19,7 +19,11 @@ object Defines {
 
     // Inking scaling constants //
     const val PORT_TO_LAND = 4f / 3
-    const val LAND_TO_PORT = 3f/ 4
+    const val LAND_TO_PORT = 3f / 4
 
     // Fragment name constants //
+    const val LIST_FRAGMENT = "list fragment"
+    const val DETAIL_FRAGMENT = "detail fragment"
+    const val NOTE = "note"
+    const val INODE = "inode"
 }
