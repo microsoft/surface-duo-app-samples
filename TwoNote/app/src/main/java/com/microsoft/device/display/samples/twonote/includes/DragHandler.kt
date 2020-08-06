@@ -67,7 +67,7 @@ class DragHandler(val fragment: NoteDetailFragment) {
                     ActivityCompat.requestDragAndDropPermissions(fragment.activity, event)
                 }
                 if (isText) {
-                    fileHandler.processTextFileData(uri, fragment.noteText, event)
+                    fileHandler.processTextFileData(uri, fragment.noteText)
                     return true
                 } else if (isImage) {
                     addImageToView(uri)

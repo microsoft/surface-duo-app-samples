@@ -16,9 +16,9 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/button_height"
         android:layout_weight="1"
+        android:contentDescription="@string/action_undo"
         android:minWidth="@dimen/button_width"
         android:src="@drawable/ic_fluent_arrow_undo_20_filled"
-        android:text="@string/action_undo"
         android:tint="?attr/colorOnBackground" />
 
     <View
@@ -30,9 +30,9 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/button_height"
         android:layout_weight="1"
+        android:contentDescription="@string/action_color"
         android:minWidth="@dimen/button_width"
         android:src="@drawable/ic_fluent_color_20_filled"
-        android:text="@string/action_color"
         android:tint="?attr/colorOnBackground" />
 
     <View
@@ -44,9 +44,9 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/button_height"
         android:layout_weight="1"
+        android:contentDescription="@string/action_thickness"
         android:minWidth="@dimen/button_width"
         android:src="@drawable/ic_line_weight"
-        android:text="@string/action_thickness"
         android:tint="?attr/colorOnBackground" />
 
     <View
@@ -58,9 +58,9 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/button_height"
         android:layout_weight="1"
+        android:contentDescription="@string/action_highlight_on"
         android:minWidth="@dimen/button_width"
         android:src="@drawable/ic_fluent_highlight_20_filled"
-        android:text="@string/action_highlight_on"
         android:tint="?attr/colorOnBackground" />
 
     <View
@@ -72,9 +72,9 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/button_height"
         android:layout_weight="1"
+        android:contentDescription="@string/action_erase_on"
         android:minWidth="@dimen/button_width"
         android:src="@drawable/ic_fluent_erase_20_filled"
-        android:text="@string/action_erase_on"
         android:tint="?attr/colorOnBackground" />
 
     <View
@@ -86,9 +86,9 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/button_height"
         android:layout_weight="1"
+        android:contentDescription="@string/action_clear"
         android:minWidth="@dimen/button_width"
         android:src="@drawable/ic_clear"
-        android:text="@string/action_clear"
         android:tint="?attr/colorOnBackground" />
 
 </LinearLayout>

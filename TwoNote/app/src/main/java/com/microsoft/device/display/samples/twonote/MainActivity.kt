@@ -151,7 +151,7 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
         // request to load file contents has been made, process the file's contents
         else if (requestCode == FileHandler.PICK_TXT_FILE && resultCode == Activity.RESULT_OK) {
             resultData?.data?.also { uri ->
-                fileHandler.processTextFileData(uri, fragment.noteText, null)
+                fileHandler.processTextFileData(uri, fragment.noteText)
             }
         }
     }
