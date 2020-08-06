@@ -34,4 +34,6 @@
     <string name="ok">OK</string>
     <string name="share_intent">Share Note</string>
     <string name="choose_color_button_description">Choose custom color</string>
+    <string name="action_highlight_on">Activate highlighting</string>
+    <string name="action_highlight_off">Deactivate highlighting</string>
 </resources>

@@ -23,7 +23,7 @@
 
     <item
         android:id="@+id/action_ink"
-        android:icon="@drawable/ic_fluent_calligraphy_pen_24_regular"
+        android:icon="@drawable/ic_fluent_inking_tool_24_regular"
         android:title="@string/action_ink_on"
         app:iconTint="?attr/colorOnPrimary"
         app:showAsAction="ifRoom" />
