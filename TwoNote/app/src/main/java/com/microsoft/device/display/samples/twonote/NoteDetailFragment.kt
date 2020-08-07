@@ -358,6 +358,17 @@ class NoteDetailFragment : Fragment() {
         drawView.undo()
     }
 
+    override fun onResume() {
+        super.onResume()
+        arguments?.let {
+            val note = it.getSerializable(NOTE)
+            if (note is Note) {
+                val imageList = note.images
+                dragHandler.setImageList(imageList)
+            }
+        }
+    }
+
     override fun onPause() {
         super.onPause()
         updateNoteContents()
@@ -579,14 +590,6 @@ class NoteDetailFragment : Fragment() {
     // create drop targets for the editor screen
     private fun initializeDragListener() {
         dragHandler = DragHandler(this)
-
-        arguments?.let {
-            val note = it.getSerializable(MainActivity.NOTE)
-            if (note is Note) {
-                val imageList = note.images
-                dragHandler.setImageList(imageList)
-            }
-        }
 
         // Main target will trigger when textField has content
         noteText.setOnDragListener { _, event ->
