@@ -233,7 +233,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                         DETAIL_FRAGMENT
                     ).commit()
             } else {
-                // If unspanned or spanned and rotated (extended view), open NoteDetailFragment in first container
+                // If unspanned or spanned and rotated (extended canvas), open NoteDetailFragment in first container
                 parentFragmentManager.beginTransaction()
                     .replace(
                         R.id.first_container_id,
