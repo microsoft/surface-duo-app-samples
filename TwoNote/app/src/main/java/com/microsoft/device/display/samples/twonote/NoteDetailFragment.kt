@@ -622,7 +622,7 @@ class NoteDetailFragment : Fragment() {
                         null
                     ).commit()
             } else {
-                // If unspanned, or spanned and rotated (extended view), show NoteListFragment in first container
+                // If unspanned, or spanned and rotated (extended canvas), show NoteListFragment in first container
                 parentFragmentManager.beginTransaction()
                     .replace(
                         R.id.first_container_id,
