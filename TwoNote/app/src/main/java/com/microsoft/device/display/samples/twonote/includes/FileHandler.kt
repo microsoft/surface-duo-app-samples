@@ -11,7 +11,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
-import android.widget.ImageView
 import androidx.core.app.ActivityCompat.startActivityForResult
 import com.google.android.material.textfield.TextInputEditText
 import java.io.BufferedReader
@@ -108,9 +107,5 @@ class FileHandler(private val activity: Activity) {
             }
         }
         textField.setText(builder.toString())
-    }
-
-    fun processImageData(uri: Uri, image: ImageView) {
-        image.setImageURI(uri)
     }
 }
