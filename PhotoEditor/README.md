@@ -34,7 +34,7 @@ When switched to dual-screen mode, however, the entire left screen can be dedica
 
 ### Drag and Drop
 
-This sample also demonstrates how drag and drop features can simplify file transfer across screens and between applications. Instead of clicking to open the photo gallery and select a new photo, users can simply drag the desired image file into the app and drop it over the currently displayed image, as shown below. For more information, check out this [drag and drop sample](https://github.com/microsoft/surface-duo-sdk-samples-kotlin/tree/master/draganddrop).
+This sample also demonstrates how drag and drop features can simplify file transfer across screens and between applications. Instead of clicking to open the photo gallery and select a new photo, users can simply drag the desired image file into the app and drop it over the currently displayed image, as shown below. For more information, check out this [drag and drop sample](https://github.com/microsoft/surface-duo-sdk-samples-kotlin/tree/master/DragAndDrop).
 
 ![Drag and drop example between Files app and PhotoEditor](screenshots/drag_drop_import.png)
 
