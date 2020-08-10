@@ -72,6 +72,10 @@ class NoteDetailFragment : Fragment() {
 
     private val strokeList = mutableListOf<Stroke>()
 
+    private val strokeList = mutableListOf<Stroke>()
+
+    var deleted = false
+
     companion object {
         lateinit var mListener: OnFragmentInteractionListener
         internal fun newInstance(inode: INode, note: Note) = NoteDetailFragment().apply {
