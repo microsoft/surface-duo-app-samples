@@ -366,7 +366,7 @@ class NoteDetailFragment : Fragment() {
             val note = it.getSerializable(NOTE)
             if (note is Note) {
                 val imageList = note.images
-                dragHandler.setImageList(imageList)
+                dragHandler.setImageList(imageList, MainActivity.isRotated(requireContext()))
             }
         }
     }

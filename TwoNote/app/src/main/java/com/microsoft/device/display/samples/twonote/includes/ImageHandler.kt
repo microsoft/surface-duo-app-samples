@@ -7,7 +7,10 @@
 
 package com.microsoft.device.display.samples.twonote.includes
 
+import Defines.LAND_TO_PORT
 import Defines.MIN_DIMEN
+import Defines.PORT_TO_LAND
+import Defines.SCALE_RATIO
 import Defines.RENDER_TIMER
 import Defines.RESIZE_SPEED
 import Defines.THRESHOLD
@@ -25,25 +28,28 @@ import android.view.ViewConfiguration
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.core.view.drawToBitmap
+import com.microsoft.device.display.samples.twonote.MainActivity
 import com.microsoft.device.display.samples.twonote.NoteDetailFragment
 import com.microsoft.device.display.samples.twonote.structures.SerializedImage
 import java.io.ByteArrayOutputStream
 import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.max
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 class ImageHandler(private val fragment: NoteDetailFragment) {
     private val names: MutableList<String> = mutableListOf()
     private val images: MutableList<ImageView> = mutableListOf()
     private val compressedImages: MutableList<String?> = mutableListOf()
+    private val rotations: MutableList<Boolean> = mutableListOf()
     private var space = 0f
     private var prevHeight = 0
     private var prevWidth = 0
     private var clickStartTime = 0L
 
     // Create a new ImageView and add it to the container
-    fun addImageToView(uri: Uri) {
+    fun addImageToView(uri: Uri, isRotated: Boolean) {
         uri.lastPathSegment?.let { seg ->
 
             val imageView = ImageView(fragment.requireContext())
@@ -58,31 +64,58 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
 
             Handler().postDelayed(
                 {
-                    trackImageData(seg, imageView, encodeImage(imageView.drawToBitmap()))
+                    trackImageData(seg, imageView, encodeImage(imageView.drawToBitmap()), isRotated)
                 },
                 RENDER_TIMER
             )
         }
     }
 
-    private fun addImageToView(serialized: SerializedImage) {
+    private fun addImageToView(serialized: SerializedImage, isRotated: Boolean) {
         // Create a new ImageView and add it to the container
         val imageView = ImageView(fragment.requireContext())
         imageView.id = View.generateViewId()
         imageView.setImageBitmap(decodeImage(serialized.image))
 
-        imageView.x = serialized.coords[0]
-        imageView.y = serialized.coords[1]
-        imageView.layoutParams = RelativeLayout.LayoutParams(serialized.dimens[0], serialized.dimens[1])
+        // Extract serialized image properties
+        val coords = serialized.coords.toFloatArray()
+        var w = serialized.dimens[0].toFloat()
+        var h = serialized.dimens[1].toFloat()
+
+        // Check if current rotation matches the rotation of the serialized image
+        if (isRotated != serialized.rotated) {
+            when (isRotated) {
+                true -> {
+                    // If currently rotated, rotate from portrait to landscape
+                    PORT_TO_LAND.mapPoints(coords, serialized.coords.toFloatArray())
+                    w *= SCALE_RATIO
+                    h *= SCALE_RATIO
+                }
+                false -> {
+                    // If not currently rotated, rotate from landscape to portrait
+                    LAND_TO_PORT.mapPoints(coords, serialized.coords.toFloatArray())
+                    w /= SCALE_RATIO
+                    h /= SCALE_RATIO
+                }
+            }
+        }
+
+        // Set image view properties based on processed serialized image properties
+        // Note: there may be a small loss of precision when rounding the width/height fields
+        // from floats to ints after rotation scaling
+        imageView.x = coords[0]
+        imageView.y = coords[1]
+        imageView.layoutParams = RelativeLayout.LayoutParams(w.roundToInt(), h.roundToInt())
 
         fragment.view?.let {
-            trackImageData(serialized.name, imageView, serialized.image)
+            // Update serialized image's rotation to match current rotation after scaling
+            trackImageData(serialized.name, imageView, serialized.image, isRotated)
             fragment.imageContainer.addView(imageView)
         }
         createShadowDragListener(imageView)
     }
 
-    private fun trackImageData(seg: String, imageView: ImageView, compressed: String?) {
+    private fun trackImageData(seg: String, imageView: ImageView, compressed: String?, isRotated: Boolean) {
         if (names.contains(seg)) {
             // Add empty string to keep array indices aligned
             compressedImages.add("")
@@ -91,15 +124,18 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         }
         images.add(imageView)
         names.add(seg)
+        rotations.add(isRotated)
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun createShadowDragListener(imageView: ImageView) {
+        val isRotated = MainActivity.isRotated(fragment.requireContext())
+
         imageView.setOnTouchListener { v, e ->
             when (e.action and MotionEvent.ACTION_MASK) {
                 MotionEvent.ACTION_POINTER_DOWN -> {
                     // Initialize image resize
-                    initResize(e, imageView)
+                    initResize(e, imageView, isRotated)
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
@@ -139,11 +175,17 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         }
     }
 
-    private fun initResize(e: MotionEvent, imageView: ImageView) {
+    private fun initResize(e: MotionEvent, imageView: ImageView, isRotated: Boolean) {
         space = spacing(e)
         prevHeight = imageView.height
         prevWidth = imageView.width
         imageView.layoutParams = RelativeLayout.LayoutParams(prevWidth, prevHeight)
+
+        // Update rotation value for the image that's about to be resized
+        if (images.contains(imageView)) {
+            val index = images.indexOf(imageView)
+            rotations[index] = isRotated
+        }
     }
 
     private fun handleResize(e: MotionEvent, imageView: ImageView) {
@@ -196,7 +238,8 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
                             names[index],
                             image,
                             getImageCoords(index),
-                            getImageDimen(index)
+                            getImageDimen(index),
+                            rotations[index]
                         )
                     )
                 }
@@ -204,6 +247,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         }
         return list.toList()
     }
+
     private fun getImageCoords(index: Int): List<Float> {
         val list: MutableList<Float> = mutableListOf()
 
@@ -222,9 +266,9 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         return list.toList()
     }
 
-    fun setImageList(list: List<SerializedImage>) {
+    fun setImageList(list: List<SerializedImage>, isRotated: Boolean) {
         for (serialized in list) {
-            addImageToView(serialized)
+            addImageToView(serialized, isRotated)
         }
     }
 

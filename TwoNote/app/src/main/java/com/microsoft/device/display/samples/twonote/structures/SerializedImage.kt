@@ -6,5 +6,6 @@ data class SerializedImage(
     val name: String,
     val image: String,
     val coords: List<Float> = listOf(),
-    val dimens: List<Int> = listOf()
+    val dimens: List<Int> = listOf(),
+    val rotated: Boolean
 ) : Serializable
