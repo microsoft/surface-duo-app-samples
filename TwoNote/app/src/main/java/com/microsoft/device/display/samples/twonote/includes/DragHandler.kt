@@ -12,6 +12,7 @@ import Defines.TEXT_PREFIX
 import android.content.ClipData
 import android.content.ContentResolver
 import android.view.DragEvent
+import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import com.microsoft.device.display.samples.twonote.MainActivity
 import com.microsoft.device.display.samples.twonote.NoteDetailFragment
@@ -91,5 +92,13 @@ class DragHandler(private val fragment: NoteDetailFragment) {
 
     fun getImageList(): List<SerializedImage> {
         return imageHandler.getImageList()
+    }
+
+    fun getImageViewList(): List<ImageView> {
+        return imageHandler.getImageViewList()
+    }
+
+    fun setDeleteMode(value: Boolean) {
+        imageHandler.setDeleteMode(value)
     }
 }

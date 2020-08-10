@@ -38,4 +38,5 @@
     <string name="action_erase_off">Deactivate erasing</string>
     <string name="confirm_clear_message">Are you sure you want to erase all ink?</string>
     <string name="confirm_clear">Confirm clear</string>
+    <string name="remove_image">Remove images</string>
 </resources>

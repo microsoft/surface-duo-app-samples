@@ -18,6 +18,7 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.PixelCopy
@@ -68,6 +69,8 @@ class NoteDetailFragment : Fragment() {
     private var textItem: MenuItem? = null
     private var imageItem: MenuItem? = null
 
+    private var deleteImageMode = false
+
     companion object {
         lateinit var mListener: OnFragmentInteractionListener
         internal fun newInstance(inode: INode, note: Note) = NoteDetailFragment().apply {
@@ -112,6 +115,7 @@ class NoteDetailFragment : Fragment() {
 
         addNoteContents()
         setUpInkMode(view)
+        setUpImageMode(view)
         setUpTools(view)
         initializeDragListener()
 
@@ -184,6 +188,17 @@ class NoteDetailFragment : Fragment() {
         toolbar.overflowIcon?.setTint(requireContext().getColor(R.color.colorOnPrimary))
 
         view.findViewById<ScrollView>(R.id.text_mode)?.bringToFront()
+    }
+
+    private fun setUpImageMode(view: View) {
+        // Set up toolbar for image mode
+        view.findViewById<ImageButton>(R.id.upload_image).setOnClickListener {}
+
+        view.findViewById<ImageButton>(R.id.delete_image).setOnClickListener {
+            Log.e("KRISTEN", "in on click listener")
+            toggleDeleteImageMode()
+            toggleButtonColor(it as ImageButton, deleteImageMode)
+        }
     }
 
     private fun setUpInkMode(view: View) {
@@ -356,6 +371,18 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
+    private fun toggleDeleteImageMode(force: Boolean? = null) {
+        deleteImageMode = force ?: !deleteImageMode
+
+        val alpha = if (deleteImageMode) 0.5f else 1f
+
+        for (image in dragHandler.getImageViewList()) {
+            image.alpha = alpha
+        }
+
+        dragHandler.setDeleteMode(deleteImageMode)
+    }
+
     private fun undoStroke() {
         drawView.undo()
     }
@@ -506,13 +533,18 @@ class NoteDetailFragment : Fragment() {
     }
 
     fun activateImage(active: Boolean) {
+        val imageTools = view?.findViewById<LinearLayout>(R.id.image_tools)
         if (active) {
             imageItem?.setIcon(R.drawable.ic_fluent_image_24_filled)
             imageItem?.title = getString(R.string.action_image_off)
+            imageTools?.visibility = View.VISIBLE
             imageContainer.bringToFront()
         } else {
             imageItem?.setIcon(R.drawable.ic_fluent_image_24_regular)
             imageItem?.title = getString(R.string.action_image_on)
+            imageTools?.visibility = View.INVISIBLE
+            toggleButtonColor(view?.findViewById(R.id.delete_image), false)
+            toggleDeleteImageMode(false)
         }
     }
 
