@@ -20,7 +20,7 @@ Includes examples of the [Dual view](https://docs.microsoft.com/dual-screen/intr
 
 ### [TwoNote](https://github.com/microsoft/surface-duo-app-samples/tree/main/TwoNote)
 
-Includes examples of the [List/detail](https://docs.microsoft.com/dual-screen/introduction#extended-canvas) and [Extended canvas](https://docs.microsoft.com/dual-screen/introduction#extended-canvas) app patterns, drag and drop import for text and images, and pen events.
+Includes examples of the [List-detail](https://docs.microsoft.com/dual-screen/introduction#master-detail) and [Extended canvas](https://docs.microsoft.com/dual-screen/introduction#extended-canvas) app patterns, drag and drop import for text and images, and pen events.
 
 ### [Widget](https://github.com/microsoft/surface-duo-app-samples/tree/main/Widget)
 
