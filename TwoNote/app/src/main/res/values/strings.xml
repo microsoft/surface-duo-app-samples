@@ -8,7 +8,6 @@
     <string name="app_name">TwoNote</string>
     <string name="exception_message">must implement OnFragmentInteractionListener</string>
     <string name="action_delete">Delete</string>
-    <string name="action_move">Move to</string>
     <string name="action_share">Share</string>
     <string name="action_select">Select all</string>
     <string name="selected">selected</string>

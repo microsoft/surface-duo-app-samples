@@ -432,10 +432,6 @@ class NoteDetailFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_move -> {
-                // TODO: pop up new dialog with categories to move to, return true when implemented
-                false
-            }
             R.id.action_share -> {
                 view?.let {
                     // Create path for note image file
