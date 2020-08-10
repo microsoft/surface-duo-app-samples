@@ -26,7 +26,7 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.core.view.drawToBitmap
 import com.microsoft.device.display.samples.twonote.NoteDetailFragment
-import com.microsoft.device.display.samples.twonote.SerializedImage
+import com.microsoft.device.display.samples.twonote.structures.SerializedImage
 import java.io.ByteArrayOutputStream
 import java.util.Calendar
 import kotlin.math.abs
@@ -58,7 +58,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
 
             Handler().postDelayed(
                 {
-                    trackImageData(seg, imageView, getStringImage(imageView.drawToBitmap()))
+                    trackImageData(seg, imageView, encodeImage(imageView.drawToBitmap()))
                 },
                 RENDER_TIMER
             )
@@ -69,7 +69,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         // Create a new ImageView and add it to the container
         val imageView = ImageView(fragment.requireContext())
         imageView.id = View.generateViewId()
-        imageView.setImageBitmap(getImageString(serialized.image))
+        imageView.setImageBitmap(decodeImage(serialized.image))
 
         imageView.x = serialized.coords[0]
         imageView.y = serialized.coords[1]
@@ -226,14 +226,14 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         }
     }
 
-    private fun getStringImage(bitmap: Bitmap?): String? {
+    private fun encodeImage(bitmap: Bitmap?): String? {
         val stream = ByteArrayOutputStream()
         bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
         val bytes: ByteArray = stream.toByteArray()
         return Base64.encodeToString(bytes, Base64.DEFAULT)
     }
 
-    private fun getImageString(str: String): Bitmap? {
+    private fun decodeImage(str: String): Bitmap? {
         val bytes = Base64.decode(str, Base64.DEFAULT)
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
