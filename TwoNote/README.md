@@ -11,7 +11,7 @@ urlFragment: TwoNote
 
 # TwoNote
 
-This sample integrates various dual-screen app features into a note-taking app for the Surface Duo. Users can view and edit notes via the [List/Detail](https://docs.microsoft.com/dual-screen/introduction#master-detail) or [Extended Canvas](https://docs.microsoft.com/dual-screen/introduction#extended-canvas) dual-screen app patterns. Each note may contain text and images, which can both be imported through drag/drop. In addition, users can add drawings and annotations to their notes with pen events.
+This sample integrates various dual-screen app features into a note-taking app for the Surface Duo. Users can view and edit notes via the [List-detail](https://docs.microsoft.com/dual-screen/introduction#master-detail) or [Extended Canvas](https://docs.microsoft.com/dual-screen/introduction#extended-canvas) dual-screen app patterns. Each note may contain text and images, which can both be imported through drag/drop. In addition, users can add drawings and annotations to their notes with pen events.
 
 ## Getting Started
 
@@ -19,7 +19,7 @@ To learn how to load apps on the Surface Duo emulator, see the [documentation](h
 
 ## Features
 
-This app supports a range operations related to notes, note categories, and note contents.
+This app supports a range of operations related to notes, note categories, and note contents.
 
 Notes can be created by clicking the floating action button in the list view. To delete a note, users can choose `Delete` from the overflow menu in the detail view of the note. To delete multiple notes at once, long-click on notes or choose `Select all` from the overflow menu in the list view. To share an individual note as an image, scroll to the desired section of the note when in the detail view and choose the `Share` option.
 
@@ -27,21 +27,25 @@ Notes can also be sorted into different categories, which are accessible via the
 
 Like with categories, to rename a note, click on its current title and make the desired changes. When editing note contents, there are 3 different modes: text, image, and inking. In text mode, the user can type to add note contents by clicking on the `Tap here to add note contents` hint. In image mode, users can drag and resize any imported images. In inking mode, users can use touch or pens to add drawings and annotations.
 
+### Drag and Drop
+
+Text and image files can be imported into an individual note via drag and drop. For more information on creating drop targets for various drag events, reference this [drag and drop sample](https://github.com/microsoft/surface-duo-sdk-samples-kotlin/tree/master/DragAndDrop)
+
+### Image Manipulation
+
+In-app pictures can be resized using zoom gestures on a particular image. Users can also move an image to a different position on the note by long clicking the image and dragging it.
+
 ### Pen Events
 
 This sample provides pen event support to allow for a smooth and pressure-sensitive inking experience. Users can choose from a variety of colors and stroke thicknesses to write, draw, highlight, and erase within a note.
 
-### List/Detail
+### List-Detail
 
-When spanned in dual-portrait mode, the app takes advantage of the [List/detail](https://docs.microsoft.com/dual-screen/introduction#extended-canvas) app pattern to simultaneously display a list of existing notes and a more detailed view of a selected note.
+When spanned in dual-portrait mode, the app takes advantage of the [List-detail](https://docs.microsoft.com/dual-screen/introduction#master-detail) app pattern to simultaneously display a list of existing notes and a more detailed view of a selected note.
 
 ### Extended Canvas
 
 When spanned in dual-landscape mode, the app switches to the [Extended canvas](https://docs.microsoft.com/dual-screen/introduction#extended-canvas) app pattern. This gives the user more screen real estate when editing note contents, which is especially useful for annotating pictures and creating drawings.
-
-### Drag and Drop
-
-Text and image files can be imported into an individual note via drag and drop.
 
 ## Contributing
 
