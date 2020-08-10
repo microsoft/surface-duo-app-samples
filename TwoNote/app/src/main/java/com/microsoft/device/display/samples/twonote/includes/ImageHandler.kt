@@ -84,6 +84,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
 
     private fun trackImageData(seg: String, imageView: ImageView, compressed: String?) {
         if (names.contains(seg)) {
+            // Add empty string to keep array indices aligned
             compressedImages.add("")
         } else {
             compressedImages.add(compressed)
@@ -162,6 +163,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
     private fun handleLongClick(v: View) {
         val clickDuration = Calendar.getInstance().timeInMillis - clickStartTime
         if (clickStartTime > 0 && clickDuration >= ViewConfiguration.getLongPressTimeout()) {
+            // On long click, make a shadow of the image to drag around
             val data = ClipData.newPlainText("", "")
             val shadowBuilder = View.DragShadowBuilder(v)
             v.startDragAndDrop(data, shadowBuilder, v, 0)
@@ -228,6 +230,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
 
     private fun encodeImage(bitmap: Bitmap?): String? {
         val stream = ByteArrayOutputStream()
+        // compression using 100% image quality
         bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
         val bytes: ByteArray = stream.toByteArray()
         return Base64.encodeToString(bytes, Base64.DEFAULT)
