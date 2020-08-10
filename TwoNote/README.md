@@ -11,7 +11,7 @@ urlFragment: TwoNote
 
 # TwoNote
 
-This sample integrates various dual-screen app features into a note-taking app for the Surface Duo. Users can view and edit notes via the [List-detail](https://docs.microsoft.com/dual-screen/introduction#master-detail) or [Extended Canvas](https://docs.microsoft.com/dual-screen/introduction#extended-canvas) dual-screen app patterns. Each note may contain text and images, which can both be imported through drag/drop. In addition, users can add drawings and annotations to their notes with pen events.
+This sample integrates various dual-screen app features into a note-taking app for the Surface Duo. Users can view and edit notes via the [list-detail](https://docs.microsoft.com/dual-screen/introduction#master-detail) or [extended canvas](https://docs.microsoft.com/dual-screen/introduction#extended-canvas) dual-screen app patterns. Each note may contain text and images, which can both be imported through drag/drop. In addition, users can add drawings and annotations to their notes with pen events.
 
 ## Getting Started
 
@@ -29,7 +29,7 @@ Like with categories, to rename a note, click on its current title and make the 
 
 ### Drag and Drop
 
-Text and image files can be imported into an individual note via drag and drop. For more information on creating drop targets for various drag events, reference this [drag and drop sample](https://github.com/microsoft/surface-duo-sdk-samples-kotlin/tree/master/DragAndDrop)
+Text and image files can be imported into an individual note via drag and drop. For more information on creating drop targets for various drag events, reference this [drag and drop sample](https://github.com/microsoft/surface-duo-sdk-samples-kotlin/tree/master/DragAndDrop).
 
 ### Image Manipulation
 
@@ -37,15 +37,15 @@ In-app pictures can be resized using zoom gestures on a particular image. Users 
 
 ### Pen Events
 
-This sample provides pen event support to allow for a smooth and pressure-sensitive inking experience. Users can choose from a variety of colors and stroke thicknesses to write, draw, highlight, and erase within a note.
+This sample provides pen event support to allow for a smooth and pressure-sensitive inking experience. Users can choose from a variety of colors and stroke thicknesses to write, draw, highlight, and erase within a note. To learn more about the capabilities of touch events and pens, visit this [pen event resource](https://devblogs.microsoft.com/surface-duo/pen-events-on-the-surface-duo/).
 
 ### List-Detail
 
-When spanned in dual-portrait mode, the app takes advantage of the [List-detail](https://docs.microsoft.com/dual-screen/introduction#master-detail) app pattern to simultaneously display a list of existing notes and a more detailed view of a selected note.
+When spanned in dual-portrait mode, the app takes advantage of the [list-detail](https://docs.microsoft.com/dual-screen/introduction#master-detail) app pattern to simultaneously display a list of existing notes and a more detailed view of a selected note.
 
 ### Extended Canvas
 
-When spanned in dual-landscape mode, the app switches to the [Extended canvas](https://docs.microsoft.com/dual-screen/introduction#extended-canvas) app pattern. This gives the user more screen real estate when editing note contents, which is especially useful for annotating pictures and creating drawings.
+When spanned in dual-landscape mode, the app switches to the [extended canvas](https://docs.microsoft.com/dual-screen/introduction#extended-canvas) app pattern. This gives the user more screen real estate when editing note contents, which is especially useful for annotating pictures and creating drawings.
 
 ## Contributing
 
