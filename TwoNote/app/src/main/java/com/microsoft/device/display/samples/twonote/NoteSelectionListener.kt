@@ -42,7 +42,6 @@ class NoteSelectionListener(
     }
 
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-        // TODO: once alpha02 is released, we can create our own custom DuoActionBar (like DuoTabLayout) so it only appears on the left screen
         mode.menuInflater.inflate(R.menu.menu_note_selection, menu)
         updateTitle(mode)
         return true

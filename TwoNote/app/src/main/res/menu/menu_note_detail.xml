@@ -30,11 +30,6 @@
 
     <!-- overflow/options menu items -->
     <item
-        android:id="@+id/action_move"
-        android:title="@string/action_move"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/action_share"
         android:title="@string/action_share"
         app:showAsAction="never" />
