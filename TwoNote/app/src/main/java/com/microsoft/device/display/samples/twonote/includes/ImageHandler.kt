@@ -47,6 +47,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
     private var prevHeight = 0
     private var prevWidth = 0
     private var clickStartTime = 0L
+    private var deleteMode = false
 
     // Create a new ImageView and add it to the container
     fun addImageToView(uri: Uri, isRotated: Boolean) {
@@ -149,8 +150,12 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
                     true
                 }
                 MotionEvent.ACTION_DOWN -> {
-                    // Start long click timer
-                    clickStartTime = Calendar.getInstance().timeInMillis
+                    if (deleteMode) {
+                        deleteImage(v)
+                    } else {
+                        // Start long click timer
+                        clickStartTime = Calendar.getInstance().timeInMillis
+                    }
                     true
                 }
                 else -> true
@@ -213,6 +218,21 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         }
     }
 
+    private fun deleteImage(v: View) {
+        val imageView = v as? View ?: return
+
+        fragment.view?.let {
+            fragment.imageContainer.removeView(v)
+        }
+
+        val index = images.indexOf(imageView)
+
+        images.removeAt(index)
+        rotations.removeAt(index)
+        names.removeAt(index)
+        compressedImages.removeAt(index)
+    }
+
     // returns the distance between two points on the screen
     private fun spacing(e: MotionEvent): Float {
         val pointer0 = MotionEvent.PointerCoords()
@@ -248,6 +268,10 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         return list.toList()
     }
 
+    fun getImageViewList(): List<ImageView> {
+        return images
+    }
+
     private fun getImageCoords(index: Int): List<Float> {
         val list: MutableList<Float> = mutableListOf()
 
@@ -270,6 +294,10 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         for (serialized in list) {
             addImageToView(serialized, isRotated)
         }
+    }
+
+    fun setDeleteMode(value: Boolean) {
+        deleteMode = value
     }
 
     private fun encodeImage(bitmap: Bitmap?): String? {
