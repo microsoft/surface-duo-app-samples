@@ -56,9 +56,15 @@ class DragHandler(private val fragment: NoteDetailFragment) {
 
                     if (isText) {
                         fileHandler.processTextFileData(uri, fragment.noteText)
+                        fragment.activateText(true)
+                        fragment.activateImage(false)
+                        fragment.activateInk(false)
                         return true
                     } else if (isImage) {
                         imageHandler.addImageToView(uri)
+                        fragment.activateText(false)
+                        fragment.activateImage(true)
+                        fragment.activateInk(false)
                         return true
                     } else {
                         // Dropped item type not supported

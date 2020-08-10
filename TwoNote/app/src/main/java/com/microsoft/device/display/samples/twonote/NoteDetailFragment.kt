@@ -498,7 +498,7 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    private fun activateText(active: Boolean) {
+    fun activateText(active: Boolean) {
         if (active) {
             textItem?.setIcon(R.drawable.ic_fluent_text_field_24_filled)
             textItem?.title = getString(R.string.action_text_off)
@@ -509,7 +509,7 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    private fun activateImage(active: Boolean) {
+    fun activateImage(active: Boolean) {
         if (active) {
             imageItem?.setIcon(R.drawable.ic_fluent_image_24_filled)
             imageItem?.title = getString(R.string.action_image_off)
@@ -520,7 +520,7 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    private fun activateInk(active: Boolean) {
+    fun activateInk(active: Boolean) {
         val penTools = view?.findViewById<LinearLayout>(R.id.pen_tools)
         if (active) {
             inkItem?.setIcon(R.drawable.ic_fluent_inking_tool_24_filled)
