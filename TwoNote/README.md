@@ -37,7 +37,7 @@ In-app pictures can be resized using zoom gestures on a particular image. Users 
 
 ### Pen Events
 
-This sample provides pen event support to allow for a smooth and pressure-sensitive inking experience. Users can choose from a variety of colors and stroke thicknesses to write, draw, highlight, and erase within a note. To learn more about the capabilities of touch events and pens, visit this [pen event resource](https://devblogs.microsoft.com/surface-duo/pen-events-on-the-surface-duo/).
+This sample provides pen event support to allow for a smooth and pressure-sensitive inking experience. Users can choose from a variety of colors and stroke thicknesses to write, draw, highlight, and erase within a note. To learn more about the capabilities of touch events and pens, visit this [pen event blog post](https://devblogs.microsoft.com/surface-duo/pen-events-on-the-surface-duo/).
 
 ### List-Detail
 
