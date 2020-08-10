@@ -35,13 +35,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.iterator
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.textfield.TextInputEditText
 import com.microsoft.device.display.samples.twonote.includes.DataProvider
 import com.microsoft.device.display.samples.twonote.includes.DragHandler
 import com.microsoft.device.display.samples.twonote.includes.FileSystem
-import com.microsoft.device.display.samples.twonote.model.DrawViewModel
 import com.microsoft.device.display.samples.twonote.structures.INode
 import com.microsoft.device.display.samples.twonote.structures.Note
 import com.microsoft.device.display.samples.twonote.structures.Stroke
@@ -71,6 +69,10 @@ class NoteDetailFragment : Fragment() {
 
     var deleted = false
     private var deleteImageMode = false
+
+    private val strokeList = mutableListOf<Stroke>()
+
+    var deleted = false
 
     companion object {
         lateinit var mListener: OnFragmentInteractionListener
@@ -143,7 +145,7 @@ class NoteDetailFragment : Fragment() {
                 val title = noteTitle.text.toString()
 
                 if (this::drawView.isInitialized) {
-                    note.drawings = drawView.getDataList()
+                    note.drawings = drawView.getDrawingList()
                 }
                 if (this::dragHandler.isInitialized) {
                     note.images = dragHandler.getImageList()
@@ -205,7 +207,7 @@ class NoteDetailFragment : Fragment() {
             AlertDialog.Builder(requireContext())
                 .setMessage(resources.getString(R.string.confirm_clear_message))
                 .setPositiveButton(resources.getString(android.R.string.ok)) { dialog, _ ->
-                    clearDrawing()
+                    drawView.clearDrawing()
                     dialog.dismiss()
                 }
                 .setNegativeButton(resources.getString(android.R.string.cancel)) { dialog, _ -> dialog.dismiss() }
@@ -310,24 +312,17 @@ class NoteDetailFragment : Fragment() {
 
         // Set up draw view
         arguments?.let {
-            val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
             val note = it.getSerializable(NOTE)
             if (note is Note) {
-                val strokeList: MutableList<Stroke> = mutableListOf()
+                strokeList.clear()
                 for (s in note.drawings) {
                     strokeList.add(Stroke(s.xList, s.yList, s.pressureList, s.paintColor, s.thicknessMultiplier, s.rotated, s.highlightStroke))
                 }
-                viewModel.setStrokeList(strokeList)
             }
         }
 
-        recoverDrawing()
+        drawView.setStrokeList(strokeList)
 
-        drawView.viewTreeObserver.addOnDrawListener {
-            copyDrawingIfAdded()
-        }
-
-        drawView.setPaintRadius(0)
         drawView.rotated = MainActivity.isRotated(requireActivity())
         drawView.disable()
     }
@@ -401,13 +396,6 @@ class NoteDetailFragment : Fragment() {
         save()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (this::drawView.isInitialized) {
-            drawView.viewTreeObserver.removeOnDrawListener { }
-        }
-    }
-
     private fun chooseColor(color: String, colorInt: Int? = null) {
         // Reset the background color of the custom color button
         view?.findViewById<ImageButton>(R.id.button_choose)?.clearColorFilter()
@@ -419,32 +407,6 @@ class NoteDetailFragment : Fragment() {
             PaintColors.Yellow.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.yellow))
             PaintColors.Purple.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.purple))
             else -> if (colorInt != null) drawView.changePaintColor(colorInt)
-        }
-    }
-
-    private fun recoverDrawing() {
-        val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
-        val strokes = viewModel.getStrokeList()
-        drawView.setStrokeList(strokes)
-    }
-
-    private fun clearDrawing() {
-        drawView.clearDrawing()
-        val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
-        viewModel.setStrokeList(listOf())
-    }
-
-    private fun copyDrawing() {
-        val viewModel = ViewModelProvider(requireActivity()).get(DrawViewModel::class.java)
-        val strokeList = drawView.getStrokeList()
-        if (strokeList.isNotEmpty()) {
-            viewModel.setStrokeList(strokeList)
-        }
-    }
-
-    private fun copyDrawingIfAdded() {
-        if (isAdded) {
-            copyDrawing()
         }
     }
 

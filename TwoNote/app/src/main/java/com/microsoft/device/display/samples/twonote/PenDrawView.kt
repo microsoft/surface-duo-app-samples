@@ -28,9 +28,7 @@ import kotlin.math.min
 
 class PenDrawView : View {
     private var currentColor: Int = 0
-    private var drawBitmap: Bitmap? = null
     private var strokeList: MutableList<Stroke> = mutableListOf()
-    private var radius = 0
     private var isErasing = false
     private val eraser = RectF()
     private var prevPressure = 0f
@@ -163,8 +161,8 @@ class PenDrawView : View {
         configuredPaint.style = Paint.Style.STROKE
         configuredPaint.isAntiAlias = true
         configuredPaint.strokeCap = if (highlight) Paint.Cap.SQUARE else Paint.Cap.ROUND
-        configuredPaint.strokeWidth = paint.strokeWidth + radius / 3
-        configuredPaint.color = paint.color + radius / 4
+        configuredPaint.strokeWidth = paint.strokeWidth
+        configuredPaint.color = paint.color
 
         return configuredPaint
     }
@@ -180,20 +178,11 @@ class PenDrawView : View {
         return eraserMode
     }
 
-    fun setPaintRadius(radius: Int) {
-        this.radius = radius
-        this.invalidate()
-    }
-
-    fun getStrokeList(): List<Stroke> {
-        return strokeList
-    }
-
     fun setStrokeList(s: List<Stroke>) {
         strokeList = s.toMutableList()
     }
 
-    fun getDataList(): List<SerializedStroke> {
+    fun getDrawingList(): List<SerializedStroke> {
         val list: MutableList<SerializedStroke> = mutableListOf()
         for (stroke in strokeList) {
             list.add(stroke.serializeData())
@@ -215,9 +204,7 @@ class PenDrawView : View {
     }
 
     fun clearDrawing() {
-        this.drawBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         strokeList.clear()
-
         invalidate()
     }
 
