@@ -18,7 +18,7 @@ import java.io.InputStreamReader
 import java.nio.charset.Charset
 
 /* Class used to make file read/write requests */
-class FileHandler(private val activity: Activity) {
+class TextHandler(private val activity: Activity) {
 
     // read text from file specified in uri path
     @Throws(IOException::class)
