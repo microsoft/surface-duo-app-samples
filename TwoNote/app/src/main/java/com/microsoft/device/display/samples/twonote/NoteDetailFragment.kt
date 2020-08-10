@@ -38,11 +38,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.textfield.TextInputEditText
+import com.microsoft.device.display.samples.twonote.includes.DataProvider
 import com.microsoft.device.display.samples.twonote.includes.DragHandler
-import com.microsoft.device.display.samples.twonote.model.DataProvider
+import com.microsoft.device.display.samples.twonote.includes.FileSystem
 import com.microsoft.device.display.samples.twonote.model.DrawViewModel
-import com.microsoft.device.display.samples.twonote.model.INode
-import com.microsoft.device.display.samples.twonote.model.Note
+import com.microsoft.device.display.samples.twonote.structures.INode
+import com.microsoft.device.display.samples.twonote.structures.Note
+import com.microsoft.device.display.samples.twonote.structures.Stroke
 import com.microsoft.device.dualscreen.core.ScreenHelper
 import java.io.File
 import java.io.FileOutputStream

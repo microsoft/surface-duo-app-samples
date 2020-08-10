@@ -16,11 +16,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Surface
 import androidx.appcompat.app.AppCompatActivity
+import com.microsoft.device.display.samples.twonote.includes.DataProvider
 import com.microsoft.device.display.samples.twonote.includes.FileHandler
-import com.microsoft.device.display.samples.twonote.model.DataProvider
-import com.microsoft.device.display.samples.twonote.model.DirEntry
-import com.microsoft.device.display.samples.twonote.model.INode
-import com.microsoft.device.display.samples.twonote.model.Note
+import com.microsoft.device.display.samples.twonote.includes.FileSystem
+import com.microsoft.device.display.samples.twonote.structures.DirEntry
+import com.microsoft.device.display.samples.twonote.structures.INode
+import com.microsoft.device.display.samples.twonote.structures.Note
 import com.microsoft.device.dualscreen.core.ScreenHelper
 import com.microsoft.device.dualscreen.core.ScreenMode
 
