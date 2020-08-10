@@ -13,6 +13,7 @@ import android.content.ClipData
 import android.content.ContentResolver
 import android.view.DragEvent
 import androidx.core.app.ActivityCompat
+import com.microsoft.device.display.samples.twonote.MainActivity
 import com.microsoft.device.display.samples.twonote.NoteDetailFragment
 import com.microsoft.device.display.samples.twonote.structures.SerializedImage
 
@@ -28,11 +29,12 @@ class DragHandler(private val fragment: NoteDetailFragment) {
             .toString().startsWith(TEXT_PREFIX)
         val isImage = event.clipDescription?.getMimeType(0)
             .toString().startsWith(IMAGE_PREFIX)
+        val isRotated = MainActivity.isRotated(fragment.requireContext())
 
         return when (event.action) {
             DragEvent.ACTION_DRAG_STARTED -> true
 
-            DragEvent.ACTION_DROP -> processDrop(event, isText, isImage)
+            DragEvent.ACTION_DROP -> processDrop(event, isText, isImage, isRotated)
 
             DragEvent.ACTION_DRAG_ENTERED, DragEvent.ACTION_DRAG_LOCATION,
             DragEvent.ACTION_DRAG_ENDED, DragEvent.ACTION_DRAG_EXITED ->
@@ -43,7 +45,7 @@ class DragHandler(private val fragment: NoteDetailFragment) {
         }
     }
 
-    private fun processDrop(event: DragEvent, isText: Boolean, isImage: Boolean): Boolean {
+    private fun processDrop(event: DragEvent, isText: Boolean, isImage: Boolean, isRotated: Boolean): Boolean {
         val item: ClipData.Item? = event.clipData?.getItemAt(0)
 
         item?.let {
@@ -54,21 +56,25 @@ class DragHandler(private val fragment: NoteDetailFragment) {
                     // Request permission to read file if it is outside the scope of the project
                     ActivityCompat.requestDragAndDropPermissions(fragment.activity, event)
 
-                    if (isText) {
-                        fileHandler.processTextFileData(uri, fragment.noteText)
-                        fragment.activateText(true)
-                        fragment.activateImage(false)
-                        fragment.activateInk(false)
-                        return true
-                    } else if (isImage) {
-                        imageHandler.addImageToView(uri)
-                        fragment.activateText(false)
-                        fragment.activateImage(true)
-                        fragment.activateInk(false)
-                        return true
-                    } else {
-                        // Dropped item type not supported
-                        return false
+                    when {
+                        isText -> {
+                            fileHandler.processTextFileData(uri, fragment.noteText)
+                            fragment.activateText(true)
+                            fragment.activateImage(false)
+                            fragment.activateInk(false)
+                            return true
+                        }
+                        isImage -> {
+                            imageHandler.addImageToView(uri, isRotated)
+                            fragment.activateText(false)
+                            fragment.activateImage(true)
+                            fragment.activateInk(false)
+                            return true
+                        }
+                        else -> {
+                            // Dropped item type not supported
+                            return false
+                        }
                     }
                 }
             } else {
@@ -79,8 +85,8 @@ class DragHandler(private val fragment: NoteDetailFragment) {
         return false
     }
 
-    fun setImageList(list: List<SerializedImage>) {
-        imageHandler.setImageList(list)
+    fun setImageList(list: List<SerializedImage>, isRotated: Boolean) {
+        imageHandler.setImageList(list, isRotated)
     }
 
     fun getImageList(): List<SerializedImage> {
