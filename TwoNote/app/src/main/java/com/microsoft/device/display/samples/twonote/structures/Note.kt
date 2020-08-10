@@ -4,10 +4,8 @@
  *
  */
 
-package com.microsoft.device.display.samples.twonote.model
+package com.microsoft.device.display.samples.twonote.structures
 
-import com.microsoft.device.display.samples.twonote.SerializedImage
-import com.microsoft.device.display.samples.twonote.SerializedStroke
 import java.io.Serializable
 
 class Note(var id: Int) : Serializable {

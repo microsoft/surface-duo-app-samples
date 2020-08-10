@@ -1,11 +1,11 @@
-package com.microsoft.device.display.samples.twonote
+package com.microsoft.device.display.samples.twonote.includes
 
 import android.content.Context
 import android.util.Log
-import com.microsoft.device.display.samples.twonote.model.DataProvider
-import com.microsoft.device.display.samples.twonote.model.DirEntry
-import com.microsoft.device.display.samples.twonote.model.INode
-import com.microsoft.device.display.samples.twonote.model.Note
+import com.microsoft.device.display.samples.twonote.R
+import com.microsoft.device.display.samples.twonote.structures.DirEntry
+import com.microsoft.device.display.samples.twonote.structures.INode
+import com.microsoft.device.display.samples.twonote.structures.Note
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream

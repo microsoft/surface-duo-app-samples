@@ -14,7 +14,7 @@ import android.content.ContentResolver
 import android.view.DragEvent
 import androidx.core.app.ActivityCompat
 import com.microsoft.device.display.samples.twonote.NoteDetailFragment
-import com.microsoft.device.display.samples.twonote.SerializedImage
+import com.microsoft.device.display.samples.twonote.structures.SerializedImage
 
 /* Class used to update app contents when an appropriate drag event occurs */
 class DragHandler(private val fragment: NoteDetailFragment) {

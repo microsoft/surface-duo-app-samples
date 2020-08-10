@@ -24,10 +24,11 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
-import com.microsoft.device.display.samples.twonote.model.DataProvider
-import com.microsoft.device.display.samples.twonote.model.DirEntry
-import com.microsoft.device.display.samples.twonote.model.INode
-import com.microsoft.device.display.samples.twonote.model.Note
+import com.microsoft.device.display.samples.twonote.includes.DataProvider
+import com.microsoft.device.display.samples.twonote.includes.FileSystem
+import com.microsoft.device.display.samples.twonote.structures.DirEntry
+import com.microsoft.device.display.samples.twonote.structures.INode
+import com.microsoft.device.display.samples.twonote.structures.Note
 import com.microsoft.device.dualscreen.core.ScreenHelper
 
 class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, AdapterView.OnItemSelectedListener {

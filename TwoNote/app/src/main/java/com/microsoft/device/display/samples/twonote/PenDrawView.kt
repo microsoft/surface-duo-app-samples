@@ -21,6 +21,8 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.graphics.ColorUtils
+import com.microsoft.device.display.samples.twonote.structures.SerializedStroke
+import com.microsoft.device.display.samples.twonote.structures.Stroke
 import java.lang.Math.max
 import kotlin.math.min
 

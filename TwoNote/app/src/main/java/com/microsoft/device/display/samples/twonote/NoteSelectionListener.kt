@@ -6,8 +6,9 @@ import android.view.MenuItem
 import android.widget.AbsListView
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import com.microsoft.device.display.samples.twonote.model.DataProvider
-import com.microsoft.device.display.samples.twonote.model.INode
+import com.microsoft.device.display.samples.twonote.includes.DataProvider
+import com.microsoft.device.display.samples.twonote.includes.FileSystem
+import com.microsoft.device.display.samples.twonote.structures.INode
 
 class NoteSelectionListener(
     private var host: NoteListFragment,
