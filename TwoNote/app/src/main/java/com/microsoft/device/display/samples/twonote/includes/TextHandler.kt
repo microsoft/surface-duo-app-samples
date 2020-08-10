@@ -35,42 +35,4 @@ class TextHandler(private val activity: Activity) {
         }
         return stringBuilder.toString()
     }
-
-    // overwrite text from file specified in uri path
-    fun alterDocument(uri: Uri, textField: TextInputEditText) {
-        try {
-            activity.contentResolver.openFileDescriptor(uri, "w")?.use {
-                FileOutputStream(it.fileDescriptor).use { stream ->
-                    val charset: Charset = Charsets.UTF_8
-                    stream.write(
-                        textField.getText().toString()
-                            .toByteArray(charset)
-                    )
-                }
-            }
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
-    // format text for readability (newline chars are dropped in saving/grabbing process)
-    fun processTextFileData(uri: Uri, textField: TextInputEditText) {
-        val str: String = readTextFromUri(uri)
-
-        val builder = StringBuilder()
-        var initHeader = true
-
-        val lines = str.split("<")
-        lines.forEach {
-            if (initHeader) {
-                builder.append(it)
-                initHeader = false
-            } else {
-                builder.append("<" + it + System.getProperty("line.separator"))
-            }
-        }
-        textField.setText(builder.toString())
-    }
 }
