@@ -21,8 +21,8 @@ import com.microsoft.device.display.samples.twonote.structures.SerializedImage
 /* Class used to update app contents when an appropriate drag event occurs */
 class DragHandler(private val fragment: NoteDetailFragment) {
 
-    private val fileHandler = FileHandler(fragment.requireActivity())
     private val imageHandler = ImageHandler(fragment)
+    private val fileHandler = TextHandler(fragment.requireActivity())
 
     // drag occurred, decide if event is relevant to app
     fun onDrag(event: DragEvent): Boolean {
@@ -37,8 +37,9 @@ class DragHandler(private val fragment: NoteDetailFragment) {
 
             DragEvent.ACTION_DROP -> processDrop(event, isText, isImage, isRotated)
 
-            DragEvent.ACTION_DRAG_ENTERED, DragEvent.ACTION_DRAG_LOCATION,
-            DragEvent.ACTION_DRAG_ENDED, DragEvent.ACTION_DRAG_EXITED ->
+            DragEvent.ACTION_DRAG_ENTERED, DragEvent.ACTION_DRAG_STARTED,
+            DragEvent.ACTION_DRAG_LOCATION, DragEvent.ACTION_DRAG_ENDED,
+            DragEvent.ACTION_DRAG_EXITED ->
                 // Ignore events
                 true
 
@@ -54,7 +55,7 @@ class DragHandler(private val fragment: NoteDetailFragment) {
 
             if (uri != null) {
                 if (ContentResolver.SCHEME_CONTENT == uri.scheme) {
-                    // Request permission to read file if it is outside the scope of the project
+                    // Request permission to read file
                     ActivityCompat.requestDragAndDropPermissions(fragment.activity, event)
 
                     when {
@@ -86,6 +87,7 @@ class DragHandler(private val fragment: NoteDetailFragment) {
         imageHandler.setImageList(list, isRotated)
     }
 
+    // get image data
     fun getImageList(): List<SerializedImage> {
         return imageHandler.getImageList()
     }

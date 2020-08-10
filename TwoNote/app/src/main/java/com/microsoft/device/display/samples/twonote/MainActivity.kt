@@ -15,6 +15,7 @@ import android.os.Bundle
 import android.view.Surface
 import androidx.appcompat.app.AppCompatActivity
 import com.microsoft.device.display.samples.twonote.includes.DataProvider
+import com.microsoft.device.display.samples.twonote.includes.TextHandler
 import com.microsoft.device.display.samples.twonote.includes.FileSystem
 import com.microsoft.device.display.samples.twonote.structures.DirEntry
 import com.microsoft.device.display.samples.twonote.structures.INode
