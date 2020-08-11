@@ -1,7 +1,7 @@
 ---
 page_type: sample
 name: "Surface Duo - PhotoEditor"
-description: "Uses the Companion Pane dual-screen pattern and drag/drop features in a photo editing app for the Surface Duo."
+description: "Uses the companion pane dual-screen pattern and drag/drop features in a photo editing app for the Surface Duo."
 languages:
 - kotlin
 products:
@@ -28,7 +28,7 @@ This app supports three main actions: selection, editing, and saving. To select 
 
 ### Companion Pane
 
-This sample shows how the [Companion Pane](https://docs.microsoft.com/dual-screen/introduction#companion-pane) dual-screen app pattern can be used to make more tools and controls available to users when the app is spanned. When in single-screen mode, the app only shows users three controls: the slider, the rotation buttons, and the save button. In order to modify all possible properties with the slider, the user must interact with the dropdown menu. This ensures that the chosen image is large enough on the screen to inspect any edits.
+This sample shows how the [companion pane](https://docs.microsoft.com/dual-screen/introduction#companion-pane) dual-screen app pattern can be used to make more tools and controls available to users when the app is spanned. When in single-screen mode, the app only shows users three controls: the slider, the rotation buttons, and the save button. In order to modify all possible properties with the slider, the user must interact with the dropdown menu. This ensures that the chosen image is large enough on the screen to inspect any edits.
 
 When switched to dual-screen mode, however, the entire left screen can be dedicated to image display. This frees up the right screen to display more editing controls. As a result, a dropdown menu is no longer needed and all three slider controls can be displayed.
 

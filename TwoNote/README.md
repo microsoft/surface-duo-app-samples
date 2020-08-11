@@ -1,6 +1,6 @@
 ---
 page_type: sample
-name: Surface Duo - TwoNote
+name: "Surface Duo - TwoNote"
 description: "Highlights pen events, drag/drop, and multiple dual-screen app patterns to enhance a notes app for the Surface Duo."
 languages:
 - kotlin
