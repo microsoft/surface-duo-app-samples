@@ -10,9 +10,9 @@ package com.microsoft.device.display.samples.twonote.includes
 import Defines.LAND_TO_PORT
 import Defines.MIN_DIMEN
 import Defines.PORT_TO_LAND
-import Defines.SCALE_RATIO
 import Defines.RENDER_TIMER
 import Defines.RESIZE_SPEED
+import Defines.SCALE_RATIO
 import Defines.THRESHOLD
 import android.annotation.SuppressLint
 import android.content.ClipData
@@ -50,12 +50,19 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
     private var deleteMode = false
 
     // Create a new ImageView and add it to the container
-    fun addImageToView(uri: Uri, isRotated: Boolean) {
+    fun addImageToView(uri: Uri, isRotated: Boolean, x: Float? = null, y: Float? = null, w: Int? = null, h: Int? = null) {
         uri.lastPathSegment?.let { seg ->
 
             val imageView = ImageView(fragment.requireContext())
             imageView.id = View.generateViewId()
             imageView.setImageURI(uri)
+
+            // If image size/position values were passed in, apply them
+            x?.let { imageView.x = it }
+            y?.let { imageView.y = it }
+            if (w != null && h != null) {
+                imageView.layoutParams = RelativeLayout.LayoutParams(w, h)
+            }
 
             fragment.view?.let {
                 fragment.imageContainer.addView(imageView)
@@ -102,8 +109,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         }
 
         // Set image view properties based on processed serialized image properties
-        // Note: there may be a small loss of precision when rounding the width/height fields
-        // from floats to ints after rotation scaling
+        // Note: small loss of precision in rotation scaling when rounding the width/height from float to int
         imageView.x = coords[0]
         imageView.y = coords[1]
         imageView.layoutParams = RelativeLayout.LayoutParams(w.roundToInt(), h.roundToInt())
@@ -116,6 +122,9 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         createShadowDragListener(imageView)
     }
 
+    /**
+     * When a new image is added, add its data to the ImageHandler's lists
+     */
     private fun trackImageData(seg: String, imageView: ImageView, compressed: String?, isRotated: Boolean) {
         if (names.contains(seg)) {
             // Add empty string to keep array indices aligned
@@ -130,13 +139,11 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun createShadowDragListener(imageView: ImageView) {
-        val isRotated = MainActivity.isRotated(fragment.requireContext())
-
         imageView.setOnTouchListener { v, e ->
             when (e.action and MotionEvent.ACTION_MASK) {
                 MotionEvent.ACTION_POINTER_DOWN -> {
                     // Initialize image resize
-                    initResize(e, imageView, isRotated)
+                    initResize(e, imageView, MainActivity.isRotated(fragment.requireContext()))
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
@@ -221,12 +228,13 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
     private fun deleteImage(v: View) {
         val imageView = v as? View ?: return
 
+        // Remove ImageView from view
         fragment.view?.let {
             fragment.imageContainer.removeView(v)
         }
 
+        // Remove image data from lists
         val index = images.indexOf(imageView)
-
         images.removeAt(index)
         rotations.removeAt(index)
         names.removeAt(index)
@@ -291,6 +299,12 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
     }
 
     fun setImageList(list: List<SerializedImage>, isRotated: Boolean) {
+        // Clear the existing image data from the lists
+        names.clear()
+        compressedImages.clear()
+        rotations.clear()
+        images.clear()
+
         for (serialized in list) {
             addImageToView(serialized, isRotated)
         }

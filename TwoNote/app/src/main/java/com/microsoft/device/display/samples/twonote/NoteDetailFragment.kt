@@ -18,7 +18,6 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.Rect
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.PixelCopy
@@ -54,21 +53,23 @@ import java.time.LocalDateTime
 
 class NoteDetailFragment : Fragment() {
     enum class PaintColors { Red, Blue, Green, Yellow, Purple }
+    enum class EditingMode { Text, Image, Ink }
 
     private lateinit var drawView: PenDrawView
     private lateinit var dragHandler: DragHandler
-
     lateinit var noteText: TextInputEditText
     private lateinit var noteTitle: TextInputEditText
-    var deleted = false
 
-    lateinit var rootDetailLayout: ConstraintLayout
+    private lateinit var rootDetailLayout: ConstraintLayout
     lateinit var imageContainer: RelativeLayout
 
+    // Editing modes
     private var inkItem: MenuItem? = null
     private var textItem: MenuItem? = null
     private var imageItem: MenuItem? = null
+    private var mode: EditingMode = EditingMode.Text
 
+    var deleted = false
     private var deleteImageMode = false
 
     companion object {
@@ -114,9 +115,9 @@ class NoteDetailFragment : Fragment() {
         imageContainer = view.findViewById(R.id.image_container)
 
         addNoteContents()
+        setUpTools(view)
         setUpInkMode(view)
         setUpImageMode(view)
-        setUpTools(view)
         initializeDragListener()
 
         return view
@@ -146,6 +147,7 @@ class NoteDetailFragment : Fragment() {
                 }
                 if (this::dragHandler.isInitialized) {
                     note.images = dragHandler.getImageList()
+                    dragHandler.clearImages()
                 }
 
                 note.text = text
@@ -159,7 +161,7 @@ class NoteDetailFragment : Fragment() {
     }
 
     private fun setUpTools(view: View) {
-        // Set up toolbar icons and actions
+        // Set up editing modes in toolbar
         val toolbar = view.findViewById<MaterialToolbar>(R.id.toolbar)
 
         toolbar.inflateMenu(R.menu.menu_note_detail)
@@ -168,36 +170,27 @@ class NoteDetailFragment : Fragment() {
         }
 
         for (item in toolbar.menu) {
-            if (item.title == getString(R.string.action_ink_on) ||
-                item.title == getString(R.string.action_ink_off)
-            )
-                inkItem = item
-            else if (item.title == getString(R.string.action_text_on) ||
-                item.title == getString(R.string.action_text_off)
-            )
-                textItem = item
-            else if (item.title == getString(R.string.action_image_on) ||
-                item.title == getString(R.string.action_image_off)
-            )
-                imageItem = item
+            when (item.title) {
+                getString(R.string.action_ink_on), getString(R.string.action_ink_off) -> inkItem = item
+                getString(R.string.action_text_on), getString(R.string.action_text_off) -> textItem = item
+                getString(R.string.action_image_on), getString(R.string.action_image_off) -> imageItem = item
+            }
         }
 
+        // Set up navigation in toolbar
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
         toolbar.setNavigationOnClickListener { closeFragment() }
 
+        // Set up overflow menu in toolbar
         toolbar.overflowIcon?.setTint(requireContext().getColor(R.color.colorOnPrimary))
-
-        view.findViewById<ScrollView>(R.id.text_mode)?.bringToFront()
     }
 
     private fun setUpImageMode(view: View) {
-        // Set up toolbar for image mode
-        view.findViewById<ImageButton>(R.id.upload_image).setOnClickListener {}
-
-        view.findViewById<ImageButton>(R.id.delete_image).setOnClickListener {
-            Log.e("KRISTEN", "in on click listener")
+        // Set up image tools buttons
+        val deleteImageButton = view.findViewById<ImageButton>(R.id.delete_image)
+        deleteImageButton.setOnClickListener {
             toggleDeleteImageMode()
-            toggleButtonColor(it as ImageButton, deleteImageMode)
+            toggleButtonColor(deleteImageButton, deleteImageMode)
         }
     }
 
@@ -206,7 +199,9 @@ class NoteDetailFragment : Fragment() {
 
         // Set up pen tools buttons
         view.findViewById<ImageButton>(R.id.undo).setOnClickListener { undoStroke() }
+
         view.findViewById<ImageButton>(R.id.clear).setOnClickListener {
+            // Create confirmation dialog before user clears all ink
             AlertDialog.Builder(requireContext())
                 .setMessage(resources.getString(R.string.confirm_clear_message))
                 .setPositiveButton(resources.getString(android.R.string.ok)) { dialog, _ ->
@@ -220,8 +215,8 @@ class NoteDetailFragment : Fragment() {
         }
 
         val colorButton = view.findViewById<ImageButton>(R.id.color)
+        val colorButtonsLayout = view.findViewById<LinearLayout>(R.id.color_buttons)
         colorButton.setOnClickListener {
-            val colorButtonsLayout = view.findViewById<LinearLayout>(R.id.color_buttons)
             toggleViewVisibility(colorButtonsLayout)
             toggleButtonColor(colorButton, colorButtonsLayout?.visibility == View.VISIBLE)
         }
@@ -301,9 +296,9 @@ class NoteDetailFragment : Fragment() {
                     val result = stringToColor(textInput.text.toString())
                     if (result != -1) {
                         chooseColor("", result)
-                        chooseButton.background.colorFilter = PorterDuffColorFilter(result, PorterDuff.Mode.SRC)
+                        toggleButtonColor(chooseButton, true, result)
                     } else {
-                        chooseButton.background.clearColorFilter()
+                        toggleButtonColor(chooseButton, false)
                     }
                     dialog.dismiss()
                 }
@@ -363,9 +358,9 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    private fun toggleButtonColor(button: ImageButton?, activated: Boolean) {
+    private fun toggleButtonColor(button: ImageButton?, activated: Boolean, color: Int = resources.getColor(R.color.colorPrimary, requireActivity().theme)) {
         if (activated) {
-            button?.background?.colorFilter = PorterDuffColorFilter(resources.getColor(R.color.colorPrimary, requireActivity().theme), PorterDuff.Mode.SRC)
+            button?.background?.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC)
         } else {
             button?.background?.clearColorFilter()
         }
@@ -375,9 +370,11 @@ class NoteDetailFragment : Fragment() {
         deleteImageMode = force ?: !deleteImageMode
 
         val alpha = if (deleteImageMode) 0.5f else 1f
+        val color = if (deleteImageMode) Color.GRAY else Color.TRANSPARENT
 
         for (image in dragHandler.getImageViewList()) {
             image.alpha = alpha
+            image.setBackgroundColor(color)
         }
 
         dragHandler.setDeleteMode(deleteImageMode)
@@ -412,6 +409,9 @@ class NoteDetailFragment : Fragment() {
     }
 
     private fun chooseColor(color: String, colorInt: Int? = null) {
+        // Reset the background color of the custom color button
+        view?.findViewById<ImageButton>(R.id.button_choose)?.clearColorFilter()
+
         when (color) {
             PaintColors.Red.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.red))
             PaintColors.Blue.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.blue))
@@ -498,21 +498,15 @@ class NoteDetailFragment : Fragment() {
                 true
             }
             R.id.action_text -> {
-                activateText(true)
-                activateImage(false)
-                activateInk(false)
+                changeEditingMode(EditingMode.Text)
                 true
             }
             R.id.action_image -> {
-                activateText(false)
-                activateImage(true)
-                activateInk(false)
+                changeEditingMode(EditingMode.Image)
                 true
             }
             R.id.action_ink -> {
-                activateText(false)
-                activateImage(false)
-                activateInk(true)
+                changeEditingMode(EditingMode.Ink)
                 true
             }
             else -> {
@@ -521,7 +515,28 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    fun activateText(active: Boolean) {
+    fun changeEditingMode(mode: EditingMode) {
+        this.mode = mode
+        when (mode) {
+            EditingMode.Text -> {
+                activateText(true)
+                activateImage(false)
+                activateInk(false)
+            }
+            EditingMode.Image -> {
+                activateText(false)
+                activateImage(true)
+                activateInk(false)
+            }
+            EditingMode.Ink -> {
+                activateText(false)
+                activateImage(false)
+                activateInk(true)
+            }
+        }
+    }
+
+    private fun activateText(active: Boolean) {
         if (active) {
             textItem?.setIcon(R.drawable.ic_fluent_text_field_24_filled)
             textItem?.title = getString(R.string.action_text_off)
@@ -532,13 +547,14 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    fun activateImage(active: Boolean) {
+    private fun activateImage(active: Boolean) {
         val imageTools = view?.findViewById<LinearLayout>(R.id.image_tools)
         if (active) {
             imageItem?.setIcon(R.drawable.ic_fluent_image_24_filled)
             imageItem?.title = getString(R.string.action_image_off)
-            imageTools?.visibility = View.VISIBLE
             imageContainer.bringToFront()
+            imageTools?.visibility = View.VISIBLE
+            imageTools?.bringToFront() // So images can't cover up buttons
         } else {
             imageItem?.setIcon(R.drawable.ic_fluent_image_24_regular)
             imageItem?.title = getString(R.string.action_image_on)
@@ -548,7 +564,7 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    fun activateInk(active: Boolean) {
+    private fun activateInk(active: Boolean) {
         val penTools = view?.findViewById<LinearLayout>(R.id.pen_tools)
         if (active) {
             inkItem?.setIcon(R.drawable.ic_fluent_inking_tool_24_filled)
@@ -556,7 +572,7 @@ class NoteDetailFragment : Fragment() {
             drawView.enable()
             view?.findViewById<ConstraintLayout>(R.id.ink_mode)?.bringToFront()
             penTools?.visibility = View.VISIBLE
-            penTools?.bringToFront()
+            penTools?.bringToFront() // So drawings can't cover up buttons
         } else {
             inkItem?.setIcon(R.drawable.ic_fluent_inking_tool_24_regular)
             inkItem?.title = getString(R.string.action_ink_on)
