@@ -8,10 +8,7 @@
 package com.microsoft.device.display.samples.twonote.includes
 
 import android.app.Activity
-import android.content.Intent
 import android.net.Uri
-import android.provider.DocumentsContract
-import androidx.core.app.ActivityCompat.startActivityForResult
 import com.google.android.material.textfield.TextInputEditText
 import java.io.BufferedReader
 import java.io.FileNotFoundException
@@ -22,38 +19,6 @@ import java.nio.charset.Charset
 
 /* Class used to make file read/write requests */
 class FileHandler(private val activity: Activity) {
-
-    companion object {
-        // intent request codes
-        const val CREATE_FILE = 1
-        const val PICK_TXT_FILE = 2
-    }
-
-    // create a window prompting user to save a new file
-    // defaults to public Downloads folder if uri is empty
-    fun createFile(pickerInitialUri: Uri) {
-        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = Defines.PLAIN_TEXT
-            putExtra(Intent.EXTRA_TITLE, Defines.DEFAULT_FILE_NAME)
-
-            putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
-        }
-        startActivityForResult(activity, intent, CREATE_FILE, null)
-    }
-
-    // creating a window prompting user to choose a file to open
-    // defaults to public Downloads folder if uri is empty
-    fun openFile(pickerInitialUri: Uri) {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = Defines.PLAIN_TEXT
-
-            putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
-        }
-
-        startActivityForResult(activity, intent, PICK_TXT_FILE, null)
-    }
 
     // read text from file specified in uri path
     @Throws(IOException::class)
