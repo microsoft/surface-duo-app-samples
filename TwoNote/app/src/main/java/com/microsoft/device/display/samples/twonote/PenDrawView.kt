@@ -9,11 +9,11 @@ package com.microsoft.device.display.samples.twonote
 
 import Defines.LAND_TO_PORT
 import Defines.PORT_TO_LAND
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
@@ -116,6 +116,7 @@ class PenDrawView : View {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (disabled)
             return true

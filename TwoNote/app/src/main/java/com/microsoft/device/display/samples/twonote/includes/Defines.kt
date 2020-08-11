@@ -9,9 +9,7 @@ import android.graphics.Matrix
 
 object Defines {
     // File Handler references //
-    const val DEFAULT_FILE_NAME = "drawing"
     const val IMAGE_PREFIX = "image/"
-    const val PLAIN_TEXT = "text/plain"
     const val TEXT_PREFIX = "text/"
 
     // Image Handler constants //
@@ -19,6 +17,7 @@ object Defines {
     const val RENDER_TIMER = 50L
     const val RESIZE_SPEED = 15
     const val THRESHOLD = 0.2
+    const val UPLOAD_IMAGE = 1000
 
     // Rotation scaling constants //
     // Each screen is 1800 by 1350 px:

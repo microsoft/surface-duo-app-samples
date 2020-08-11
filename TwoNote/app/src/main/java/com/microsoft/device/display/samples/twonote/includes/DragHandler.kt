@@ -60,16 +60,12 @@ class DragHandler(private val fragment: NoteDetailFragment) {
                     when {
                         isText -> {
                             fileHandler.processTextFileData(uri, fragment.noteText)
-                            fragment.activateText(true)
-                            fragment.activateImage(false)
-                            fragment.activateInk(false)
+                            fragment.changeEditingMode(NoteDetailFragment.EditingMode.Text)
                             return true
                         }
                         isImage -> {
                             imageHandler.addImageToView(uri, isRotated)
-                            fragment.activateText(false)
-                            fragment.activateImage(true)
-                            fragment.activateInk(false)
+                            fragment.changeEditingMode(NoteDetailFragment.EditingMode.Image)
                             return true
                         }
                         else -> {
@@ -100,5 +96,13 @@ class DragHandler(private val fragment: NoteDetailFragment) {
 
     fun setDeleteMode(value: Boolean) {
         imageHandler.setDeleteMode(value)
+    }
+
+    fun clearImages() {
+        for (image in imageHandler.getImageViewList()) {
+            fragment.view?.let {
+                fragment.imageContainer.removeView(image)
+            }
+        }
     }
 }
