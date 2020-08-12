@@ -25,6 +25,8 @@ In addition to including various dual-screen enhancements, this app supports a r
 
 Notes can be created by clicking the floating action button in the list view. To rename a note, click on its current title and make the desired changes. To delete a note, users can choose `Delete` from the overflow menu in the detail view of the note. To delete multiple notes at once, long-click on notes or choose `Select all` from the overflow menu in the list view. To share an individual note as an image, scroll to the desired section of the note when in the detail view and choose the `Share` option.
 
+![Select all option in list view](screenshots/list_view_select_all.png)
+
 ### Categories
 
 Notes can also be sorted into different categories, which are accessible via the dropdown in the list view. To add or delete a category, choose the appropriate option from the overflow menu. Like with notes, to rename a category, click on its current title and make the desired changes. To switch categories, open the dropdown and select a different category.
@@ -35,21 +37,29 @@ Notes can also be sorted into different categories, which are accessible via the
 
 To add text to the note, click on the `Tap here to add note contents` hint and start typing. Users can also import existing text files to the note via drag/drop. For more information on creating drop targets for various drag events, reference this [drag and drop sample](https://github.com/microsoft/surface-duo-sdk-samples-kotlin/tree/master/DragAndDrop).
 
+![Result of drag and drop import of text file](screenshots/drag_drop_text.png)
+
 #### Image Mode - Drag and Drop
 
 Images can be added to the note via drag and drop. Once imported, the images can be resized using zoom gestures on a particular image. Users can also move an image to a different position on the note by long clicking the image and dragging it. To delete an image, click the delete button and then click on any image that needs to be removed.
+
+![Deletion mode in image mode](screenshots/image_mode_delete.png)
 
 #### Ink Mode - Pen Events
 
 This sample provides pen event support to allow for a smooth and pressure-sensitive inking experience. Users can use the buttons at the bottom of the screen to choose from a variety of colors and stroke thicknesses to write, draw, highlight, and erase within a note, as well as undo previous strokes and clear the entire canvas. To learn more about the capabilities of touch events and pens, visit this [pen event blog post](https://devblogs.microsoft.com/surface-duo/pen-events-on-the-surface-duo/).
 
+![Extended canvas drawing](screenshots/extended_canvas_garden.png)
+
+### Extended Canvas
+
+When spanned in dual-landscape mode, the app switches to the [extended canvas](https://docs.microsoft.com/dual-screen/introduction#extended-canvas) app pattern. This gives the user more screen real estate when editing note contents, which is especially useful for annotating pictures and creating drawings (see screenshot above).
+
 ### List-Detail
 
 When spanned in dual-portrait mode, the app takes advantage of the [list-detail](https://docs.microsoft.com/dual-screen/introduction#master-detail) app pattern to simultaneously display a list of existing notes and a more detailed view of a selected note.
 
-### Extended Canvas
-
-When spanned in dual-landscape mode, the app switches to the [extended canvas](https://docs.microsoft.com/dual-screen/introduction#extended-canvas) app pattern. This gives the user more screen real estate when editing note contents, which is especially useful for annotating pictures and creating drawings.
+![List-detail view for ocean doodle](screenshots/list_detail_ocean.png)
 
 ## Contributing
 
