@@ -33,8 +33,6 @@ class DragHandler(private val fragment: NoteDetailFragment) {
         val isRotated = MainActivity.isRotated(fragment.requireContext())
 
         return when (event.action) {
-            DragEvent.ACTION_DRAG_STARTED -> true
-
             DragEvent.ACTION_DROP -> processDrop(event, isText, isImage, isRotated)
 
             DragEvent.ACTION_DRAG_ENTERED, DragEvent.ACTION_DRAG_STARTED,

@@ -57,6 +57,10 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
             imageView.id = View.generateViewId()
             imageView.setImageURI(uri)
 
+            fragment.view?.let {
+                fragment.imageContainer.addView(imageView)
+            }
+
             createShadowDragListener(imageView)
 
             Handler().postDelayed(

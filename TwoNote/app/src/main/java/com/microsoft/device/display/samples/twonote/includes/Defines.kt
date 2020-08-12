@@ -17,7 +17,6 @@ object Defines {
     const val RENDER_TIMER = 50L
     const val RESIZE_SPEED = 15
     const val THRESHOLD = 0.2
-    const val UPLOAD_IMAGE = 1000
 
     // Rotation scaling constants //
     // Each screen is 1800 by 1350 px:
