@@ -31,6 +31,8 @@ Notes can be created by clicking the floating action button in the list view. To
 
 Notes can also be sorted into different categories, which are accessible via the dropdown in the list view. To add or delete a category, choose the appropriate option from the overflow menu. Like with notes, to rename a category, click on its current title and make the desired changes. To switch categories, open the dropdown and select a different category.
 
+![Note category dropdown in list-detail view with examples of highlighting](screenshots/categories.png)
+
 ### Note Editing Modes
 
 #### Text Mode - Drag and Drop
