@@ -11,6 +11,8 @@
     <string name="action_share">Share</string>
     <string name="action_select">Select all</string>
     <string name="selected">selected</string>
+    <string name="default_category_name">Category</string>
+    <string name="default_note_name">Note</string>
     <string name="load_error_note">Error: loaded file is not of type Note</string>
     <string name="load_error_dir">Error: loaded file is not of type DirEntry</string>
     <string name="welcome">Welcome to TwoNote</string>
