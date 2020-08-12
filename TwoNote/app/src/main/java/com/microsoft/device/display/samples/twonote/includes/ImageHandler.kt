@@ -39,14 +39,18 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 class ImageHandler(private val fragment: NoteDetailFragment) {
-    private val names: MutableList<String> = mutableListOf()
-    private val images: MutableList<ImageView> = mutableListOf()
+    // Image data for serialization
     private val compressedImages: MutableList<String?> = mutableListOf()
+    private val images: MutableList<ImageView> = mutableListOf()
+    private val names: MutableList<String> = mutableListOf()
     private val rotations: MutableList<Boolean> = mutableListOf()
-    private var space = 0f
-    private var prevHeight = 0
-    private var prevWidth = 0
+
+    // reference values for resizing events
+    private var initialSpacing = 0f
+    private var initialHeight = 0
+    private var initialWidth = 0
     private var clickStartTime = 0L
+
     private var deleteMode = false
 
     // Create a new ImageView and add it to the container
@@ -181,10 +185,10 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
     }
 
     private fun initResize(e: MotionEvent, imageView: ImageView, isRotated: Boolean) {
-        space = spacing(e)
-        prevHeight = imageView.height
-        prevWidth = imageView.width
-        imageView.layoutParams = RelativeLayout.LayoutParams(prevWidth, prevHeight)
+        initialSpacing = spacing(e)
+        initialHeight = imageView.height
+        initialWidth = imageView.width
+        imageView.layoutParams = RelativeLayout.LayoutParams(initialWidth, initialHeight)
 
         // Update rotation value for the image that's about to be resized
         if (images.contains(imageView)) {
@@ -198,13 +202,13 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
 
         // formula reasoning    -> "spread out" will result in positive percentage (add pixels to dimen)
         //                      -> "pinch in" will result in negative percentage (sub pixels from dimen)
-        var percentage: Float = (spacing(e) / space) - 1
+        var percentage: Float = (spacing(e) / initialSpacing) - 1
         if (percentage < THRESHOLD && percentage > -THRESHOLD) percentage = 0f
 
-        prevHeight = max((prevHeight + (RESIZE_SPEED * percentage)).toInt(), MIN_DIMEN)
-        prevWidth = max((prevWidth + (RESIZE_SPEED * percentage)).toInt(), MIN_DIMEN)
+        initialHeight = max((initialHeight + (RESIZE_SPEED * percentage)).toInt(), MIN_DIMEN)
+        initialWidth = max((initialWidth + (RESIZE_SPEED * percentage)).toInt(), MIN_DIMEN)
 
-        imageView.layoutParams = RelativeLayout.LayoutParams(prevWidth, prevHeight)
+        imageView.layoutParams = RelativeLayout.LayoutParams(initialWidth, initialHeight)
     }
 
     private fun handleLongClick(v: View) {
