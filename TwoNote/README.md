@@ -1,7 +1,7 @@
 ---
 page_type: sample
 name: Surface Duo - TwoNote
-description: "Highlights pen events, drag/drop, and multiple dual-screen app patterns to enhance a notes app for the Surface Duo."
+description: "Highlights pen events, drag and drop, and multiple dual-screen app patterns to enhance a notes app for the Surface Duo."
 languages:
 - kotlin
 products:
@@ -19,25 +19,29 @@ To learn how to load apps on the Surface Duo emulator, see the [documentation](h
 
 ## Features
 
-This app supports a range of operations related to notes, note categories, and note contents.
+In addition to including various dual-screen enhancements, this app supports a range of operations related to notes, note categories, and note contents.
 
-Notes can be created by clicking the floating action button in the list view. To delete a note, users can choose `Delete` from the overflow menu in the detail view of the note. To delete multiple notes at once, long-click on notes or choose `Select all` from the overflow menu in the list view. To share an individual note as an image, scroll to the desired section of the note when in the detail view and choose the `Share` option.
+### Notes
 
-Notes can also be sorted into different categories, which are accessible via the dropdown in the list view. To add or delete a category, choose the appropriate option from the overflow menu. To rename a category, click on its current title and make the desired changes. To switch categories, open the dropdown and select a different category.
+Notes can be created by clicking the floating action button in the list view. To rename a note, click on its current title and make the desired changes. To delete a note, users can choose `Delete` from the overflow menu in the detail view of the note. To delete multiple notes at once, long-click on notes or choose `Select all` from the overflow menu in the list view. To share an individual note as an image, scroll to the desired section of the note when in the detail view and choose the `Share` option.
 
-Like with categories, to rename a note, click on its current title and make the desired changes. When editing note contents, there are 3 different modes: text, image, and inking. In text mode, the user can type to add note contents by clicking on the `Tap here to add note contents` hint. In image mode, users can drag and resize any imported images. In inking mode, users can use touch or pens to add drawings and annotations.
+### Categories
 
-### Drag and Drop
+Notes can also be sorted into different categories, which are accessible via the dropdown in the list view. To add or delete a category, choose the appropriate option from the overflow menu. Like with notes, to rename a category, click on its current title and make the desired changes. To switch categories, open the dropdown and select a different category.
 
-Text and image files can be imported into an individual note via drag and drop. For more information on creating drop targets for various drag events, reference this [drag and drop sample](https://github.com/microsoft/surface-duo-sdk-samples-kotlin/tree/master/DragAndDrop).
+### Note Editing Modes
 
-### Image Manipulation
+#### Text Mode - Drag and Drop
 
-In-app pictures can be resized using zoom gestures on a particular image. Users can also move an image to a different position on the note by long clicking the image and dragging it.
+To add text to the note, click on the `Tap here to add note contents` hint and start typing. Users can also import existing text files to the note via drag/drop. For more information on creating drop targets for various drag events, reference this [drag and drop sample](https://github.com/microsoft/surface-duo-sdk-samples-kotlin/tree/master/DragAndDrop).
 
-### Pen Events
+#### Image Mode - Drag and Drop
 
-This sample provides pen event support to allow for a smooth and pressure-sensitive inking experience. Users can choose from a variety of colors and stroke thicknesses to write, draw, highlight, and erase within a note. To learn more about the capabilities of touch events and pens, visit this [pen event blog post](https://devblogs.microsoft.com/surface-duo/pen-events-on-the-surface-duo/).
+Images can be added to the note via drag and drop. Once imported, the images can be resized using zoom gestures on a particular image. Users can also move an image to a different position on the note by long clicking the image and dragging it. To delete an image, click the delete button and then click on any image that needs to be removed.
+
+#### Ink Mode - Pen Events
+
+This sample provides pen event support to allow for a smooth and pressure-sensitive inking experience. Users can use the buttons at the bottom of the screen to choose from a variety of colors and stroke thicknesses to write, draw, highlight, and erase within a note, as well as undo previous strokes and clear the entire canvas. To learn more about the capabilities of touch events and pens, visit this [pen event blog post](https://devblogs.microsoft.com/surface-duo/pen-events-on-the-surface-duo/).
 
 ### List-Detail
 
