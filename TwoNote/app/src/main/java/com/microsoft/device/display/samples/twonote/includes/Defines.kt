@@ -35,4 +35,7 @@ object Defines {
     const val LIST_FRAGMENT = "list fragment"
     const val INODE = "inode"
     const val NOTE = "note"
+
+    // Instance state constants //
+    const val LIST_VIEW = "list view"
 }

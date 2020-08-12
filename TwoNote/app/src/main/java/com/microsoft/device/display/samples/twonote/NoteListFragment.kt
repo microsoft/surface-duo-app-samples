@@ -7,6 +7,7 @@
 package com.microsoft.device.display.samples.twonote
 
 import Defines.DETAIL_FRAGMENT
+import Defines.LIST_VIEW
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Editable
@@ -32,20 +33,19 @@ import com.microsoft.device.display.samples.twonote.structures.Note
 import com.microsoft.device.dualscreen.core.ScreenHelper
 
 class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, AdapterView.OnItemSelectedListener {
-    private var arrayAdapter: ArrayAdapter<INode>? = null
-    private var dropDownAdapter: ArrayAdapter<INode>? = null
+    private var categoriesListAdapter: ArrayAdapter<INode>? = null
+    private var notesListAdapter: ArrayAdapter<INode>? = null
+
     private var listView: ListView? = null
     private var categoryView: Spinner? = null
+    private lateinit var editText: TextInputEditText
+
     private lateinit var inodes: MutableList<INode>
     private lateinit var categories: MutableList<INode>
-    private lateinit var editText: TextInputEditText
+
     private val root = ""
     private var selectedFlag = false
     private var noteSelectionListener: NoteSelectionListener? = null
-
-    companion object {
-        const val LIST_VIEW = "list view"
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +54,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         FileSystem.loadCategories(requireContext(), root)
 
         activity?.let {
-            arrayAdapter = object : ArrayAdapter<INode>(it, android.R.layout.simple_list_item_2, android.R.id.text1, inodes) {
+            notesListAdapter = object : ArrayAdapter<INode>(it, android.R.layout.simple_list_item_2, android.R.id.text1, inodes) {
                 // Override getView function so that ArrayAdapter can be used while both text
                 // views in the simple_list_item_2 format are updated
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -71,7 +71,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                     return view
                 }
             }
-            dropDownAdapter = object : ArrayAdapter<INode>(it, android.R.layout.simple_spinner_item, android.R.id.text1, categories) {
+            categoriesListAdapter = object : ArrayAdapter<INode>(it, android.R.layout.simple_spinner_item, android.R.id.text1, categories) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent)
 
@@ -83,23 +83,8 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                     return view
                 }
             }
-            dropDownAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            categoriesListAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
-
-        // uncomment this to clear record of all root entries (use for testing)
-        /* val cat = DataProvider.getCategories()
-        for (nodes in cat.size - 1 downTo 0) {
-            FileHandler.switchCategory(requireContext(), cat[0])
-            val n = DataProvider.getINodes()
-            for (notes in n.size - 1 downTo 0) {
-                FileHandler.delete(requireContext(), ROOT, n[notes])
-                n.removeAt(notes)
-            }
-            FileHandler.delete(requireContext(), ROOT, cat[nodes])
-            cat.removeAt(nodes)
-        }
-        FileHandler.writeDirEntry(requireContext(), ROOT, DirEntry())
-        FileHandler.addCategory(requireContext())*/
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -117,10 +102,10 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
         listView = view.findViewById(R.id.list_view)
         listView?.let {
-            it.adapter = arrayAdapter
+            it.adapter = notesListAdapter
             it.onItemClickListener = this
             it.onItemLongClickListener = this
-            noteSelectionListener = NoteSelectionListener(this, it, arrayAdapter!!)
+            noteSelectionListener = NoteSelectionListener(this, it, notesListAdapter!!)
             it.setMultiChoiceModeListener(noteSelectionListener)
             it.choiceMode = ListView.CHOICE_MODE_SINGLE
 
@@ -131,14 +116,14 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
         categoryView = view.findViewById(R.id.dropdown_spinner)
         categoryView?.let {
-            it.adapter = dropDownAdapter
+            it.adapter = categoriesListAdapter
             it.onItemSelectedListener = this
         }
 
         view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
             // Set selected item to newly created note (first element in list)
             FileSystem.addInode()
-            updateArrayAdapter()
+            updateNotesList()
             startNoteFragment(0)
         }
 
@@ -167,9 +152,10 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         FileSystem.writeDirEntry(requireContext(), root, DirEntry(categories))
     }
 
+    // item in category list is clicked, switch to appropriate category
     override fun onItemSelected(adapterView: AdapterView<*>, item: View?, position: Int, id: Long) {
         if (selectedFlag) {
-            dropDownAdapter?.let {
+            categoriesListAdapter?.let {
                 it.getItem(position)?.let { inode ->
                     setNewCategory(inode, false)
                     editText.setText(inode.title)
@@ -180,9 +166,10 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
-        // TODO: implement this
+        // Do nothing
     }
 
+    // item in note list is clicked, switch to appropriate note
     override fun onItemClick(adapterView: AdapterView<*>, item: View, position: Int, rowId: Long) {
         if (listView?.choiceMode == ListView.CHOICE_MODE_SINGLE) {
             startNoteFragment(position)
@@ -191,7 +178,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         }
     }
 
-    // listener for changes to text in code editor
+    // listener for changes to category name
     private fun setOnChangeListenerForTextInput(field: TextInputEditText) {
         field.addTextChangedListener(object : TextWatcher {
 
@@ -205,19 +192,21 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         })
     }
 
+    // close out old category and switch to new category
     private fun setNewCategory(inode: INode?, deleting: Boolean) {
         exitDetailFragment(deleting)
         FileSystem.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
         FileSystem.switchCategory(requireContext(), inode)
-        updateDropDown()
-        updateArrayAdapter()
+        updateCategoriesList()
+        updateNotesList()
         categoryView?.setSelection(0)
     }
 
+    // open detail fragment for specified note (selected from notes list)
     private fun startNoteFragment(position: Int) {
-        arrayAdapter?.getItem(position)?.let { inode ->
+        notesListAdapter?.getItem(position)?.let { inode ->
             DataProvider.moveINodeToTop(inode)
-            updateArrayAdapter()
+            updateNotesList()
             listView?.setItemChecked(position, true)
 
             var note = FileSystem.loadNote(requireContext(), DataProvider.getActiveSubDirectory(), inode.descriptor + inode.id)
@@ -245,6 +234,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         }
     }
 
+    // option from overflow menu selected
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_add_category -> {
@@ -253,27 +243,11 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                 true
             }
             R.id.action_delete_category -> {
-                if (DataProvider.getCategories().size > 1) {
-                    DataProvider.clearInodes()
-                    setNewCategory(DataProvider.getCategories()[1], true)
-
-                    val categoryToDelete = DataProvider.getCategories()[1]
-                    FileSystem.delete(requireContext(), root, categoryToDelete)
-                    DataProvider.removeCategory(categoryToDelete)
-
-                    editText.setText(DataProvider.getActiveCategoryName())
-                    updateDropDown()
-                }
+                deleteCategory()
                 true
             }
             R.id.action_select -> {
-                // Select all notes
-                listView?.let {
-                    it.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
-                    for (i in 0 until it.count) {
-                        it.setItemChecked(i, true)
-                    }
-                }
+                selectAllNotes()
                 true
             }
             else -> {
@@ -282,6 +256,32 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         }
     }
 
+    // remove active category from the file system
+    private fun deleteCategory() {
+        if (DataProvider.getCategories().size > 1) {
+            DataProvider.clearInodes()
+            setNewCategory(DataProvider.getCategories()[1], true)
+
+            val categoryToDelete = DataProvider.getCategories()[1]
+            FileSystem.delete(requireContext(), root, categoryToDelete)
+            DataProvider.removeCategory(categoryToDelete)
+
+            editText.setText(DataProvider.getActiveCategoryName())
+            updateCategoriesList()
+        }
+    }
+
+    // select all the items in the notes list
+    private fun selectAllNotes() {
+        listView?.let {
+            it.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
+            for (i in 0 until it.count) {
+                it.setItemChecked(i, true)
+            }
+        }
+    }
+
+    // enable multi-selection of notes on long click
     override fun onItemLongClick(adapterView: AdapterView<*>, item: View, position: Int, rowId: Long): Boolean {
         listView?.let {
             it.clearChoices()
@@ -291,6 +291,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         return true
     }
 
+    // save and exit detail fragment of currently active note
     fun exitDetailFragment(deleting: Boolean) {
         activity?.let {
             if (ScreenHelper.isDualMode(it) && !MainActivity.isRotated(it)) {
@@ -308,11 +309,13 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         }
     }
 
-    fun updateArrayAdapter() {
-        arrayAdapter?.notifyDataSetChanged()
+    // indicate change made to note list
+    fun updateNotesList() {
+        notesListAdapter?.notifyDataSetChanged()
     }
 
-    private fun updateDropDown() {
-        dropDownAdapter?.notifyDataSetChanged()
+    // indicate change made to categories list
+    private fun updateCategoriesList() {
+        categoriesListAdapter?.notifyDataSetChanged()
     }
 }

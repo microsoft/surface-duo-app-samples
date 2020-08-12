@@ -15,7 +15,6 @@ import android.os.Bundle
 import android.view.Surface
 import androidx.appcompat.app.AppCompatActivity
 import com.microsoft.device.display.samples.twonote.includes.DataProvider
-import com.microsoft.device.display.samples.twonote.includes.TextHandler
 import com.microsoft.device.display.samples.twonote.includes.FileSystem
 import com.microsoft.device.display.samples.twonote.structures.DirEntry
 import com.microsoft.device.display.samples.twonote.structures.INode
@@ -132,6 +131,6 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
         FileSystem.writeDirEntry(applicationContext, DataProvider.getActiveSubDirectory(), DirEntry(DataProvider.getINodes()))
 
         // Notify NoteListFragment (if it exists)
-        (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as? NoteListFragment)?.updateArrayAdapter()
+        (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) as? NoteListFragment)?.updateNotesList()
     }
 }

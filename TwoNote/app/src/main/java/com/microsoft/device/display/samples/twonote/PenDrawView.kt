@@ -31,7 +31,6 @@ class PenDrawView : View {
     private var strokeList: MutableList<Stroke> = mutableListOf()
     private var isErasing = false
     private val eraser = RectF()
-    private var prevPressure = 0f
     private var disabled = true
     private var currentThickness: Int = 25
     var rotated = false
@@ -138,7 +137,6 @@ class PenDrawView : View {
                 MotionEvent.ACTION_DOWN -> {
                     val stroke = Stroke(event.x, event.y, pressure, currentColor, currentThickness, rotated, highlightMode)
                     strokeList.add(stroke)
-                    prevPressure = pressure
                 }
                 MotionEvent.ACTION_MOVE -> {
                     if (strokeList.isNotEmpty())
