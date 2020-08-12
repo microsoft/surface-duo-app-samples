@@ -53,7 +53,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
 
     private var deleteMode = false
 
-    // Create a new ImageView and add it to the container
+    // Add a new image to the app using a uri (reference to an existing image in memory)
     fun addImageToView(uri: Uri, isRotated: Boolean) {
         uri.lastPathSegment?.let { seg ->
 
@@ -76,6 +76,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         }
     }
 
+    // Add a new image to the app using serializable data
     private fun addImageToView(serialized: SerializedImage, isRotated: Boolean) {
         // Create a new ImageView and add it to the container
         val imageView = ImageView(fragment.requireContext())
@@ -134,6 +135,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         rotations.add(isRotated)
     }
 
+    // listener for image resizing and dragging events
     @SuppressLint("ClickableViewAccessibility")
     private fun createShadowDragListener(imageView: ImageView) {
         imageView.setOnTouchListener { v, e ->
@@ -167,6 +169,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         }
     }
 
+    // move active image to position on screen when it is dropped
     fun handleReposition(event: DragEvent): Boolean {
         return when (event.action) {
             DragEvent.ACTION_DROP -> {
@@ -184,6 +187,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         }
     }
 
+    // initialize reference values needed for resize
     private fun initResize(e: MotionEvent, imageView: ImageView, isRotated: Boolean) {
         initialSpacing = spacing(e)
         initialHeight = imageView.height
@@ -197,6 +201,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         }
     }
 
+    // handle resize events for a given view (make image larger or smaller)
     private fun handleResize(e: MotionEvent, imageView: ImageView) {
         clickStartTime = 0
 
@@ -211,6 +216,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         imageView.layoutParams = RelativeLayout.LayoutParams(initialWidth, initialHeight)
     }
 
+    // handle long clicks for given view (drag image around app)
     private fun handleLongClick(v: View) {
         val clickDuration = Calendar.getInstance().timeInMillis - clickStartTime
         if (clickStartTime > 0 && clickDuration >= ViewConfiguration.getLongPressTimeout()) {
@@ -222,6 +228,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         }
     }
 
+    // remove specified image from handler and view
     private fun deleteImage(v: View) {
         val imageView = v as? View ?: return
 
@@ -252,6 +259,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         return sqrt((xDist * xDist) + (yDist * yDist))
     }
 
+    // get list of serializable image data
     fun getImageList(): List<SerializedImage> {
         val list: MutableList<SerializedImage> = mutableListOf()
 
@@ -273,10 +281,12 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         return list.toList()
     }
 
+    // get image views of all images in handler
     fun getImageViewList(): List<ImageView> {
         return images
     }
 
+    // get coordinates of all images in handler
     private fun getImageCoords(index: Int): List<Float> {
         val list: MutableList<Float> = mutableListOf()
 
@@ -286,6 +296,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         return list.toList()
     }
 
+    // get dimensions of all images in handler
     private fun getImageDimen(index: Int): List<Int> {
         val list: MutableList<Int> = mutableListOf()
 
@@ -295,6 +306,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         return list.toList()
     }
 
+    // initialize handler with image data from memory
     fun setImageList(list: List<SerializedImage>, isRotated: Boolean) {
         // Clear the existing image data from the lists
         names.clear()
@@ -307,10 +319,12 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         }
     }
 
+    // enable/disable image deletion
     fun setDeleteMode(value: Boolean) {
         deleteMode = value
     }
 
+    // compress bitmap and convert to serializable format
     private fun encodeImage(bitmap: Bitmap?): String? {
         val stream = ByteArrayOutputStream()
         // compression using 100% image quality
@@ -319,6 +333,7 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
         return Base64.encodeToString(bytes, Base64.DEFAULT)
     }
 
+    // deserialize image string into bitmap
     private fun decodeImage(str: String): Bitmap? {
         val bytes = Base64.decode(str, Base64.DEFAULT)
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)

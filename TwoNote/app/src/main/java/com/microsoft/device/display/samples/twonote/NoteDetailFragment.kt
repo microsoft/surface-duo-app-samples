@@ -349,7 +349,7 @@ class NoteDetailFragment : Fragment() {
         }
 
         drawView.setStrokeList(strokeList)
-        drawView.rotated = MainActivity.isRotated(requireActivity())
+        drawView.setRotation(MainActivity.isRotated(requireActivity()))
         drawView.disable()
     }
 

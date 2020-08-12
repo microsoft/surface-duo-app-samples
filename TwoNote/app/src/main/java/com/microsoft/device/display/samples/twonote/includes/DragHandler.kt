@@ -22,7 +22,7 @@ import com.microsoft.device.display.samples.twonote.structures.SerializedImage
 class DragHandler(private val fragment: NoteDetailFragment) {
 
     private val imageHandler = ImageHandler(fragment)
-    private val fileHandler = TextHandler(fragment.requireActivity())
+    private val textHandler = TextHandler(fragment.requireActivity())
 
     // drag occurred, decide if event is relevant to app
     fun onDrag(event: DragEvent): Boolean {
@@ -37,14 +37,13 @@ class DragHandler(private val fragment: NoteDetailFragment) {
 
             DragEvent.ACTION_DRAG_ENTERED, DragEvent.ACTION_DRAG_STARTED,
             DragEvent.ACTION_DRAG_LOCATION, DragEvent.ACTION_DRAG_ENDED,
-            DragEvent.ACTION_DRAG_EXITED ->
-                // Ignore events
-                true
+            DragEvent.ACTION_DRAG_EXITED -> true
 
             else -> false
         }
     }
 
+    // drop event occurred, handle the event if item dropped is text or an image
     private fun processDrop(event: DragEvent, isText: Boolean, isImage: Boolean, isRotated: Boolean): Boolean {
         val item: ClipData.Item? = event.clipData?.getItemAt(0)
 
@@ -58,7 +57,7 @@ class DragHandler(private val fragment: NoteDetailFragment) {
 
                     when {
                         isText -> {
-                            fileHandler.processTextFileData(uri, fragment.noteText)
+                            textHandler.processTextFileData(uri, fragment.noteText)
                             fragment.changeEditingMode(NoteDetailFragment.EditingMode.Text)
                             return true
                         }
@@ -81,23 +80,27 @@ class DragHandler(private val fragment: NoteDetailFragment) {
         return false
     }
 
+    // initialize imageHandler with serialized image data
     fun setImageList(list: List<SerializedImage>, isRotated: Boolean) {
         imageHandler.setImageList(list, isRotated)
     }
 
-    // get image data
+    // get serialized image data
     fun getImageList(): List<SerializedImage> {
         return imageHandler.getImageList()
     }
 
+    // get image data related to views
     fun getImageViewList(): List<ImageView> {
         return imageHandler.getImageViewList()
     }
 
+    // enable/disable image deletion
     fun setDeleteMode(value: Boolean) {
         imageHandler.setDeleteMode(value)
     }
 
+    // remove all images from the view
     fun clearImages() {
         for (image in imageHandler.getImageViewList()) {
             fragment.view?.let {
