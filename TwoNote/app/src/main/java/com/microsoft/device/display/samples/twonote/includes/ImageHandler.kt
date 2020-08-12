@@ -50,23 +50,12 @@ class ImageHandler(private val fragment: NoteDetailFragment) {
     private var deleteMode = false
 
     // Create a new ImageView and add it to the container
-    fun addImageToView(uri: Uri, isRotated: Boolean, x: Float? = null, y: Float? = null, w: Int? = null, h: Int? = null) {
+    fun addImageToView(uri: Uri, isRotated: Boolean) {
         uri.lastPathSegment?.let { seg ->
 
             val imageView = ImageView(fragment.requireContext())
             imageView.id = View.generateViewId()
             imageView.setImageURI(uri)
-
-            // If image size/position values were passed in, apply them
-            x?.let { imageView.x = it }
-            y?.let { imageView.y = it }
-            if (w != null && h != null) {
-                imageView.layoutParams = RelativeLayout.LayoutParams(w, h)
-            }
-
-            fragment.view?.let {
-                fragment.imageContainer.addView(imageView)
-            }
 
             createShadowDragListener(imageView)
 
