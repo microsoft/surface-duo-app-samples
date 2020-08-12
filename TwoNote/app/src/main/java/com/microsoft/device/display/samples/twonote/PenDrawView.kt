@@ -11,7 +11,6 @@ import Defines.LAND_TO_PORT
 import Defines.PORT_TO_LAND
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -27,15 +26,17 @@ import java.lang.Math.max
 import kotlin.math.min
 
 class PenDrawView : View {
-    private var currentColor: Int = 0
     private var strokeList: MutableList<Stroke> = mutableListOf()
-    private var isErasing = false
     private val eraser = RectF()
-    private var disabled = true
+
+    private var currentColor: Int = 0
     private var currentThickness: Int = 25
-    var rotated = false
-    private var highlightMode = false
+
+    private var disabled = true
     private var eraserMode = false
+    private var highlightMode = false
+    private var isErasing = false
+    private var rotated = false
 
     companion object {
         // Attributes used for scaling drawings based on rotation
@@ -120,39 +121,50 @@ class PenDrawView : View {
 
         isErasing = false
         if (event.getToolType(0) == MotionEvent.TOOL_TYPE_ERASER || eraserMode) {
-            if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
-                isErasing = true
-
-                val offset = 50f
-                val left = max(event.x - offset, 0f)
-                val right = min(event.x + offset, width.toFloat() - 1)
-                val top = min(event.y - offset, height.toFloat() - 1)
-                val bottom = max(event.y + offset, 0f)
-                eraser.set(left, top, right, bottom)
-            }
+            configureEraser(event)
         } else {
-            // Keep constant pressure if in highlight mode (1 = normal pressure)
-            val pressure = if (highlightMode) 1f else event.pressure
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    val stroke = Stroke(event.x, event.y, pressure, currentColor, currentThickness, rotated, highlightMode)
-                    strokeList.add(stroke)
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    if (strokeList.isNotEmpty())
-                        strokeList[strokeList.lastIndex].continueDrawing(event.x, event.y, pressure)
-                }
-                MotionEvent.ACTION_UP -> {
-                    if (strokeList.isNotEmpty())
-                        strokeList[strokeList.lastIndex].finishStroke()
-                }
-            }
+            handleInkingEvent(event)
         }
         invalidate()
 
         return true
     }
 
+    // initialize new eraser coordinates and bounds
+    private fun configureEraser(event: MotionEvent) {
+        if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
+            isErasing = true
+
+            val offset = 50f
+            val left = max(event.x - offset, 0f)
+            val right = min(event.x + offset, width.toFloat() - 1)
+            val top = min(event.y - offset, height.toFloat() - 1)
+            val bottom = max(event.y + offset, 0f)
+            eraser.set(left, top, right, bottom)
+        }
+    }
+
+    // add new coordinate to current list of strokes
+    private fun handleInkingEvent(event: MotionEvent) {
+        // Keep constant pressure if in highlight mode (1 = normal pressure)
+        val pressure = if (highlightMode) 1f else event.pressure
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                val stroke = Stroke(event.x, event.y, pressure, currentColor, currentThickness, rotated, highlightMode)
+                strokeList.add(stroke)
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (strokeList.isNotEmpty())
+                    strokeList[strokeList.lastIndex].continueDrawing(event.x, event.y, pressure)
+            }
+            MotionEvent.ACTION_UP -> {
+                if (strokeList.isNotEmpty())
+                    strokeList[strokeList.lastIndex].finishStroke()
+            }
+        }
+    }
+
+    // create a paint object to associate with a path when drawing
     private fun configurePaint(paint: Paint, highlight: Boolean = false): Paint {
         val configuredPaint = Paint()
 
@@ -165,21 +177,30 @@ class PenDrawView : View {
         return configuredPaint
     }
 
+    // enable/disable highlighting
     fun toggleHighlightMode(force: Boolean? = null): Boolean {
         highlightMode = force ?: !highlightMode
         changePaintColor(currentColor)
         return highlightMode
     }
 
+    // enable/disable forced erasing (non-stylus erasing)
     fun toggleEraserMode(force: Boolean? = null): Boolean {
         eraserMode = force ?: !eraserMode
         return eraserMode
     }
 
+    // initialize canvas with a list of drawings
     fun setStrokeList(s: List<Stroke>) {
         strokeList = s.toMutableList()
     }
 
+    // adjust rotation of canvas
+    fun setRotation(rotation: Boolean) {
+        rotated = rotation
+    }
+
+    // get list of serialized drawings from canvas
     fun getDrawingList(): List<SerializedStroke> {
         val list: MutableList<SerializedStroke> = mutableListOf()
         for (stroke in strokeList) {
@@ -188,8 +209,8 @@ class PenDrawView : View {
         return list.toList()
     }
 
+    // change color of virtual paintbrush
     fun changePaintColor(color: Int) {
-        // TODO: adjust highlight for dark theme
         // alpha values range from 0 (transparent) to 255 (opaque)
         currentColor = if (highlightMode)
             ColorUtils.setAlphaComponent(color, 100)
@@ -197,15 +218,18 @@ class PenDrawView : View {
             ColorUtils.setAlphaComponent(color, 255)
     }
 
+    // change thickness of virtual paintbrush
     fun changeThickness(thickness: Int) {
         currentThickness = thickness
     }
 
+    // completely clear canvas
     fun clearDrawing() {
         strokeList.clear()
         invalidate()
     }
 
+    // undo last drawing made
     fun undo() {
         if (strokeList.isNotEmpty()) {
             strokeList.removeAt(strokeList.lastIndex)
@@ -213,10 +237,12 @@ class PenDrawView : View {
         }
     }
 
+    // disable canvas
     fun disable() {
         disabled = true
     }
 
+    // enable canvas
     fun enable() {
         disabled = false
     }
