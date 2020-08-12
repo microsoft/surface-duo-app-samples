@@ -41,61 +41,76 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
 
         when ((application as TwoNote).surfaceDuoScreenManager.screenMode) {
             ScreenMode.SINGLE_SCREEN -> {
-                // Remove fragment from second container if it exists
-                removeFragment(R.id.second_container_id)
-
-                if (noteSelected) {
-                    startNoteDetailFragment(R.id.first_container_id, note!!, inode!!)
-                } else {
-                    startNoteListFragment(R.id.first_container_id)
-                }
+                selectSingleScreenFragment(noteSelected, note, inode)
             }
             ScreenMode.DUAL_SCREEN -> {
-                if (isRotated(applicationContext)) {
-                    // Remove fragment from second container if it exists
-                    removeFragment(R.id.second_container_id)
-
-                    if (noteSelected) {
-                        startNoteDetailFragment(R.id.first_container_id, note!!, inode!!)
-                    } else {
-                        startNoteListFragment(R.id.first_container_id)
-                    }
-                } else {
-                    if (noteSelected) {
-                        startNoteDetailFragment(R.id.second_container_id, note!!, inode!!)
-                    } else {
-                        startGetStartedFragment()
-                    }
-                    startNoteListFragment(R.id.first_container_id)
-                }
+                selectDualScreenFragments(noteSelected, note, inode)
             }
         }
     }
 
+    // app is in single screen mode, select which fragment needs to be inflated
+    private fun selectSingleScreenFragment(noteSelected: Boolean, note: Note?, inode: INode?) {
+        // Remove fragment from second container if it exists
+        removeFragment(R.id.second_container_id)
+
+        if (noteSelected) {
+            startNoteDetailFragment(R.id.first_container_id, note!!, inode!!)
+        } else {
+            startNoteListFragment(R.id.first_container_id)
+        }
+    }
+
+    // app is in dual screen mode, select two fragments to be inflated
+    private fun selectDualScreenFragments(noteSelected: Boolean, note: Note?, inode: INode?) {
+        if (isRotated(applicationContext)) {
+            // Remove fragment from second container if it exists
+            removeFragment(R.id.second_container_id)
+
+            if (noteSelected) {
+                startNoteDetailFragment(R.id.first_container_id, note!!, inode!!)
+            } else {
+                startNoteListFragment(R.id.first_container_id)
+            }
+        } else {
+            if (noteSelected) {
+                startNoteDetailFragment(R.id.second_container_id, note!!, inode!!)
+            } else {
+                startGetStartedFragment()
+            }
+            startNoteListFragment(R.id.first_container_id)
+        }
+    }
+
+    // remove specified fragment from the view
     private fun removeFragment(containerId: Int) {
         supportFragmentManager.findFragmentById(containerId)?.let {
             supportFragmentManager.beginTransaction().remove(it).commit()
         }
     }
 
+    // inflate a list fragment and add it to the view
     private fun startNoteListFragment(container: Int) {
         supportFragmentManager.beginTransaction()
             .replace(container, NoteListFragment(), LIST_FRAGMENT)
             .commit()
     }
 
+    // inflate a detail fragment and add it to the view
     private fun startNoteDetailFragment(container: Int, note: Note, inode: INode) {
         supportFragmentManager.beginTransaction()
             .replace(container, NoteDetailFragment.newInstance(inode, note), DETAIL_FRAGMENT)
             .commit()
     }
 
+    // add a placeholder fragment and add it to the view
     private fun startGetStartedFragment() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.second_container_id, GetStartedFragment(), null)
             .commit()
     }
 
+    // preserve note data on rotation
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
@@ -117,6 +132,7 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
         }
     }
 
+    // save note data to location outside of its lifecycle
     private fun saveCurrentNote(outState: Bundle, frag: NoteDetailFragment) {
         outState.putSerializable(NOTE, frag.arguments?.getSerializable(NOTE))
         outState.putSerializable(INODE, frag.arguments?.getSerializable(INODE))
@@ -124,7 +140,6 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
 
     /**
      * Communicate from NoteFragment to NoteListFragment that a note/inode has been edited
-     *
      */
     override fun onINodeUpdate() {
         // Write change to file system

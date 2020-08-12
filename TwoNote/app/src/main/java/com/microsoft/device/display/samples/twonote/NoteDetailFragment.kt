@@ -131,11 +131,11 @@ class NoteDetailFragment : Fragment() {
             val n = it.getSerializable(NOTE)
             val i = it.getSerializable(INODE)
 
-            if (n is Note) note = n
-            else note = null
+            note = if (n is Note) n
+            else null
 
-            if (i is INode) inode = i
-            else inode = null
+            inode = if (i is INode) i
+            else null
         }
 
         noteTitle.setText(note?.title)
@@ -411,7 +411,7 @@ class NoteDetailFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        note?.let {n ->
+        note?.let { n ->
             val imageList = n.images
             dragHandler.setImageList(imageList, MainActivity.isRotated(requireContext()))
         }
@@ -440,7 +440,7 @@ class NoteDetailFragment : Fragment() {
 
     // save the current note's data to memory
     fun save() {
-        note?.let{ n ->
+        note?.let { n ->
             if (!deleted) {
                 FileSystem.save(requireContext(), DataProvider.getActiveSubDirectory(), n)
             }

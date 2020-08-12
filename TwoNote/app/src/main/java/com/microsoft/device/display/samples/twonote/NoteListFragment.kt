@@ -122,7 +122,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
         view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
             // Set selected item to newly created note (first element in list)
-            FileSystem.addInode()
+            FileSystem.addInode(requireContext())
             updateNotesList()
             startNoteFragment(0)
         }
@@ -211,7 +211,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
             var note = FileSystem.loadNote(requireContext(), DataProvider.getActiveSubDirectory(), inode.descriptor + inode.id)
             if (note == null)
-                note = Note(inode.id)
+                note = Note(inode.id, resources.getString(R.string.default_note_name))
 
             if (ScreenHelper.isDualMode(requireActivity()) && !MainActivity.isRotated(requireActivity())) {
                 // If spanned and not rotated (list view), open NoteDetailFragment in second container
