@@ -3,7 +3,6 @@
   ~ Licensed under the MIT License.
   ~
   -->
-
 <resources>
     <string name="app_name">TwoNote</string>
     <string name="exception_message">must implement OnFragmentInteractionListener</string>
