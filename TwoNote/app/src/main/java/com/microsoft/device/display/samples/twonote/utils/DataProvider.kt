@@ -4,9 +4,9 @@
  *
  */
 
-package com.microsoft.device.display.samples.twonote.includes
+package com.microsoft.device.display.samples.twonote.utils
 
-import com.microsoft.device.display.samples.twonote.structures.INode
+import com.microsoft.device.display.samples.twonote.models.INode
 import kotlin.math.max
 
 object DataProvider {

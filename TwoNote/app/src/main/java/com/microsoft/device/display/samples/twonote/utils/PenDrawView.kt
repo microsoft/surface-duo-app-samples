@@ -5,7 +5,7 @@
  *
  */
 
-package com.microsoft.device.display.samples.twonote
+package com.microsoft.device.display.samples.twonote.utils
 
 import Defines.LAND_TO_PORT
 import Defines.PORT_TO_LAND
@@ -20,8 +20,8 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.graphics.ColorUtils
-import com.microsoft.device.display.samples.twonote.structures.SerializedStroke
-import com.microsoft.device.display.samples.twonote.structures.Stroke
+import com.microsoft.device.display.samples.twonote.models.SerializedStroke
+import com.microsoft.device.display.samples.twonote.models.Stroke
 import java.lang.Math.max
 import kotlin.math.min
 

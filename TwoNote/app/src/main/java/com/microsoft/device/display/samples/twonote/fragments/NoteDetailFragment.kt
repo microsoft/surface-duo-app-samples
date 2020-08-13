@@ -5,7 +5,7 @@
  *
  */
 
-package com.microsoft.device.display.samples.twonote
+package com.microsoft.device.display.samples.twonote.fragments
 
 import Defines.INODE
 import Defines.LIST_FRAGMENT
@@ -37,12 +37,15 @@ import androidx.core.view.iterator
 import androidx.fragment.app.Fragment
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.textfield.TextInputEditText
-import com.microsoft.device.display.samples.twonote.includes.DataProvider
-import com.microsoft.device.display.samples.twonote.includes.DragHandler
-import com.microsoft.device.display.samples.twonote.includes.FileSystem
-import com.microsoft.device.display.samples.twonote.structures.INode
-import com.microsoft.device.display.samples.twonote.structures.Note
-import com.microsoft.device.display.samples.twonote.structures.Stroke
+import com.microsoft.device.display.samples.twonote.MainActivity
+import com.microsoft.device.display.samples.twonote.R
+import com.microsoft.device.display.samples.twonote.models.INode
+import com.microsoft.device.display.samples.twonote.models.Note
+import com.microsoft.device.display.samples.twonote.models.Stroke
+import com.microsoft.device.display.samples.twonote.utils.DataProvider
+import com.microsoft.device.display.samples.twonote.utils.DragHandler
+import com.microsoft.device.display.samples.twonote.utils.FileSystem
+import com.microsoft.device.display.samples.twonote.utils.PenDrawView
 import com.microsoft.device.dualscreen.core.ScreenHelper
 import java.io.File
 import java.io.FileOutputStream

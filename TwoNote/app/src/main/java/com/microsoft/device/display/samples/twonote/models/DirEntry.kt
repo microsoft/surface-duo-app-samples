@@ -4,7 +4,7 @@
  *
  */
 
-package com.microsoft.device.display.samples.twonote.structures
+package com.microsoft.device.display.samples.twonote.models
 
 import java.io.Serializable
 

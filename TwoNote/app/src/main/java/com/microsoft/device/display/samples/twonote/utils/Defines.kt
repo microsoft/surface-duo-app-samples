@@ -1,11 +1,11 @@
-import android.graphics.Matrix
-
 /*
  *
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License.
  *
  */
+
+import android.graphics.Matrix
 
 object Defines {
     // File Handler references //
@@ -20,8 +20,8 @@ object Defines {
 
     // Rotation scaling constants //
     // Each screen is 1800 by 1350 px:
-    // --> PORT_TO_LAND = 1800 / 1350 = 4/3
-    // --> LAND_TO_PORT = 1350 / 1800 = 3/4
+    //     --> PORT_TO_LAND = 1800 / 1350 = 4/3
+    //     --> LAND_TO_PORT = 1350 / 1800 = 3/4
     const val SCALE_RATIO = 4f / 3
     val LAND_TO_PORT = Matrix().apply {
         postScale(1 / SCALE_RATIO, 1 / SCALE_RATIO)
