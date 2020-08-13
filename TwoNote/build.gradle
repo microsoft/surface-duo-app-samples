@@ -1,11 +1,11 @@
 /*
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License.
+ *
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License.
  *
  */
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
     apply from: 'dependencies.gradle'
 
