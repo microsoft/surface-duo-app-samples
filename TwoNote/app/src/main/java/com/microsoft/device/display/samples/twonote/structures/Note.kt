@@ -8,7 +8,7 @@ package com.microsoft.device.display.samples.twonote.structures
 
 import java.io.Serializable
 
-class Note(var id: Int, localizedTitle: String = "Note") : Serializable {
+class Note(var id: Int, localizedTitle: String) : Serializable {
     var title: String = "$localizedTitle $id"
     var text: String = ""
     var drawings: List<SerializedStroke> = listOf()

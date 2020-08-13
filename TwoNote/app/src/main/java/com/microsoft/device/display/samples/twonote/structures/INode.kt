@@ -12,10 +12,10 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 class INode(
-    var title: String = "Note 0",
+    var title: String,
     var dateModified: LocalDateTime = LocalDateTime.now(),
     val descriptor: String = "/n",
-    var id: Int = 0
+    var id: Int = 1
 ) : Serializable {
 
     fun dateModifiedString(): String {

@@ -27,7 +27,7 @@ object FileSystem {
     // create a new inode and add it to the DataProvider
     fun addInode(context: Context) {
         val prefix = context.resources.getString(R.string.default_note_name)
-        val inode = INode()
+        val inode = INode("$prefix 1")
         if (DataProvider.getINodes().isNotEmpty()) {
             inode.id = DataProvider.getNextInodeId()
             inode.title = "$prefix ${inode.id}"
@@ -55,7 +55,7 @@ object FileSystem {
     // create a new category and add it to the DataProvider
     private fun addCategory(context: Context) {
         val prefix = context.resources.getString(R.string.default_category_name)
-        val inode = INode(title = "$prefix 0", descriptor = "/c")
+        val inode = INode(title = "$prefix 1", descriptor = "/c")
         if (DataProvider.getCategories().isNotEmpty()) {
             inode.id = DataProvider.getNextCategoryId()
             inode.title = "$prefix ${inode.id}"
