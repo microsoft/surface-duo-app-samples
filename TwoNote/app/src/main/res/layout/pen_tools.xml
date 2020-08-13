@@ -13,82 +13,48 @@
 
     <ImageButton
         android:id="@+id/undo"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/button_height"
-        android:layout_weight="1"
+        style="@style/penToolsButtonStyle"
         android:contentDescription="@string/action_undo"
-        android:minWidth="@dimen/button_width"
-        android:src="@drawable/ic_fluent_arrow_undo_20_filled"
-        android:tint="?attr/colorOnBackground" />
+        android:src="@drawable/ic_fluent_arrow_undo_20_filled" />
 
-    <View
-        android:layout_width="@dimen/spacing"
-        android:layout_height="match_parent" />
+    <View style="@style/spacerStyle" />
 
     <ImageButton
         android:id="@+id/color"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/button_height"
-        android:layout_weight="1"
+        style="@style/penToolsButtonStyle"
         android:contentDescription="@string/action_color"
-        android:minWidth="@dimen/button_width"
-        android:src="@drawable/ic_fluent_color_20_filled"
-        android:tint="?attr/colorOnBackground" />
+        android:src="@drawable/ic_fluent_color_20_filled" />
 
-    <View
-        android:layout_width="@dimen/spacing"
-        android:layout_height="match_parent" />
+    <View style="@style/spacerStyle" />
 
     <ImageButton
         android:id="@+id/thickness"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/button_height"
-        android:layout_weight="1"
+        style="@style/penToolsButtonStyle"
         android:contentDescription="@string/action_thickness"
-        android:minWidth="@dimen/button_width"
-        android:src="@drawable/ic_line_weight"
-        android:tint="?attr/colorOnBackground" />
+        android:src="@drawable/ic_line_weight" />
 
-    <View
-        android:layout_width="@dimen/spacing"
-        android:layout_height="match_parent" />
+    <View style="@style/spacerStyle" />
 
     <ImageButton
         android:id="@+id/highlight"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/button_height"
-        android:layout_weight="1"
+        style="@style/penToolsButtonStyle"
         android:contentDescription="@string/action_highlight_on"
-        android:minWidth="@dimen/button_width"
-        android:src="@drawable/ic_fluent_highlight_20_filled"
-        android:tint="?attr/colorOnBackground" />
+        android:src="@drawable/ic_fluent_highlight_20_filled" />
 
-    <View
-        android:layout_width="@dimen/spacing"
-        android:layout_height="match_parent" />
+    <View style="@style/spacerStyle" />
 
     <ImageButton
         android:id="@+id/erase"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/button_height"
-        android:layout_weight="1"
+        style="@style/penToolsButtonStyle"
         android:contentDescription="@string/action_erase_on"
-        android:minWidth="@dimen/button_width"
-        android:src="@drawable/ic_fluent_erase_20_filled"
-        android:tint="?attr/colorOnBackground" />
+        android:src="@drawable/ic_fluent_erase_20_filled" />
 
-    <View
-        android:layout_width="@dimen/spacing"
-        android:layout_height="match_parent" />
+    <View style="@style/spacerStyle" />
 
     <ImageButton
         android:id="@+id/clear"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/button_height"
-        android:layout_weight="1"
+        style="@style/penToolsButtonStyle"
         android:contentDescription="@string/action_clear"
-        android:minWidth="@dimen/button_width"
-        android:src="@drawable/ic_clear"
-        android:tint="?attr/colorOnBackground" />
+        android:src="@drawable/ic_clear" />
 
 </LinearLayout>
