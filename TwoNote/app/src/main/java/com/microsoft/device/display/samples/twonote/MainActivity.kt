@@ -14,11 +14,14 @@ import android.content.Context
 import android.os.Bundle
 import android.view.Surface
 import androidx.appcompat.app.AppCompatActivity
-import com.microsoft.device.display.samples.twonote.includes.DataProvider
-import com.microsoft.device.display.samples.twonote.includes.FileSystem
-import com.microsoft.device.display.samples.twonote.structures.DirEntry
-import com.microsoft.device.display.samples.twonote.structures.INode
-import com.microsoft.device.display.samples.twonote.structures.Note
+import com.microsoft.device.display.samples.twonote.fragments.GetStartedFragment
+import com.microsoft.device.display.samples.twonote.fragments.NoteDetailFragment
+import com.microsoft.device.display.samples.twonote.fragments.NoteListFragment
+import com.microsoft.device.display.samples.twonote.models.DirEntry
+import com.microsoft.device.display.samples.twonote.models.INode
+import com.microsoft.device.display.samples.twonote.models.Note
+import com.microsoft.device.display.samples.twonote.utils.DataProvider
+import com.microsoft.device.display.samples.twonote.utils.FileSystem
 import com.microsoft.device.dualscreen.core.ScreenHelper
 import com.microsoft.device.dualscreen.core.ScreenMode
 
