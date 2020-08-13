@@ -52,33 +52,42 @@ import java.io.FileOutputStream
 import java.lang.ClassCastException
 import java.time.LocalDateTime
 
+/**
+ * Fragment that shows a detailed view of a note and lets the user edit, share, rename, and delete
+ * note contents
+ */
 class NoteDetailFragment : Fragment() {
     enum class PaintColors { Red, Blue, Green, Yellow, Purple }
     enum class EditingMode { Text, Image, Ink }
 
-    private lateinit var drawView: PenDrawView
-    private lateinit var dragHandler: DragHandler
-    lateinit var noteText: TextInputEditText
-    private lateinit var noteTitle: TextInputEditText
-
-    private lateinit var rootDetailLayout: ConstraintLayout
-    lateinit var imageContainer: RelativeLayout
-
-    // Editing modes
-    private var inkItem: MenuItem? = null
-    private var textItem: MenuItem? = null
-    private var imageItem: MenuItem? = null
-    private var mode: EditingMode = EditingMode.Text
-
+    // Note data attributes
     var deleted = false
-    private var deleteImageMode = false
-
     private var note: Note? = null
     private var inode: INode? = null
     private val strokeList = mutableListOf<Stroke>()
 
+    // Note view attributes
+    private lateinit var drawView: PenDrawView
+    private lateinit var dragHandler: DragHandler
+    lateinit var noteText: TextInputEditText
+    private lateinit var noteTitle: TextInputEditText
+    private lateinit var rootDetailLayout: ConstraintLayout
+    lateinit var imageContainer: RelativeLayout
+
+    // Editing mode attributes
+    private var inkItem: MenuItem? = null
+    private var textItem: MenuItem? = null
+    private var imageItem: MenuItem? = null
+    private var deleteImageMode = false
+
+    /**
+     * Listener that communicates note changes between detail and list fragments
+     */
+    interface OnFragmentInteractionListener {
+        fun onINodeUpdate()
+    }
+
     companion object {
-        lateinit var mListener: OnFragmentInteractionListener
         internal fun newInstance(inode: INode, note: Note) = NoteDetailFragment().apply {
             arguments = Bundle().apply {
                 this.putSerializable(NOTE, note)
@@ -86,6 +95,9 @@ class NoteDetailFragment : Fragment() {
             }
         }
 
+        lateinit var mListener: OnFragmentInteractionListener
+
+        // Pen stroke thickness values
         const val THICKNESS_1 = 5
         const val THICKNESS_2 = 15
         const val THICKNESS_DEFAULT = 25
@@ -94,16 +106,10 @@ class NoteDetailFragment : Fragment() {
         const val THICKNESS_6 = 100
     }
 
-    interface OnFragmentInteractionListener {
-        fun onINodeUpdate()
-    }
-
-    /**
-     * Connects this fragment to the NoteListFragment (via MainActivity) so any note edits in
-     * the UI will be passed back to the actual list of note objects
-     */
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        // Connect listener (MainActivity) to fragment so note edits in the UI are passed back
+        // to the list of note objects
         if (context is OnFragmentInteractionListener) {
             mListener = context
         } else {
@@ -113,72 +119,37 @@ class NoteDetailFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_note_detail, container, false)
+
         noteTitle = view.findViewById(R.id.title_input)
         noteText = view.findViewById(R.id.text_input)
-
         rootDetailLayout = view.findViewById(R.id.note_detail_layout)
         imageContainer = view.findViewById(R.id.image_container)
 
-        addNoteContents(view)
-        setUpTools(view)
-        setUpInkMode(view)
+        setUpToolbar(view)
+        setUpTextMode(view)
         setUpImageMode(view)
+        setUpInkMode(view)
         initializeDragListener()
 
         return view
     }
 
-    // initialize text content for note
-    private fun addNoteContents(view: View) {
-        arguments?.let {
-            val n = it.getSerializable(NOTE)
-            val i = it.getSerializable(INODE)
-
-            note = if (n is Note) n
-            else null
-
-            inode = if (i is INode) i
-            else null
-        }
-
-        noteTitle.setText(note?.title)
-        noteText.setText(note?.text)
-        view.findViewById<ScrollView>(R.id.text_mode)?.bringToFront()
-    }
-
-    // save contents of fragment to note
-    fun updateNoteContents() {
-        if (!deleted) {
-            val text = noteText.text.toString()
-            val title = noteTitle.text.toString()
-
-            if (this::drawView.isInitialized) {
-                note?.drawings = drawView.getDrawingList()
-            }
-            if (this::dragHandler.isInitialized) {
-                note?.images = dragHandler.getImageList()
-                dragHandler.clearImages()
-            }
-
-            note?.text = text
-            note?.title = title
-            inode?.title = title
-            inode?.dateModified = LocalDateTime.now()
-
-            mListener.onINodeUpdate()
-        }
-    }
-
-    // initialize toolbar buttons and content
-    private fun setUpTools(view: View) {
-        // Set up editing modes in toolbar
+    /**
+     * Initialize toolbar buttons and content
+     *
+     * @param view: the fragment's view
+     */
+    private fun setUpToolbar(view: View) {
         val toolbar = view.findViewById<MaterialToolbar>(R.id.toolbar)
-
         toolbar.inflateMenu(R.menu.menu_note_detail)
+
+        // Set up overflow menu
         toolbar.setOnMenuItemClickListener {
             onOptionsItemSelected(it)
         }
+        toolbar.overflowIcon?.setTint(requireContext().getColor(R.color.colorOnPrimary))
 
+        // Set up editing modes
         for (item in toolbar.menu) {
             when (item.title) {
                 getString(R.string.action_ink_on), getString(R.string.action_ink_off) -> inkItem = item
@@ -187,17 +158,41 @@ class NoteDetailFragment : Fragment() {
             }
         }
 
-        // Set up navigation in toolbar
+        // Set up navigation
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
         toolbar.setNavigationOnClickListener { closeFragment() }
-
-        // Set up overflow menu in toolbar
-        toolbar.overflowIcon?.setTint(requireContext().getColor(R.color.colorOnPrimary))
     }
 
-    // initialize buttons for image mode
+    /**
+     * Initialize text mode and load note contents
+     *
+     * @param view: the fragment's view
+     */
+    private fun setUpTextMode(view: View) {
+        // Retrieve note/inode from bundle arguments
+        arguments?.let {
+            val n = it.getSerializable(NOTE)
+            val i = it.getSerializable(INODE)
+
+            note = if (n is Note) n else null
+            inode = if (i is INode) i else null
+        }
+
+        // Update view elements with note contents
+        noteTitle.setText(note?.title)
+        noteText.setText(note?.text)
+
+        // Set default mode to text mode
+        view.findViewById<ScrollView>(R.id.text_mode)?.bringToFront()
+    }
+
+    /**
+     * Initialize button for image mode
+     *
+     * @param view: the fragment's view
+     */
     private fun setUpImageMode(view: View) {
-        // Set up image tools buttons
+        // Set up delete button
         val deleteImageButton = view.findViewById<ImageButton>(R.id.delete_image)
         deleteImageButton.setOnClickListener {
             toggleDeleteImageMode()
@@ -205,87 +200,29 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    // initialize buttons for ink mode
+    /**
+     * Initialize buttons for ink mode
+     *
+     * @param view: the fragment's view
+     */
     private fun setUpInkMode(view: View) {
         drawView = view.findViewById(R.id.draw_view)
 
+        // Set up pen tools buttons
         view.findViewById<ImageButton>(R.id.undo).setOnClickListener { undoStroke() }
         setUpColorButtons(view)
         setUpThicknessBar(view)
-        setUpHighlighting(view)
-        setUpErasing(view)
+        setUpErasingAndHighlighting(view)
         setUpClearButton(view)
+
         setUpDrawView()
     }
 
-    // initialize settings for ink thickness
-    private fun setUpThicknessBar(view: View) {
-        val thickness = view.findViewById<SeekBar>(R.id.thickness_slider)
-        thickness.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
-                // Progress: [0, 6] (default 3), Thicknesses: [5, 100] (default 25)
-                val newThickness =
-                    when (progress) {
-                        1 -> THICKNESS_1
-                        2 -> THICKNESS_2
-                        3 -> THICKNESS_DEFAULT
-                        4 -> THICKNESS_4
-                        5 -> THICKNESS_5
-                        6 -> THICKNESS_6
-                        else -> THICKNESS_DEFAULT
-                    }
-                drawView.changeThickness(newThickness)
-            }
-            override fun onStartTrackingTouch(seek: SeekBar) {}
-            override fun onStopTrackingTouch(seek: SeekBar) {}
-        })
-
-        val thicknessButton = view.findViewById<ImageButton>(R.id.thickness)
-        thicknessButton.setOnClickListener {
-            toggleViewVisibility(thickness)
-            toggleButtonColor(thicknessButton, thickness?.visibility == View.VISIBLE)
-        }
-    }
-
-    // initialize settings for ink highlighting
-    private fun setUpHighlighting(view: View) {
-        val eraseButton = view.findViewById<ImageButton>(R.id.erase)
-        val highlightButton = view.findViewById<ImageButton>(R.id.highlight)
-
-        highlightButton.setOnClickListener {
-            val activate = drawView.toggleHighlightMode()
-            toggleButtonColor(highlightButton, activate)
-
-            // Turn off eraser mode if activating highlighting mode
-            if (activate) {
-                toggleButtonColor(eraseButton, drawView.toggleEraserMode(false))
-                it.contentDescription = resources.getString(R.string.action_highlight_off)
-            } else {
-                it.contentDescription = resources.getString(R.string.action_highlight_on)
-            }
-        }
-    }
-
-    // initialize settings for ink erasing
-    private fun setUpErasing(view: View) {
-        val eraseButton = view.findViewById<ImageButton>(R.id.erase)
-        val highlightButton = view.findViewById<ImageButton>(R.id.highlight)
-
-        eraseButton.setOnClickListener {
-            val activate = drawView.toggleEraserMode()
-            toggleButtonColor(eraseButton, activate)
-
-            // Turn off highlight button if activating eraser mode
-            if (activate) {
-                toggleButtonColor(highlightButton, drawView.toggleHighlightMode(false))
-                it.contentDescription = resources.getString(R.string.action_erase_off)
-            } else {
-                it.contentDescription = resources.getString(R.string.action_erase_on)
-            }
-        }
-    }
-
-    // initialize settings for ink color selection
+    /**
+     * Initialize settings for ink color selection
+     *
+     * @param view: the fragment's view
+     */
     private fun setUpColorButtons(view: View) {
         val colorButton = view.findViewById<ImageButton>(R.id.color)
         val colorButtonsLayout = view.findViewById<LinearLayout>(R.id.color_buttons)
@@ -294,13 +231,14 @@ class NoteDetailFragment : Fragment() {
             toggleButtonColor(colorButton, colorButtonsLayout?.visibility == View.VISIBLE)
         }
 
-        // Set up color buttons
+        // Set up color choice buttons
         view.findViewById<Button>(R.id.button_red).setOnClickListener { chooseColor(PaintColors.Red.name) }
         view.findViewById<Button>(R.id.button_blue).setOnClickListener { chooseColor(PaintColors.Blue.name) }
         view.findViewById<Button>(R.id.button_green).setOnClickListener { chooseColor(PaintColors.Green.name) }
         view.findViewById<Button>(R.id.button_yellow).setOnClickListener { chooseColor(PaintColors.Yellow.name) }
         view.findViewById<Button>(R.id.button_purple).setOnClickListener { chooseColor(PaintColors.Purple.name) }
 
+        // Set up custom color button and dialog
         val chooseButton = view.findViewById<ImageButton>(R.id.button_choose)
         chooseButton.setOnClickListener {
             val textInput = TextInputEditText(requireContext())
@@ -325,7 +263,121 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    // initialize settings for clearing drawings
+    /**
+     * Update inking color for canvas
+     *
+     * @param color: name of color to change to
+     * @param colorInt: if non-null, int value of color to change to (defaults to null)
+     */
+    private fun chooseColor(color: String, colorInt: Int? = null) {
+        // Reset the background color of the custom color button
+        view?.findViewById<ImageButton>(R.id.button_choose)?.clearColorFilter()
+
+        when (color) {
+            PaintColors.Red.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.red))
+            PaintColors.Blue.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.blue))
+            PaintColors.Green.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.green))
+            PaintColors.Yellow.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.yellow))
+            PaintColors.Purple.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.purple))
+            else -> if (colorInt != null) drawView.changePaintColor(colorInt)
+        }
+    }
+
+    /**
+     * Converts user-inputted color to Color object using parseColor method
+     *
+     * Accepted hexadecimal color formats: #RRGGBB or #AARRGGBB
+     *
+     * Accepted color names: red, blue, green, black, white, gray, cyan, magenta, yellow,
+     * lightgray, darkgray, grey, lightgrey, darkgrey, aqua, fuchsia, lime, maroon,
+     * navy, olive, purple, silver, and teal.
+     *
+     * @param string: string to try to parse into a color
+     * @return int value of color or -1 if parse was unsuccessful
+     */
+    private fun stringToColor(string: String): Int {
+        return try {
+            Color.parseColor(string.trim())
+        } catch (e: Exception) {
+            -1
+        }
+    }
+
+    /**
+     * Initialize settings for ink thickness
+     *
+     * @param view: the fragment's view
+     */
+    private fun setUpThicknessBar(view: View) {
+        val thickness = view.findViewById<SeekBar>(R.id.thickness_slider)
+        thickness.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
+                // Progress: [0, 6] (default 3), Thicknesses: [5, 100] (default 25)
+                val newThickness =
+                    when (progress) {
+                        1 -> THICKNESS_1
+                        2 -> THICKNESS_2
+                        3 -> THICKNESS_DEFAULT
+                        4 -> THICKNESS_4
+                        5 -> THICKNESS_5
+                        6 -> THICKNESS_6
+                        else -> THICKNESS_DEFAULT
+                    }
+                drawView.changeThickness(newThickness)
+            }
+
+            override fun onStartTrackingTouch(seek: SeekBar) {}
+            override fun onStopTrackingTouch(seek: SeekBar) {}
+        })
+
+        val thicknessButton = view.findViewById<ImageButton>(R.id.thickness)
+        thicknessButton.setOnClickListener {
+            toggleViewVisibility(thickness)
+            toggleButtonColor(thicknessButton, thickness?.visibility == View.VISIBLE)
+        }
+    }
+
+    /**
+     * Initialize settings for ink highlighting and erasing
+     *
+     * @param view: the fragment's view
+     */
+    private fun setUpErasingAndHighlighting(view: View) {
+        val eraseButton = view.findViewById<ImageButton>(R.id.erase)
+        val highlightButton = view.findViewById<ImageButton>(R.id.highlight)
+
+        highlightButton.setOnClickListener {
+            val activate = drawView.toggleHighlightMode()
+            toggleButtonColor(highlightButton, activate)
+
+            // Update button description and turn off eraser mode if activating highlighting mode
+            if (activate) {
+                toggleButtonColor(eraseButton, drawView.toggleEraserMode(false))
+                it.contentDescription = resources.getString(R.string.action_highlight_off)
+            } else {
+                it.contentDescription = resources.getString(R.string.action_highlight_on)
+            }
+        }
+
+        eraseButton.setOnClickListener {
+            val activate = drawView.toggleEraserMode()
+            toggleButtonColor(eraseButton, activate)
+
+            // Update button description and turn off highlight button if activating eraser mode
+            if (activate) {
+                toggleButtonColor(highlightButton, drawView.toggleHighlightMode(false))
+                it.contentDescription = resources.getString(R.string.action_erase_off)
+            } else {
+                it.contentDescription = resources.getString(R.string.action_erase_on)
+            }
+        }
+    }
+
+    /**
+     * Initialize settings for clearing drawings
+     *
+     * @param view: the fragment's view
+     */
     private fun setUpClearButton(view: View) {
         view.findViewById<ImageButton>(R.id.clear).setOnClickListener {
             // Create confirmation dialog before user clears all ink
@@ -342,7 +394,9 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    // initialize custom view for drawing
+    /**
+     * Initialize the drawing canvas with any existing note drawings and the device's current rotation
+     */
     private fun setUpDrawView() {
         strokeList.clear()
         note?.let { n ->
@@ -350,31 +404,33 @@ class NoteDetailFragment : Fragment() {
                 strokeList.add(Stroke(s.xList, s.yList, s.pressureList, s.paintColor, s.thicknessMultiplier, s.rotated, s.highlightStroke))
             }
         }
-
         drawView.setStrokeList(strokeList)
         drawView.setRotation(MainActivity.isRotated(requireActivity()))
-        drawView.disable()
     }
 
     /**
-     * Converts user-inputted color to Color object using parseColor method
-     *
-     * Accepted hexadecimal color formats: #RRGGBB or #AARRGGBB
-     *
-     * Accepted color names: red, blue, green, black, white, gray, cyan, magenta, yellow,
-     * lightgray, darkgray, grey, lightgrey, darkgrey, aqua, fuchsia, lime, maroon,
-     * navy, olive, purple, silver, and teal.
-     *
+     * Add drag and drop handling to note view
      */
-    private fun stringToColor(string: String): Int {
-        return try {
-            Color.parseColor(string.trim())
-        } catch (e: Exception) {
-            -1
+    private fun initializeDragListener() {
+        dragHandler = DragHandler(this)
+
+        // Main target will trigger when textField has content
+        noteText.setOnDragListener { _, event ->
+            dragHandler.onDrag(event)
+        }
+
+        // Sub-target will trigger when textField is empty
+        rootDetailLayout.setOnDragListener { _, event ->
+            dragHandler.onDrag(event)
         }
     }
 
-    // show/hide a given view
+    /**
+     * Change view visibility from visible to invisible or vice versa
+     *
+     * @param view: View to change visibility of
+     * @param hide: if true, makes the view invisible regardless of current visibility (defaults to false)
+     */
     private fun toggleViewVisibility(view: View?, hide: Boolean = false) {
         if (view?.visibility == View.VISIBLE || hide) {
             view?.visibility = View.INVISIBLE
@@ -383,8 +439,18 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    // show/hide that a given button is selected
-    private fun toggleButtonColor(button: ImageButton?, activated: Boolean, color: Int = resources.getColor(R.color.colorPrimary, requireActivity().theme)) {
+    /**
+     * Change ImageButton background color to indicate whether it's active or not
+     *
+     * @param button: ImageButton to change background color of
+     * @param activated: if true, set background color, if false, clear background color
+     * @param color: int value of background color (defaults to theme's primary color)
+     */
+    private fun toggleButtonColor(
+        button: ImageButton?,
+        activated: Boolean,
+        color: Int = resources.getColor(R.color.colorPrimary, requireActivity().theme)
+    ) {
         if (activated) {
             button?.background?.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC)
         } else {
@@ -392,10 +458,15 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    // enable/disable image deletion on click
+    /**
+     * Change ability to delete images on touch
+     *
+     * @param force: if non-null, true -> deletion is enabled, false -> deletion is disabled (defaults to null)
+     */
     private fun toggleDeleteImageMode(force: Boolean? = null) {
         deleteImageMode = force ?: !deleteImageMode
 
+        // Visually indicate that deletion is active by changing image appearances
         val alpha = if (deleteImageMode) 0.5f else 1f
         val color = if (deleteImageMode) Color.GRAY else Color.TRANSPARENT
 
@@ -404,16 +475,20 @@ class NoteDetailFragment : Fragment() {
             image.setBackgroundColor(color)
         }
 
+        // Tell drag handler that deletion is active so it won't move the image on touch
         dragHandler.setDeleteMode(deleteImageMode)
     }
 
-    // undo last drawing made on the canvas
+    /**
+     * Undo last stroke made on the canvas
+     */
     private fun undoStroke() {
         drawView.undo()
     }
 
     override fun onResume() {
         super.onResume()
+        // Update image list in drag handler
         note?.let { n ->
             val imageList = n.images
             dragHandler.setImageList(imageList, MainActivity.isRotated(requireContext()))
@@ -426,22 +501,35 @@ class NoteDetailFragment : Fragment() {
         save()
     }
 
-    // set inking color when a new color is selected
-    private fun chooseColor(color: String, colorInt: Int? = null) {
-        // Reset the background color of the custom color button
-        view?.findViewById<ImageButton>(R.id.button_choose)?.clearColorFilter()
+    /**
+     * Save note changes in the view to note object
+     */
+    fun updateNoteContents() {
+        if (!deleted) {
+            val text = noteText.text.toString()
+            val title = noteTitle.text.toString()
 
-        when (color) {
-            PaintColors.Red.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.red))
-            PaintColors.Blue.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.blue))
-            PaintColors.Green.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.green))
-            PaintColors.Yellow.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.yellow))
-            PaintColors.Purple.name -> drawView.changePaintColor(ContextCompat.getColor(requireActivity().applicationContext, R.color.purple))
-            else -> if (colorInt != null) drawView.changePaintColor(colorInt)
+            if (this::drawView.isInitialized) {
+                note?.drawings = drawView.getDrawingList()
+            }
+            if (this::dragHandler.isInitialized) {
+                note?.images = dragHandler.getImageList()
+                dragHandler.clearImages()
+            }
+
+            note?.text = text
+            note?.title = title
+            inode?.title = title
+            inode?.dateModified = LocalDateTime.now()
+
+            // Tell listener that note contents have been updated
+            mListener.onINodeUpdate()
         }
     }
 
-    // save the current note's data to memory
+    /**
+     * Save note data to file system
+     */
     fun save() {
         note?.let { n ->
             if (!deleted) {
@@ -450,7 +538,12 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    // Item in overflow menu selected
+    /**
+     * Set up overflow menu item actions
+     *
+     * @param item: selected item from overflow menu
+     * @return true if handled successfully, false otherwise
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_share -> {
@@ -483,7 +576,9 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    // take a snapshot of current note and send it to a user selected app
+    /**
+     * Take a screenshot of the current note and allow user to share it through an Intent
+     */
     private fun shareNoteContents() {
         view?.let {
             // Create path for note image file
@@ -510,7 +605,12 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    // request user chooses an app to send bitmap to
+    /**
+     * Start a share intent for an image
+     *
+     * @param bitmap: bitmap/image to be shared
+     * @param path: location of bitmap
+     */
     private fun openShareIntent(bitmap: Bitmap, path: String) {
         // Write bitmap to file (with parameter 100 for max quality)
         val outputStream = FileOutputStream(path)
@@ -526,9 +626,12 @@ class NoteDetailFragment : Fragment() {
         startActivity(Intent.createChooser(intent, resources.getString(R.string.share_intent)))
     }
 
-    // switch between note modes (text, image, ink)
+    /**
+     * Change current note editing mode
+     *
+     * @param mode: editing mode to change to
+     */
     fun changeEditingMode(mode: EditingMode) {
-        this.mode = mode
         when (mode) {
             EditingMode.Text -> {
                 activateText(true)
@@ -548,7 +651,11 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    // enable/disable text mode
+    /**
+     * Enable or disable text mode
+     *
+     * @param enable: if true, enable, if false, disable
+     */
     private fun activateText(enable: Boolean) {
         if (enable) {
             textItem?.setIcon(R.drawable.ic_fluent_text_field_24_filled)
@@ -560,39 +667,54 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-    // enable/disable image mode
+    /**
+     * Enable or disable image mode
+     *
+     * @param enable: if true, enable, if false, disable
+     */
     private fun activateImage(enable: Boolean) {
         val imageTools = view?.findViewById<LinearLayout>(R.id.image_tools)
         if (enable) {
             imageItem?.setIcon(R.drawable.ic_fluent_image_24_filled)
             imageItem?.title = getString(R.string.action_image_off)
             imageContainer.bringToFront()
+
+            // Show image tools over canvas
             imageTools?.visibility = View.VISIBLE
-            imageTools?.bringToFront() // So images can't cover up buttons
+            imageTools?.bringToFront()
         } else {
             imageItem?.setIcon(R.drawable.ic_fluent_image_24_regular)
             imageItem?.title = getString(R.string.action_image_on)
+
+            // Close image tools and reset button states
             imageTools?.visibility = View.INVISIBLE
             toggleButtonColor(view?.findViewById(R.id.delete_image), false)
             toggleDeleteImageMode(false)
         }
     }
 
-    // enable/disable ink mode
+    /**
+     * Enable or disable ink mode
+     *
+     * @param enable: if true, enable, if false, disable
+     */
     private fun activateInk(enable: Boolean) {
         val penTools = view?.findViewById<LinearLayout>(R.id.pen_tools)
         if (enable) {
             inkItem?.setIcon(R.drawable.ic_fluent_inking_tool_24_filled)
             inkItem?.title = getString(R.string.action_ink_off)
-            drawView.enable()
             view?.findViewById<ConstraintLayout>(R.id.ink_mode)?.bringToFront()
+
+            // Enable drawing and show pen tools over canvas
+            drawView.enable()
             penTools?.visibility = View.VISIBLE
-            penTools?.bringToFront() // So drawings can't cover up buttons
+            penTools?.bringToFront()
         } else {
             inkItem?.setIcon(R.drawable.ic_fluent_inking_tool_24_regular)
             inkItem?.title = getString(R.string.action_ink_on)
+
+            // Disable drawing, close pen tools, and reset button states
             drawView.disable()
-            // Close pen tools and reset button states
             penTools?.visibility = View.INVISIBLE
             toggleViewVisibility(view?.findViewById<SeekBar>(R.id.thickness_slider), true)
             toggleViewVisibility(view?.findViewById<LinearLayout>(R.id.color_buttons), true)
@@ -630,21 +752,6 @@ class NoteDetailFragment : Fragment() {
                         LIST_FRAGMENT
                     ).commit()
             }
-        }
-    }
-
-    // create drop targets for the editor screen
-    private fun initializeDragListener() {
-        dragHandler = DragHandler(this)
-
-        // Main target will trigger when textField has content
-        noteText.setOnDragListener { _, event ->
-            dragHandler.onDrag(event)
-        }
-
-        // Sub target will trigger when textField is empty
-        rootDetailLayout.setOnDragListener { _, event ->
-            dragHandler.onDrag(event)
         }
     }
 }
