@@ -28,6 +28,12 @@ import com.microsoft.device.dualscreen.core.ScreenMode
 
 class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteractionListener {
     companion object {
+        /**
+         * Returns whether device is rotated (to the left or right) or not
+         *
+         * @param context: application context
+         * @return true if rotated, false otherwise
+         */
         fun isRotated(context: Context): Boolean {
             return ScreenHelper.getCurrentRotation(context) == Surface.ROTATION_90 ||
                 ScreenHelper.getCurrentRotation(context) == Surface.ROTATION_270
@@ -53,28 +59,41 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
         }
     }
 
-    // app is in single screen mode, select which fragment needs to be inflated
+    /**
+     * Select which fragment should be inflated in single-screen mode
+     *
+     * @param noteSelected: true if savedInstanceState contained a specific note/inode, false otherwise
+     * @param note: note from savedInstanceState
+     * @param inode: inode from savedInstanceState
+     */
     private fun selectSingleScreenFragment(noteSelected: Boolean, note: Note?, inode: INode?) {
         // Remove fragment from second container if it exists
-        removeFragment(R.id.second_container_id)
+        removeSecondFragment()
 
         if (noteSelected) {
             startNoteDetailFragment(R.id.first_container_id, note!!, inode!!)
         } else {
-            startNoteListFragment(R.id.first_container_id)
+            startNoteListFragment()
         }
     }
 
-    // app is in dual screen mode, select two fragments to be inflated
+    /**
+     * Select which fragment(s) should be inflated in dual-screen mode
+     *
+     * @param noteSelected: true if savedInstanceState contained a specific note/inode, false otherwise
+     * @param note: note from savedInstanceState
+     * @param inode: inode from savedInstanceState
+     */
     private fun selectDualScreenFragments(noteSelected: Boolean, note: Note?, inode: INode?) {
+        // If rotated, use extended canvas pattern, otherwise use list-detail pattern
         if (isRotated(applicationContext)) {
             // Remove fragment from second container if it exists
-            removeFragment(R.id.second_container_id)
+            removeSecondFragment()
 
             if (noteSelected) {
                 startNoteDetailFragment(R.id.first_container_id, note!!, inode!!)
             } else {
-                startNoteListFragment(R.id.first_container_id)
+                startNoteListFragment()
             }
         } else {
             if (noteSelected) {
@@ -82,45 +101,57 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
             } else {
                 startGetStartedFragment()
             }
-            startNoteListFragment(R.id.first_container_id)
+            startNoteListFragment()
         }
     }
 
-    // remove specified fragment from the view
-    private fun removeFragment(containerId: Int) {
-        supportFragmentManager.findFragmentById(containerId)?.let {
+    /**
+     * Remove fragment from second container
+     */
+    private fun removeSecondFragment() {
+        supportFragmentManager.findFragmentById(R.id.second_container_id)?.let {
             supportFragmentManager.beginTransaction().remove(it).commit()
         }
     }
 
-    // inflate a list fragment and add it to the view
-    private fun startNoteListFragment(container: Int) {
+    /**
+     * Start note list view fragment in first container
+     */
+    private fun startNoteListFragment() {
         supportFragmentManager.beginTransaction()
-            .replace(container, NoteListFragment(), LIST_FRAGMENT)
+            .replace(R.id.first_container_id, NoteListFragment(), LIST_FRAGMENT)
             .commit()
     }
 
-    // inflate a detail fragment and add it to the view
+    /**
+     * Start note detail view fragment in specified container
+     *
+     * @param container: container to start fragment in
+     * @param note: note to display in fragment
+     * @param inode: inode associated with note to display in fragment
+     */
     private fun startNoteDetailFragment(container: Int, note: Note, inode: INode) {
         supportFragmentManager.beginTransaction()
             .replace(container, NoteDetailFragment.newInstance(inode, note), DETAIL_FRAGMENT)
             .commit()
     }
 
-    // add a placeholder fragment and add it to the view
+    /**
+     * Start welcome fragment in second container
+     */
     private fun startGetStartedFragment() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.second_container_id, GetStartedFragment(), null)
             .commit()
     }
 
-    // preserve note data on rotation
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        val secondFrag = supportFragmentManager.findFragmentById(R.id.second_container_id)
         val firstFrag = supportFragmentManager.findFragmentById(R.id.first_container_id)
+        val secondFrag = supportFragmentManager.findFragmentById(R.id.second_container_id)
 
+        // Save data from note detail view for configuration changes
         if (secondFrag is NoteDetailFragment) {
             if (secondFrag.deleted)
                 outState.clear()
@@ -136,7 +167,12 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
         }
     }
 
-    // save note data to location outside of its lifecycle
+    /**
+     * Save NoteDetailFragment's note and inode data to outState bundle
+     *
+     * @param outState: bundle to save data in
+     * @param frag: NoteDetailFragment to extract note/inode data from
+     */
     private fun saveCurrentNote(outState: Bundle, frag: NoteDetailFragment) {
         outState.putSerializable(NOTE, frag.arguments?.getSerializable(NOTE))
         outState.putSerializable(INODE, frag.arguments?.getSerializable(INODE))
