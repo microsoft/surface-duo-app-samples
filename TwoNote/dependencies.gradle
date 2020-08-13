@@ -1,6 +1,7 @@
 /*
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License.
+ *
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License.
  *
  */
 
@@ -30,22 +31,14 @@ ext {
     //AndroidX versions
     appCompatVersion = '1.2.0'
     constraintLayoutVersion = "1.1.3"
-    recyclerViewVersion = "1.1.0"
-    cardViewVersion = "1.0.0"
     ktxCoreVersion = '1.3.1'
     ktxFragmentVersion = '1.2.5'
-    viewPager2Version = "1.0.0"
-    localBroadcastManagerVersion = "1.0.0"
 
     androidxDependencies = [
             appCompat       : "androidx.appcompat:appcompat:$appCompatVersion",
             constraintLayout: "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion",
-            recyclerView    : "androidx.recyclerview:recyclerview:$recyclerViewVersion",
-            cardView        : "androidx.cardview:cardview:$cardViewVersion",
             ktxCore         : "androidx.core:core-ktx:$ktxCoreVersion",
             ktxFragment     : "androidx.fragment:fragment-ktx:$ktxFragmentVersion",
-            viewPager2      : "androidx.viewpager2:viewpager2:$viewPager2Version",
-            locaBroadcastManager: "androidx.localbroadcastmanager:localbroadcastmanager:$localBroadcastManagerVersion",
     ]
 
     //Google dependencies
@@ -63,27 +56,9 @@ ext {
 
     microsoftDependencies = [
             dualScreenLayouts: "com.microsoft.device.dualscreen:layouts:$dualScreenLayoutsVersion",
-            core: "com.microsoft.device.dualscreen:core:$coreVersion",
-            fluent: "com.microsoft.design:fluent-system-icons:$fluentVersion",
-            fragmentsHandler: "com.microsoft.device.dualscreen:fragmentshandler:$fragmentsHandlerVersion",
-    ]
-
-    //Network dependencies version
-    jsoupVersion = "1.11.1"
-    retrofitVersion = "2.4.0"
-    retrofitConverterScalarsVersion = "2.3.0"
-    okhttpLoggingInterceptorVersion = "3.9.1"
-    networkDependencies = [
-            jsoup                   : "org.jsoup:jsoup:$jsoupVersion",
-            retrofit                : "com.squareup.retrofit2:retrofit:$retrofitVersion",
-            retrofitConverterScalars: "com.squareup.retrofit2:converter-scalars:$retrofitConverterScalarsVersion",
-            okhttpLoggingInterceptor: "com.squareup.okhttp3:logging-interceptor:$okhttpLoggingInterceptorVersion"
-    ]
-    //Other libs version
-    glideVersion = "4.11.0"
-    otherDependencies = [
-            glide: "com.github.bumptech.glide:glide:$glideVersion",
-            glideCompiler: "com.github.bumptech.glide:compiler:$glideVersion"
+            core             : "com.microsoft.device.dualscreen:core:$coreVersion",
+            fluent           : "com.microsoft.design:fluent-system-icons:$fluentVersion",
+            fragmentsHandler : "com.microsoft.device.dualscreen:fragmentshandler:$fragmentsHandlerVersion",
     ]
 
     //Test dependencies version
