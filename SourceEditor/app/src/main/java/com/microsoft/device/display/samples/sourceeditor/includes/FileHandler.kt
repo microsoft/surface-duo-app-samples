@@ -68,19 +68,21 @@ class TextHandler(private val activity: Activity) {
 
     // read text from file specified in uri path
     @Throws(IOException::class)
-    private fun readTextFromUri(uri: Uri, event: DragEvent?): String {
+    fun processFileData(uri: Uri, event: DragEvent?) {
         val stringBuilder = StringBuilder()
-        ActivityCompat.requestDragAndDropPermissions(activity, event)
+
+        event?.let { ActivityCompat.requestDragAndDropPermissions(activity, event)}
         contentResolver.openInputStream(uri)?.use { inputStream ->
             BufferedReader(InputStreamReader(inputStream)).use { reader ->
                 var line: String? = reader.readLine()
                 while (line != null) {
                     stringBuilder.append(line)
+                    stringBuilder.append(System.getProperty("line.separator"))
                     line = reader.readLine()
                 }
             }
         }
-        return stringBuilder.toString()
+        return webVM.setText(stringBuilder.toString())
     }
 
     // overwrite text from file specified in uri path
@@ -100,24 +102,5 @@ class TextHandler(private val activity: Activity) {
         } catch (e: IOException) {
             e.printStackTrace()
         }
-    }
-
-    // format text for readability (newline chars are dropped in saving/grabbing process)
-    fun processFileData(uri: Uri, event: DragEvent?) {
-        val str: String = readTextFromUri(uri, event)
-
-        val builder = StringBuilder()
-        var initHeader = true
-
-        val lines = str.split("<")
-        lines.forEach {
-            if (initHeader) {
-                builder.append(it)
-                initHeader = false
-            } else {
-                builder.append("<" + it + System.getProperty("line.separator"))
-            }
-        }
-        webVM.setText(builder.toString())
     }
 }
