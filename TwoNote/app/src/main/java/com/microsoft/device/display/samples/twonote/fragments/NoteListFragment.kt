@@ -36,16 +36,21 @@ import com.microsoft.device.display.samples.twonote.utils.FileSystem
 import com.microsoft.device.display.samples.twonote.utils.NoteSelectionListener
 import com.microsoft.device.dualscreen.core.ScreenHelper
 
+/**
+ * Fragment that shows a list view of the user's notes and lets the user add, delete, and rename
+ * categories, as well as create and delete notes
+ */
 class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, AdapterView.OnItemSelectedListener {
+    // Lists and list adapters
     private var categoriesListAdapter: ArrayAdapter<INode>? = null
     private var notesListAdapter: ArrayAdapter<INode>? = null
+    private lateinit var inodes: MutableList<INode>
+    private lateinit var categories: MutableList<INode>
 
+    // Fragment view elements
     private var listView: ListView? = null
     private var categoryView: Spinner? = null
     private lateinit var editText: TextInputEditText
-
-    private lateinit var inodes: MutableList<INode>
-    private lateinit var categories: MutableList<INode>
 
     private val root = ""
     private var selectedFlag = false
@@ -53,14 +58,15 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Load note and category list data
         inodes = DataProvider.getINodes()
         categories = DataProvider.getCategories()
         FileSystem.loadCategories(requireContext(), root)
 
         activity?.let {
+            // Override getView function so that note list displays both note title and date modified
             notesListAdapter = object : ArrayAdapter<INode>(it, android.R.layout.simple_list_item_2, android.R.id.text1, inodes) {
-                // Override getView function so that ArrayAdapter can be used while both text
-                // views in the simple_list_item_2 format are updated
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent)
 
@@ -113,7 +119,6 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
             it.setMultiChoiceModeListener(noteSelectionListener)
             it.choiceMode = ListView.CHOICE_MODE_SINGLE
 
-            // REVISIT: is this necessary
             if (savedInstanceState != null)
                 listView?.onRestoreInstanceState(savedInstanceState.getParcelable(LIST_VIEW))
         }
@@ -125,7 +130,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         }
 
         view.findViewById<FloatingActionButton>(R.id.add_fab).setOnClickListener {
-            // Set selected item to newly created note (first element in list)
+            // Open newly created note (first element in list)
             FileSystem.addInode(requireContext())
             updateNotesList()
             startNoteFragment(0)
