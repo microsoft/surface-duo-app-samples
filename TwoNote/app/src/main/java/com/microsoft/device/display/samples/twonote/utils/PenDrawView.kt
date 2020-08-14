@@ -7,8 +7,12 @@
 
 package com.microsoft.device.display.samples.twonote.utils
 
+import Defines.DEFAULT_THICKNESS
+import Defines.ERASER_RADIUS
 import Defines.LAND_TO_PORT
+import Defines.OPAQUE
 import Defines.PORT_TO_LAND
+import Defines.TRANSPARENT
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
@@ -25,12 +29,16 @@ import com.microsoft.device.display.samples.twonote.models.Stroke
 import java.lang.Math.max
 import kotlin.math.min
 
+/**
+ * Custom view that allows users to draw and erase on a virtual canvas
+ * Supports events triggered by smart pens
+ */
 class PenDrawView : View {
     private var strokeList: MutableList<Stroke> = mutableListOf()
     private val eraser = RectF()
 
     private var currentColor: Int = 0
-    private var currentThickness: Int = 25
+    private var currentThickness: Int = DEFAULT_THICKNESS
 
     private var disabled = true
     private var eraserMode = false
@@ -61,6 +69,12 @@ class PenDrawView : View {
         setLayerType(LAYER_TYPE_SOFTWARE, null)
     }
 
+    /**
+     * Event triggered when canvas is initialized or cleared
+     * Iterates through strokeList and renders all strokes
+     *
+     * @param canvas: virtual canvas to draw strokes on
+     */
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
@@ -69,15 +83,17 @@ class PenDrawView : View {
             while (line < strokeList.size && line >= 0) {
                 val stroke = strokeList[line]
                 val pathList = stroke.getPathList()
-                val paints = stroke.getPaints()
                 val bounds = stroke.getBounds()
+                val pressures = stroke.getPressure()
+                val thickness = stroke.getThickness()
+                val color = stroke.getColor()
 
                 if (pathList.isNotEmpty()) {
                     var section = 0
                     while (section < stroke.getSize() && section >= 0) {
                         val bound = bounds[section]
                         val path = pathList[section]
-                        val paint = paints[section]
+                        val strokeWidth = pressures[section][0] * thickness
                         val diffRotations = rotated != stroke.getRotation()
                         val matrix = when (rotated) {
                             true -> PORT_TO_LAND
@@ -102,7 +118,7 @@ class PenDrawView : View {
                                 line--
                             }
                         } else {
-                            val configurePaint = configurePaint(paint, stroke.getHighlight())
+                            val configurePaint = configurePaint(color, strokeWidth, stroke.getHighlight())
                             val pathToDraw = if (diffRotations) scaledPath else path
                             canvas.drawPath(pathToDraw, configurePaint)
                         }
@@ -114,6 +130,11 @@ class PenDrawView : View {
         }
     }
 
+    /**
+     * Listener for touch events on the canvas
+     *
+     * @param event: touch event triggered by the user
+     */
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (disabled)
@@ -130,12 +151,16 @@ class PenDrawView : View {
         return true
     }
 
-    // initialize new eraser coordinates and bounds
+    /**
+     * Initialize new eraser coordinates and bounds
+     *
+     * @param event: touch event triggered by the user
+     */
     private fun configureEraser(event: MotionEvent) {
         if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
             isErasing = true
 
-            val offset = 50f
+            val offset = ERASER_RADIUS
             val left = max(event.x - offset, 0f)
             val right = min(event.x + offset, width.toFloat() - 1)
             val top = min(event.y - offset, height.toFloat() - 1)
@@ -144,7 +169,11 @@ class PenDrawView : View {
         }
     }
 
-    // add new coordinate to current list of strokes
+    /**
+     * Add new coordinate to current list of strokes
+     *
+     * @param event: touch event triggered by the user
+     */
     private fun handleInkingEvent(event: MotionEvent) {
         // Keep constant pressure if in highlight mode (1 = normal pressure)
         val pressure = if (highlightMode) 1f else event.pressure
@@ -164,43 +193,96 @@ class PenDrawView : View {
         }
     }
 
-    // create a paint object to associate with a path when drawing
-    private fun configurePaint(paint: Paint, highlight: Boolean = false): Paint {
+    /**
+     * Create a paint object to associate with a path when drawing
+     *
+     * @param color: hex color code of paint object
+     * @param strokeWidth: width brush stroke associated with paint
+     * @param: highlight: true if the app is in highlight mode, false by default
+     * @return Paint object with given parameters
+     */
+    private fun configurePaint(color: Int, strokeWidth: Float, highlight: Boolean = false): Paint {
         val configuredPaint = Paint()
 
         configuredPaint.style = Paint.Style.STROKE
         configuredPaint.isAntiAlias = true
         configuredPaint.strokeCap = if (highlight) Paint.Cap.SQUARE else Paint.Cap.ROUND
-        configuredPaint.strokeWidth = paint.strokeWidth
-        configuredPaint.color = paint.color
+        configuredPaint.strokeWidth = strokeWidth
+        configuredPaint.color = color
 
         return configuredPaint
     }
 
-    // enable/disable highlighting
+    /**
+     * Change color of virtual paintbrush
+     *
+     * @param color: hex color code to change paint to
+     */
+    fun changePaintColor(color: Int) {
+        // alpha values range from 0 (transparent) to 255 (opaque)
+        currentColor = if (highlightMode)
+            ColorUtils.setAlphaComponent(color, TRANSPARENT)
+        else
+            ColorUtils.setAlphaComponent(color, OPAQUE)
+    }
+
+    /**
+     * Change thickness of virtual paintbrush
+     *
+     * @param thickness: new width of paint strokes
+     */
+    fun changeThickness(thickness: Int) {
+        currentThickness = thickness
+    }
+
+    /**
+     * Enable/disable highlighting
+     *
+     * @param force: if force is not null, set highlight mode to the value of force
+     *                  else toggle value of highlight mode
+     * @return the value of highlight mode after it has been toggled
+     */
     fun toggleHighlightMode(force: Boolean? = null): Boolean {
         highlightMode = force ?: !highlightMode
         changePaintColor(currentColor)
         return highlightMode
     }
 
-    // enable/disable forced erasing (non-stylus erasing)
+    /**
+     * Enable/disable forced erasing (non-stylus erasing)
+     *
+     * @param force: if force is not null, set eraser mode to the value of force
+     *                  else toggle value of eraser mode
+     * @return the value of eraser mode after it has been toggled
+     */
     fun toggleEraserMode(force: Boolean? = null): Boolean {
         eraserMode = force ?: !eraserMode
         return eraserMode
     }
 
-    // initialize canvas with a list of drawings
+    /**
+     * Initialize canvas with a list of drawings
+     *
+     * @param s: list of strokes to initialize the canvas with
+     */
     fun setStrokeList(s: List<Stroke>) {
         strokeList = s.toMutableList()
     }
 
-    // adjust rotation of canvas
+    /**
+     * Adjust rotation of canvas
+     *
+     * @param rotation: true if application is rotated, false otherwise
+     */
     fun setRotation(rotation: Boolean) {
         rotated = rotation
     }
 
-    // get list of serialized drawings from canvas
+    /**
+     * Get list of serialized drawings from canvas
+     *
+     * @return list of strokes from canvas after they have been serialized
+     */
     fun getDrawingList(): List<SerializedStroke> {
         val list: MutableList<SerializedStroke> = mutableListOf()
         for (stroke in strokeList) {
@@ -209,27 +291,17 @@ class PenDrawView : View {
         return list.toList()
     }
 
-    // change color of virtual paintbrush
-    fun changePaintColor(color: Int) {
-        // alpha values range from 0 (transparent) to 255 (opaque)
-        currentColor = if (highlightMode)
-            ColorUtils.setAlphaComponent(color, 100)
-        else
-            ColorUtils.setAlphaComponent(color, 255)
-    }
-
-    // change thickness of virtual paintbrush
-    fun changeThickness(thickness: Int) {
-        currentThickness = thickness
-    }
-
-    // completely clear canvas
+    /**
+     * Completely clear canvas
+     */
     fun clearDrawing() {
         strokeList.clear()
         invalidate()
     }
 
-    // undo last drawing made
+    /**
+     * Undo last drawing made
+     */
     fun undo() {
         if (strokeList.isNotEmpty()) {
             strokeList.removeAt(strokeList.lastIndex)
@@ -237,12 +309,16 @@ class PenDrawView : View {
         }
     }
 
-    // disable canvas
+    /**
+     * Disable canvas
+     */
     fun disable() {
         disabled = true
     }
 
-    // enable canvas
+    /**
+     * Enable canvas
+     */
     fun enable() {
         disabled = false
     }

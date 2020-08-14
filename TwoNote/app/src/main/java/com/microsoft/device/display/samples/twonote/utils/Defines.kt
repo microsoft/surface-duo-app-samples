@@ -7,7 +7,25 @@
 
 import android.graphics.Matrix
 
+/**
+ * Object used to define constant variables used throughout the rest of the application
+ */
 object Defines {
+    // Fragment name constants //
+    const val DETAIL_FRAGMENT = "detail fragment"
+    const val LIST_FRAGMENT = "list fragment"
+    const val INODE = "inode"
+    const val NOTE = "note"
+
+    // Instance state constants //
+    const val LIST_VIEW = "list view"
+
+    // Pen Event constants //
+    const val DEFAULT_THICKNESS = 25
+    const val ERASER_RADIUS = 50f
+    const val OPAQUE = 255
+    const val TRANSPARENT = 100
+
     // File Handler references //
     const val IMAGE_PREFIX = "image/"
     const val TEXT_PREFIX = "text/"
@@ -29,13 +47,4 @@ object Defines {
     val PORT_TO_LAND = Matrix().apply {
         postScale(SCALE_RATIO, SCALE_RATIO)
     }
-
-    // Fragment name constants //
-    const val DETAIL_FRAGMENT = "detail fragment"
-    const val LIST_FRAGMENT = "list fragment"
-    const val INODE = "inode"
-    const val NOTE = "note"
-
-    // Instance state constants //
-    const val LIST_VIEW = "list view"
 }
