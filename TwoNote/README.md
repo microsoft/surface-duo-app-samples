@@ -23,7 +23,7 @@ In addition to including various dual-screen enhancements, this app supports a r
 
 ### Notes
 
-Notes can be created by clicking the floating action button in the list view. To rename a note, click on its current title and make the desired changes. To delete a note, users can choose `Delete` from the overflow menu in the detail view of the note. To delete multiple notes at once, long-click on notes or choose `Select all` from the overflow menu in the list view. To share an individual note as an image, scroll to the desired section of the note when in the detail view and choose the `Share` option.
+Notes can be created by clicking the floating action button in the list view. To rename a note, click on its current title and make the desired changes. To delete a note, users can choose `Delete` from the overflow menu in the detail view of the note. To delete multiple notes at once, long-click on notes or choose `Select all` from the overflow menu in the list view. To share a screenshot of an individual note, choose the `Share` option in the note detail view.
 
 ![Select all option in list view](screenshots/list_view_select_all.png)
 
