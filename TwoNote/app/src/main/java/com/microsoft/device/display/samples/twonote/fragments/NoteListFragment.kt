@@ -161,33 +161,11 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         FileSystem.writeDirEntry(requireContext(), root, DirEntry(categories))
     }
 
-    // item in category list is clicked, switch to appropriate category
-    override fun onItemSelected(adapterView: AdapterView<*>, item: View?, position: Int, id: Long) {
-        if (selectedFlag) {
-            categoriesListAdapter?.let {
-                it.getItem(position)?.let { inode ->
-                    setNewCategory(inode, false)
-                    editText.setText(inode.title)
-                }
-            }
-        }
-        selectedFlag = !selectedFlag
-    }
-
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-        // Do nothing
-    }
-
-    // item in note list is clicked, switch to appropriate note
-    override fun onItemClick(adapterView: AdapterView<*>, item: View, position: Int, rowId: Long) {
-        if (listView?.choiceMode == ListView.CHOICE_MODE_SINGLE) {
-            startNoteFragment(position)
-        } else {
-            listView?.setItemChecked(position, true)
-        }
-    }
-
-    // listener for changes to category name
+    /**
+     * Listener for changes to a specified text field
+     *
+     * @param field: text field to set a listener for
+     */
     private fun setOnChangeListenerForTextInput(field: TextInputEditText) {
         field.addTextChangedListener(object : TextWatcher {
 
@@ -201,7 +179,13 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         })
     }
 
-    // close out old category and switch to new category
+    /**
+     * Close out old category and switch to new category
+     *
+     * @param inode: new category to switch to
+     * @param deleting: true if the currently active category is being deleted, causing the switch
+     *                  false otherwise
+     */
     private fun setNewCategory(inode: INode?, deleting: Boolean) {
         exitDetailFragment(deleting)
         FileSystem.writeDirEntry(requireContext(), DataProvider.getActiveSubDirectory(), DirEntry(inodes))
@@ -211,7 +195,28 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         categoryView?.setSelection(0)
     }
 
-    // open detail fragment for specified note (selected from notes list)
+    /**
+     * Remove active category from the file system
+     */
+    private fun deleteCategory() {
+        if (DataProvider.getCategories().size > 1) {
+            DataProvider.clearInodes()
+            setNewCategory(DataProvider.getCategories()[1], true)
+
+            val categoryToDelete = DataProvider.getCategories()[1]
+            FileSystem.delete(requireContext(), root, categoryToDelete)
+            DataProvider.removeCategory(categoryToDelete)
+
+            editText.setText(DataProvider.getActiveCategoryName())
+            updateCategoriesList()
+        }
+    }
+
+    /**
+     * Open detail fragment for specified note (selected from notes list)
+     *
+     * @param position: selected item's position in the note list
+     */
     private fun startNoteFragment(position: Int) {
         notesListAdapter?.getItem(position)?.let { inode ->
             DataProvider.moveINodeToTop(inode)
@@ -243,7 +248,90 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         }
     }
 
-    // option from overflow menu selected
+    /**
+     * Save and exit detail fragment of currently active note
+     *
+     * @param deleting: true if the currently active category is being deleted
+     *                  false otherwise
+     */
+    fun exitDetailFragment(deleting: Boolean) {
+        activity?.let {
+            if (ScreenHelper.isDualMode(it) && !MainActivity.isRotated(it)) {
+                val fragment = parentFragmentManager.findFragmentById(R.id.second_container_id) as? NoteDetailFragment
+
+                fragment?.let { detail ->
+                    if (!deleting) {
+                        detail.updateNoteContents()
+                        detail.save()
+                    }
+                    detail.deleted = true // set flag so file isn't resaved on destroy
+                    detail.closeFragment()
+                }
+            }
+        }
+    }
+
+    /**
+     * Indicate change made to note list
+     */
+    fun updateNotesList() {
+        notesListAdapter?.notifyDataSetChanged()
+    }
+
+    /**
+     * Indicate change made to categories list
+     */
+    private fun updateCategoriesList() {
+        categoriesListAdapter?.notifyDataSetChanged()
+    }
+
+    /**
+     * Select all the items in the notes list
+     */
+    private fun selectAllNotes() {
+        listView?.let {
+            it.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
+            for (i in 0 until it.count) {
+                it.setItemChecked(i, true)
+            }
+        }
+    }
+
+    /**
+     * Item in category list is clicked, switch to appropriate category
+     *
+     * @param adapterView: adapter that contains list of categories
+     * @param item: category that was selected
+     * @param position: selected item's position in the list
+     * @param id: view id of the selected item
+     */
+    override fun onItemSelected(adapterView: AdapterView<*>, item: View?, position: Int, id: Long) {
+        if (selectedFlag) {
+            categoriesListAdapter?.let {
+                it.getItem(position)?.let { inode ->
+                    setNewCategory(inode, false)
+                    editText.setText(inode.title)
+                }
+            }
+        }
+        selectedFlag = !selectedFlag
+    }
+
+    /**
+     * Category list was opened, but no item was selected
+     *
+     * @param adapterView: adapter that contains list of categories
+     */
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        // Do nothing
+    }
+
+    /**
+     * Option from overflow menu selected
+     *
+     * @param item: option that was selected from the overflow menu
+     * @return true if valid item, false otherwise
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_add_category -> {
@@ -265,32 +353,31 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
         }
     }
 
-    // remove active category from the file system
-    private fun deleteCategory() {
-        if (DataProvider.getCategories().size > 1) {
-            DataProvider.clearInodes()
-            setNewCategory(DataProvider.getCategories()[1], true)
-
-            val categoryToDelete = DataProvider.getCategories()[1]
-            FileSystem.delete(requireContext(), root, categoryToDelete)
-            DataProvider.removeCategory(categoryToDelete)
-
-            editText.setText(DataProvider.getActiveCategoryName())
-            updateCategoriesList()
+    /**
+     * Item in note list is clicked, switch to appropriate note
+     *
+     * @param adapterView: adapter that contains list of categories
+     * @param item: note that was selected
+     * @param position: selected item's position in the list
+     * @param rowId: view id of the selected item
+     */
+    override fun onItemClick(adapterView: AdapterView<*>, item: View, position: Int, rowId: Long) {
+        if (listView?.choiceMode == ListView.CHOICE_MODE_SINGLE) {
+            startNoteFragment(position)
+        } else {
+            listView?.setItemChecked(position, true)
         }
     }
 
-    // select all the items in the notes list
-    private fun selectAllNotes() {
-        listView?.let {
-            it.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
-            for (i in 0 until it.count) {
-                it.setItemChecked(i, true)
-            }
-        }
-    }
-
-    // enable multi-selection of notes on long click
+    /**
+     * Enable multi-selection of notes on long click
+     *
+     * @param adapterView: adapter that contains list of categories
+     * @param item: note that was selected
+     * @param position: selected item's position in the list
+     * @param rowId: view id of the selected item
+     * @return always return true to consume click event
+     */
     override fun onItemLongClick(adapterView: AdapterView<*>, item: View, position: Int, rowId: Long): Boolean {
         listView?.let {
             it.clearChoices()
@@ -298,33 +385,5 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
             it.setItemChecked(position, true)
         }
         return true
-    }
-
-    // save and exit detail fragment of currently active note
-    fun exitDetailFragment(deleting: Boolean) {
-        activity?.let {
-            if (ScreenHelper.isDualMode(it) && !MainActivity.isRotated(it)) {
-                val fragment = parentFragmentManager.findFragmentById(R.id.second_container_id) as? NoteDetailFragment
-
-                fragment?.let { detail ->
-                    if (!deleting) {
-                        detail.updateNoteContents()
-                        detail.save()
-                    }
-                    detail.deleted = true // set flag so file isn't resaved on destroy
-                    detail.closeFragment()
-                }
-            }
-        }
-    }
-
-    // indicate change made to note list
-    fun updateNotesList() {
-        notesListAdapter?.notifyDataSetChanged()
-    }
-
-    // indicate change made to categories list
-    private fun updateCategoriesList() {
-        categoriesListAdapter?.notifyDataSetChanged()
     }
 }

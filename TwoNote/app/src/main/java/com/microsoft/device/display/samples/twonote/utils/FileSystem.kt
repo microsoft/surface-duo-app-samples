@@ -20,8 +20,18 @@ import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.lang.Exception
 
+/**
+ * Object to handle file persistence. Functions include saving and loading various data structures
+ * from memory as well as interacting with local memory. @see DataProvider for more information on
+ * how data structures are stored locally.
+ */
 object FileSystem {
-    // load inode information from the current directory into the DataProvider
+    /**
+     * Load inode information from the current directory into the DataProvider
+     *
+     * @param context: status information about the application
+     * @param subDir: directory in device memory to access
+     */
     private fun loadDirectory(context: Context, subDir: String) {
         DataProvider.clearInodes()
         readDirEntry(context, subDir)?.let { notes ->
@@ -31,7 +41,11 @@ object FileSystem {
         }
     }
 
-    // create a new inode and add it to the DataProvider
+    /**
+     * Create a new inode and add it to the DataProvider
+     *
+     * @param context: status information about the application
+     */
     fun addInode(context: Context) {
         val prefix = context.resources.getString(R.string.default_note_name)
         val inode = INode("$prefix 1")
@@ -42,7 +56,12 @@ object FileSystem {
         DataProvider.addINode(inode)
     }
 
-    // load category information from root into the DataProvider
+    /**
+     * Load category information from root into the DataProvider
+     *
+     * @param context: status information about the application
+     * @param subDir: directory in device memory to access
+     */
     fun loadCategories(context: Context, subDir: String) {
         if (DataProvider.getCategories().isEmpty()) {
             readDirEntry(context, subDir)?.let { dir ->
@@ -59,7 +78,11 @@ object FileSystem {
         }
     }
 
-    // create a new category and add it to the DataProvider
+    /**
+     * Create a new category and add it to the DataProvider
+     *
+     * @param context: status information about the application
+     */
     private fun addCategory(context: Context) {
         val prefix = context.resources.getString(R.string.default_category_name)
         val inode = INode(title = "$prefix 1", descriptor = "/c")
@@ -70,9 +93,14 @@ object FileSystem {
         DataProvider.addCategory(inode)
     }
 
-    // load DataProvider with inodes from given category (switches from one category to another)
-    fun switchCategory(context: Context, inode: INode?) {
-        var newNode = inode
+    /**
+     * Load DataProvider with inodes from given category (switches from one category to another)
+     *
+     * @param context: status information about the application
+     * @param category: new category to switch to
+     */
+    fun switchCategory(context: Context, category: INode?) {
+        var newNode = category
         if (newNode == null) {
             addCategory(context)
             newNode = DataProvider.getCategories()[0]
@@ -81,7 +109,15 @@ object FileSystem {
         loadDirectory(context, DataProvider.getActiveSubDirectory())
     }
 
-    // read a file and parse note data
+    /**
+     * Read a file and parse note data
+     *
+     * @param context: status information about the application
+     * @param subDir: directory in device memory to access
+     * @param noteName: file name of the note to load
+     * @return if file exists, return loaded note data from memory
+     *          otherwise return null
+     */
     fun loadNote(context: Context, subDir: String, noteName: String): Note? {
         val path: String? = context.getExternalFilesDir(null)?.absolutePath
         val file = File(path + subDir + noteName)
@@ -107,7 +143,14 @@ object FileSystem {
         }
     }
 
-    // read directory entry to get inodes
+    /**
+     * Read a file and parse directory entry information
+     *
+     * @param context: status information about the application
+     * @param subDir: directory in device memory to access
+     * @return if file exists, return loaded directory entry from memory
+     *          otherwise, return a new directory entry for the specified path
+     */
     private fun readDirEntry(context: Context, subDir: String): DirEntry? {
         val path: String? = context.getExternalFilesDir(null)?.absolutePath
         val file = File("$path$subDir/dEntry")
@@ -134,14 +177,25 @@ object FileSystem {
         }
     }
 
-    // if file path doesn't exist, create missing directories for the path
+    /**
+     * Generate missing directories for a given path
+     *
+     * @param context: status information about the application
+     * @param subDir: directory in device memory to access
+     */
     private fun createDirectory(context: Context, subDir: String) {
         val path: String? = context.getExternalFilesDir(null)?.absolutePath
         val file = File(path + subDir)
         file.mkdirs()
     }
 
-    // update/create directory entry
+    /**
+     * Update/create directory entry
+     *
+     * @param context: status information about the application
+     * @param subDir: directory in device memory to access
+     * @param entry: directory entry to write to memory
+     */
     fun writeDirEntry(context: Context, subDir: String, entry: DirEntry) {
         val path: String? = context.getExternalFilesDir(null)?.absolutePath
         createDirectory(context, subDir)
@@ -153,7 +207,14 @@ object FileSystem {
         fileStream.close()
     }
 
-    // remove an inode and its associated content from memory
+    /**
+     * Remove an inode and its associated content from memory
+     *
+     * @param context: status information about the application
+     * @param subDir: directory in device memory to access
+     * @param inode: inode to remove from memory
+     * @return true if file deleted successfully, false otherwise
+     */
     fun delete(context: Context, subDir: String, inode: INode): Boolean {
         val path: String? = context.getExternalFilesDir(null)?.absolutePath
         val file = File(path + subDir + inode.descriptor + inode.id)
@@ -171,7 +232,13 @@ object FileSystem {
         return false
     }
 
-    // save a note to memory at a given file path
+    /**
+     * Save a note to memory at a given file path
+     *
+     * @param context: status information about the application
+     * @param subDir: directory in device memory to access
+     * @param note: note to be saved to device memory
+     */
     fun save(context: Context, subDir: String, note: Note) {
         val path: String? = context.getExternalFilesDir(null)?.absolutePath
         val file = File("$path$subDir/n${note.id}")
