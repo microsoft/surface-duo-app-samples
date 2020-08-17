@@ -31,7 +31,7 @@ import kotlin.math.min
 
 /**
  * Custom view that allows users to draw and erase on a virtual canvas
- * Supports events triggered by smart pens
+ * Pen events tested with Surface Pen, other pens have not been verified
  */
 class PenDrawView : View {
     private var strokeList: MutableList<Stroke> = mutableListOf()
@@ -188,7 +188,7 @@ class PenDrawView : View {
             }
             MotionEvent.ACTION_UP -> {
                 if (strokeList.isNotEmpty())
-                    strokeList[strokeList.lastIndex].finishStroke()
+                    strokeList[strokeList.lastIndex].finishPath()
             }
         }
     }
