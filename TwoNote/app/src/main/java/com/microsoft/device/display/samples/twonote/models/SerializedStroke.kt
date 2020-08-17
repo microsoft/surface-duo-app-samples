@@ -17,7 +17,7 @@ import java.io.Serializable
  * @param xList: collection of x coordinates in stroke
  * @param yList: collection of y coordinates in stroke
  * @param pressureList: collection of pressures associated with each path in stroke
- * @param paintColor: hex color code associated with stroke
+ * @param paintColor: int value of color associated with stroke
  * @param thicknessMultiplier: constant multiplier used for width calculations
  * @param rotated: rotation flag for stroke - true if rotated, false by default
  * @param highlightStroke: highlighter flag for stroke - true if transparent, false by default

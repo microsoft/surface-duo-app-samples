@@ -48,11 +48,8 @@ object FileSystem {
      */
     fun addInode(context: Context) {
         val prefix = context.resources.getString(R.string.default_note_name)
-        val inode = INode("$prefix 1")
-        if (DataProvider.getINodes().isNotEmpty()) {
-            inode.id = DataProvider.getNextInodeId()
-            inode.title = "$prefix ${inode.id}"
-        }
+        val id = DataProvider.getNextInodeId()
+        val inode = INode("$prefix $id", id = id)
         DataProvider.addINode(inode)
     }
 
@@ -85,11 +82,8 @@ object FileSystem {
      */
     private fun addCategory(context: Context) {
         val prefix = context.resources.getString(R.string.default_category_name)
-        val inode = INode(title = "$prefix 1", descriptor = "/c")
-        if (DataProvider.getCategories().isNotEmpty()) {
-            inode.id = DataProvider.getNextCategoryId()
-            inode.title = "$prefix ${inode.id}"
-        }
+        val id = DataProvider.getNextCategoryId()
+        val inode = INode("$prefix $id", descriptor = "/c", id = id)
         DataProvider.addCategory(inode)
     }
 

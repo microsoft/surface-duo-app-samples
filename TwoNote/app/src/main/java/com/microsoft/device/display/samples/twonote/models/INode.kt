@@ -26,7 +26,7 @@ class INode(
     var title: String,
     var dateModified: LocalDateTime = LocalDateTime.now(),
     val descriptor: String = "/n",
-    var id: Int = 1
+    var id: Int
 ) : Serializable {
 
     /**
