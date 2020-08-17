@@ -24,16 +24,11 @@ import java.io.IOException
 import java.nio.charset.Charset
 
 /* Class used to make file read/write requests */
-<<<<<<< HEAD:SourceEditor/app/src/main/java/com/microsoft/device/display/samples/sourceeditor/includes/FileHandler.kt
 class FileHandler(
     private val activity: Activity,
     private val webVM: WebViewModel,
     private val contentResolver: ContentResolver
 ) {
-=======
-class TextHandler(private val activity: Activity) {
->>>>>>> reformatted handlers:TwoNote/app/src/main/java/com/microsoft/device/display/samples/twonote/includes/TextHandler.kt
-
     companion object {
         // intent request codes
         const val CREATE_FILE = 1
