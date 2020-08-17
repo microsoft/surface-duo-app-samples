@@ -66,7 +66,7 @@ class FileHandler(
     fun processFileData(uri: Uri, event: DragEvent?) {
         val stringBuilder = StringBuilder()
 
-        event?.let { ActivityCompat.requestDragAndDropPermissions(activity, event)}
+        event?.let { ActivityCompat.requestDragAndDropPermissions(activity, event) }
         contentResolver.openInputStream(uri)?.use { inputStream ->
             BufferedReader(InputStreamReader(inputStream)).use { reader ->
                 var line: String? = reader.readLine()
