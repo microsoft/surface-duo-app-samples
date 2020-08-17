@@ -26,6 +26,9 @@ import com.microsoft.device.display.samples.twonote.utils.FileSystem
 import com.microsoft.device.dualscreen.core.ScreenHelper
 import com.microsoft.device.dualscreen.core.ScreenMode
 
+/**
+ * Activity that manages fragments and preservation of data through the app's lifecycle
+ */
 class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteractionListener {
     companion object {
         /**
