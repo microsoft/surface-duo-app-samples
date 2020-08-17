@@ -11,6 +11,9 @@ import android.app.Application
 import com.microsoft.device.dualscreen.core.manager.SurfaceDuoScreenManager
 import com.microsoft.device.dualscreen.fragmentshandler.FragmentManagerStateHandler
 
+/**
+ * Application definition that initializes dual-screen functions and managers
+ */
 class TwoNote : Application() {
     lateinit var surfaceDuoScreenManager: SurfaceDuoScreenManager
 
