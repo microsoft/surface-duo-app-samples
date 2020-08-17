@@ -17,6 +17,13 @@ import com.microsoft.device.display.samples.twonote.R
 import com.microsoft.device.display.samples.twonote.fragments.NoteListFragment
 import com.microsoft.device.display.samples.twonote.models.INode
 
+/**
+ * Class that handles multiple choice mode for the list of notes
+ *
+ * @param host: NoteListFragment that contains the list of notes
+ * @param listView: ListView object that displays the list of notes
+ * @param arrayAdapter: ArrayAdapter connected to the ListView object
+ */
 class NoteSelectionListener(
     private var host: NoteListFragment,
     private var listView: ListView,
@@ -26,6 +33,7 @@ class NoteSelectionListener(
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_delete -> {
+                // Delete all selected notes
                 val list = listView.checkedItemPositions
                 for (i in arrayAdapter.count - 1 downTo 0) {
                     if (list.get(i)) {
@@ -62,6 +70,11 @@ class NoteSelectionListener(
         listView.choiceMode = ListView.CHOICE_MODE_SINGLE
     }
 
+    /**
+     * Update ActionMode toolbar title based on how many items are selected
+     *
+     * @param mode: ActionMode toolbar to update
+     */
     private fun updateTitle(mode: ActionMode) {
         mode.title = "${listView.checkedItemCount} ${host.getString(R.string.selected)}"
     }

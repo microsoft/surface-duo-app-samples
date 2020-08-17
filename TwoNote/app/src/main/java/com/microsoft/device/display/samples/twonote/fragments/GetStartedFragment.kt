@@ -14,6 +14,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.microsoft.device.display.samples.twonote.R
 
+/**
+ * Fragment that shows a welcome screen when a note is not selected in list-detail view
+ */
 class GetStartedFragment : Fragment() {
 
     override fun onCreateView(

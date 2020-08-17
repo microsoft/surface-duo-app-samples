@@ -26,7 +26,6 @@ import android.view.View
 import androidx.core.graphics.ColorUtils
 import com.microsoft.device.display.samples.twonote.models.SerializedStroke
 import com.microsoft.device.display.samples.twonote.models.Stroke
-import java.lang.Math.max
 import kotlin.math.min
 
 /**
@@ -34,12 +33,13 @@ import kotlin.math.min
  * Pen events tested with Surface Pen, other pens have not been verified
  */
 class PenDrawView : View {
+    // Stroke-related attributes
     private var strokeList: MutableList<Stroke> = mutableListOf()
     private val eraser = RectF()
 
+    // Canvas and drawing properties
     private var currentColor: Int = 0
     private var currentThickness: Int = DEFAULT_THICKNESS
-
     private var disabled = true
     private var eraserMode = false
     private var highlightMode = false
@@ -161,10 +161,10 @@ class PenDrawView : View {
             isErasing = true
 
             val offset = ERASER_RADIUS
-            val left = max(event.x - offset, 0f)
+            val left = (event.x - offset).coerceAtLeast(0f)
             val right = min(event.x + offset, width.toFloat() - 1)
             val top = min(event.y - offset, height.toFloat() - 1)
-            val bottom = max(event.y + offset, 0f)
+            val bottom = (event.y + offset).coerceAtLeast(0f)
             eraser.set(left, top, right, bottom)
         }
     }
@@ -196,7 +196,7 @@ class PenDrawView : View {
     /**
      * Create a paint object to associate with a path when drawing
      *
-     * @param color: hex color code of paint object
+     * @param color: int value of color to paint with
      * @param strokeWidth: width brush stroke associated with paint
      * @param: highlight: true if the app is in highlight mode, false by default
      * @return Paint object with given parameters
@@ -216,7 +216,7 @@ class PenDrawView : View {
     /**
      * Change color of virtual paintbrush
      *
-     * @param color: hex color code to change paint to
+     * @param color: int value of color to change to
      */
     fun changePaintColor(color: Int) {
         // alpha values range from 0 (transparent) to 255 (opaque)
@@ -270,7 +270,7 @@ class PenDrawView : View {
     }
 
     /**
-     * Adjust rotation of canvas
+     * Update rotation of canvas after device rotation has changed
      *
      * @param rotation: true if application is rotated, false otherwise
      */
@@ -310,14 +310,14 @@ class PenDrawView : View {
     }
 
     /**
-     * Disable canvas
+     * Disable drawing on canvas
      */
     fun disable() {
         disabled = true
     }
 
     /**
-     * Enable canvas
+     * Enable drawing on canvas
      */
     fun enable() {
         disabled = false

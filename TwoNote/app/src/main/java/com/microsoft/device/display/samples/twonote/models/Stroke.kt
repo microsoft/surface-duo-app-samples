@@ -25,9 +25,9 @@ class Stroke {
     private var rotated = false
     private var highlightStroke = false
 
+    // Path properties
     private var pathList: MutableList<Path> = mutableListOf()
     private var pathBounds: MutableList<RectF> = mutableListOf()
-
     private var xCoord: Float = 0f
     private var yCoord: Float = 0f
     private var prevPressure: Float = 0f
@@ -38,7 +38,7 @@ class Stroke {
      * @param x: starting x coordinate of stroke
      * @param y: starting y coordinate of stroke
      * @param pressure: starting pressure of stroke
-     * @param color: hex color code associated with stroke
+     * @param color: int value of color associated with stroke
      * @param thickness: thickness multiplier used for width calculations
      * @param rotation: rotation flag for stroke - true if rotated, false otherwise
      * @param highlight: highlighter flag for stroke - true if transparent, false by default
@@ -56,7 +56,7 @@ class Stroke {
      * @param x: collection of x coordinates
      * @param y: collection of y coordinates
      * @param pressure: collection of pressure values
-     * @param color: hex color code for the stroke
+     * @param color: int value of color for the stroke
      * @param thickness: thickness multiplier for width calculations
      * @param rotation: rotation flag for stroke - true if rotated, false otherwise
      * @param highlight: highlighter flag for stroke - true if transparent, false otherwise
@@ -90,7 +90,7 @@ class Stroke {
      * @param x: starting x coordinate of stroke
      * @param y: starting y coordinate of stroke
      * @param pressure: starting pressure of stroke
-     * @param color: hex color code associated with stroke
+     * @param color: int value of color associated with stroke
      * @param thickness: thickness multiplier used for width calculations
      * @param rotation: rotation flag for stroke - true if rotated, false otherwise
      * @param highlight: highlighter flag for stroke - true if transparent, false by default
@@ -269,7 +269,7 @@ class Stroke {
     /**
      * Get the color of the stroke
      *
-     * @return hex color value of the stroke
+     * @return int color value of the stroke
      */
     fun getColor(): Int {
         return paintColor

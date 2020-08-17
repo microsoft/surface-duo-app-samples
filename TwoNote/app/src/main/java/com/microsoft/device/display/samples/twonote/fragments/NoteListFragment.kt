@@ -320,7 +320,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
     /**
      * Category list was opened, but no item was selected
      *
-     * @param adapterView: adapter that contains list of categories
+     * @param parent: adapter that contains list of categories
      */
     override fun onNothingSelected(parent: AdapterView<*>?) {
         // Do nothing
