@@ -1,0 +1,81 @@
+/*
+ *
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License.
+ *
+ */
+
+ext {
+    gradlePluginVersion = "3.6.3"
+    kotlinVersion = "1.3.72"
+    compileSdkVersion = 29
+    buildToolsVersion = '29.0.2'
+    targetSdkVersion = compileSdkVersion
+    minSdkVersion = compileSdkVersion
+
+    //Surface Duo
+    duo_url = "https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1"
+
+    config = [
+            gradlePlugin             : "com.android.tools.build:gradle:$gradlePluginVersion",
+            kotlinGradlePlugin       : "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion",
+            duoSdkUrl                :
+                    "https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1",
+            testInstrumentationRunner: "androidx.test.runner.AndroidJUnitRunner"
+    ]
+
+    kotlinDependencies = [
+            kotlinStdlib: "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    ]
+
+    //AndroidX versions
+    appCompatVersion = '1.2.0'
+    constraintLayoutVersion = "1.1.3"
+    ktxCoreVersion = '1.3.1'
+    ktxFragmentVersion = '1.2.5'
+
+    androidxDependencies = [
+            appCompat       : "androidx.appcompat:appcompat:$appCompatVersion",
+            constraintLayout: "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion",
+            ktxCore         : "androidx.core:core-ktx:$ktxCoreVersion",
+            ktxFragment     : "androidx.fragment:fragment-ktx:$ktxFragmentVersion",
+    ]
+
+    //Google dependencies
+    materialVersion = '1.2.0'
+
+    googleDependencies = [
+            material: "com.google.android.material:material:$materialVersion"
+    ]
+
+    //Microsoft dependencies version
+    dualScreenLayoutsVersion = "1.0.0-alpha02"
+    coreVersion = "1.0.0-alpha01"
+    fluentVersion = "1.1.33"
+    fragmentsHandlerVersion = "1.0.0-alpha02"
+
+    microsoftDependencies = [
+            dualScreenLayouts: "com.microsoft.device.dualscreen:layouts:$dualScreenLayoutsVersion",
+            core             : "com.microsoft.device.dualscreen:core:$coreVersion",
+            fluent           : "com.microsoft.design:fluent-system-icons:$fluentVersion",
+            fragmentsHandler : "com.microsoft.device.dualscreen:fragmentshandler:$fragmentsHandlerVersion",
+    ]
+
+    //Test dependencies version
+    junitVersion = "4.13"
+
+    testDependencies = [
+            junit: "junit:junit:$junitVersion"
+    ]
+
+    //Android test dependencies version
+    junitInstrumentationVersion = "1.1.1"
+    espressoCoreVersion = "3.2.0"
+    testRunnerVersion = "1.2.0"
+
+    instrumentationTestDependencies = [
+            junit       : "androidx.test.ext:junit:$junitInstrumentationVersion",
+            espressoCore: "androidx.test.espresso:espresso-core:$espressoCoreVersion",
+            testRunner  : "androidx.test:runner:$testRunnerVersion"
+    ]
+}

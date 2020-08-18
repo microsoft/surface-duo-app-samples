@@ -6,6 +6,7 @@
 
 package com.microsoft.device.display.samples.photoeditor
 
+import android.app.Activity
 import android.content.ClipData
 import android.content.ContentResolver
 import android.content.ContentValues
@@ -94,7 +95,7 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         // Select image to edit from photo gallery
-        if (requestCode == SELECT_IMAGE && data?.data != null) {
+        if (requestCode == SELECT_IMAGE && resultCode == Activity.RESULT_OK && data?.data != null) {
             val uri: Uri = data.data!!
             val image = findViewById<ImageFilterView>(R.id.image)
             image.setImageBitmap(BitmapFactory.decodeStream(contentResolver.openInputStream(uri)))

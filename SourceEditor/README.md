@@ -1,7 +1,7 @@
 ---
 page_type: sample
 name: "Surface Duo - SourceEditor"
-description: "Uses the Dual View layout pattern and external storage capabilities to create a source-editing app for the Surface Duo."
+description: "Uses the dual view layout pattern and external storage capabilities to create a source-editing app for the Surface Duo."
 languages:
 - kotlin
 products:
@@ -9,17 +9,13 @@ products:
 urlFragment: source-editor
 ---
 
-# Introduction
+# SourceEditor
 
-This sample contains a Kotlin application designed for Surface Duo. The application is an HTML
- editor that enables real-time rendering of formatted source code. Making use of the
- [Dual View](https://docs.microsoft.com/dual-screen/introduction#dual-view)
- app pattern, users are able to edit and preview any changes simultaneously without switching
- windows.
+This sample contains a Kotlin application designed for Surface Duo. The application is an HTML editor that enables real-time rendering of formatted source code. Making use of the [dual view](https://docs.microsoft.com/dual-screen/introduction#dual-view) app pattern, users are able to edit and preview any changes simultaneously without switching windows.
 
 ## Getting Started
 
-To learn how to load your app on to emulator, and to use it, see the full documentation here: [https://docs.microsoft.com/dual-screen](https://docs.microsoft.com/dual-screen)
+To learn how to load apps on the Surface Duo emulator, see the [documentation](https://docs.microsoft.com/dual-screen/android), and follow [the blog](https://devblogs.microsoft.com/surface-duo).
 
 ## Features
 

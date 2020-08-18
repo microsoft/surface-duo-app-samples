@@ -5,7 +5,7 @@ name: App samples CI
 
 on:
   push:
-    branches: [ main, hero_notes, add-ci ]
+    branches: [ main, hero_notes ]
   pull_request:
     branches: [ main, hero_notes ]
   workflow_dispatch:
@@ -109,4 +109,33 @@ jobs:
       run: |
         cd Widget
         ./gradlew ktlint
+    - name: Cache TwoNote Gradle packages
+      uses: actions/cache@v2
+      with:
+        path: TwoNote/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        restore-keys: ${{ runner.os }}-gradle
+    - name: Grant execute permission for TwoNote gradlew
+      run: chmod +x TwoNote/gradlew
+    - name: clean TwoNote
+      run: |
+        cd TwoNote
+        ./gradlew clean
+    - name: assemble debug TwoNote
+      run: |
+        cd TwoNote
+        ./gradlew assembleDebug
+    - name: unit tests TwoNote
+      run: |
+        cd TwoNote
+        ./gradlew testDebugUnitTest
+    - name: lint TwoNote
+      run: |
+        cd TwoNote
+        ./gradlew lintDebug
+    - name: ktlint TwoNote
+      run: |
+        cd TwoNote
+        ./gradlew ktlint
+    
 

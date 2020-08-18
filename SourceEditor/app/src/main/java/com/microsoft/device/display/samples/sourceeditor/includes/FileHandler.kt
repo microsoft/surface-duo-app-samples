@@ -12,6 +12,8 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
+import android.view.DragEvent
+import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.startActivityForResult
 import com.microsoft.device.display.samples.sourceeditor.viewmodel.WebViewModel
 import java.io.BufferedReader
@@ -27,7 +29,6 @@ class FileHandler(
     private val webVM: WebViewModel,
     private val contentResolver: ContentResolver
 ) {
-
     companion object {
         // intent request codes
         const val CREATE_FILE = 1
@@ -62,18 +63,21 @@ class FileHandler(
 
     // read text from file specified in uri path
     @Throws(IOException::class)
-    private fun readTextFromUri(uri: Uri): String {
+    fun processFileData(uri: Uri, event: DragEvent?) {
         val stringBuilder = StringBuilder()
+
+        event?.let { ActivityCompat.requestDragAndDropPermissions(activity, event) }
         contentResolver.openInputStream(uri)?.use { inputStream ->
             BufferedReader(InputStreamReader(inputStream)).use { reader ->
                 var line: String? = reader.readLine()
                 while (line != null) {
                     stringBuilder.append(line)
+                    stringBuilder.append(System.getProperty("line.separator"))
                     line = reader.readLine()
                 }
             }
         }
-        return stringBuilder.toString()
+        return webVM.setText(stringBuilder.toString())
     }
 
     // overwrite text from file specified in uri path
@@ -93,24 +97,5 @@ class FileHandler(
         } catch (e: IOException) {
             e.printStackTrace()
         }
-    }
-
-    // format text for readability (newline chars are dropped in saving/grabbing process)
-    fun processFileData(uri: Uri) {
-        val str: String = readTextFromUri(uri)
-
-        val builder = StringBuilder()
-        var initHeader = true
-
-        val lines = str.split("<")
-        lines.forEach {
-            if (initHeader) {
-                builder.append(it)
-                initHeader = false
-            } else {
-                builder.append("<" + it + System.getProperty("line.separator"))
-            }
-        }
-        webVM.setText(builder.toString())
     }
 }
