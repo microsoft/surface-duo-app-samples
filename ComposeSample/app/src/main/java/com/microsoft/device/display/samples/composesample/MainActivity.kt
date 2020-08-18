@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appStateViewModel: AppStateViewModel
 
     private val handler = Handler(Looper.getMainLooper())
-    val mainThreadExecutor = Executor { r: Runnable -> handler.post(r) }
+    private val mainThreadExecutor = Executor { r: Runnable -> handler.post(r) }
     private val layoutStateChangeCallback = LayoutStateChangeCallback()
 
     override fun onCreate(savedInstanceState: Bundle?) {

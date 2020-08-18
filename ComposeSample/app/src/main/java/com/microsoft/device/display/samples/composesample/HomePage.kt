@@ -35,7 +35,6 @@ import com.microsoft.device.display.samples.composesample.models.ImageModel
 import com.microsoft.device.display.samples.composesample.viewModels.AppStateViewModel
 
 private lateinit var appStateViewModel: AppStateViewModel
-private const val SELECT_IMAGE = 1000
 
 @Preview
 @Composable
