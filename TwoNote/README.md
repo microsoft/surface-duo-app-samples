@@ -6,7 +6,7 @@ languages:
 - kotlin
 products:
 - surface-duo
-urlFragment: TwoNote
+urlFragment: two-note
 ---
 
 # TwoNote
