@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity() {
         super.onAttachedToWindow()
         windowManager.registerLayoutChangeCallback(mainThreadExecutor, layoutStateChangeCallback)
         Log.i("ComposeSample", "onAttachedToWindow")
-
     }
 
     override fun onDetachedFromWindow() {
