@@ -5,9 +5,9 @@ name: App samples CI
 
 on:
   push:
-    branches: [ main, hero_notes ]
+    branches: [ main, improve-ci ] # remove improve-ci before merging into main
   pull_request:
-    branches: [ main, hero_notes ]
+    branches: [ main ]
   workflow_dispatch:
     inputs:
       name:
@@ -19,123 +19,51 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        projects: [SourceEditor, PhotoEditor, Widget, TwoNote] # add ComposeSample once merged
+      fail-fast: false
+
     steps:
     - uses: actions/checkout@v2
+
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Cache SourceEditor Gradle packages
-      uses: actions/cache@v2
-      with:
-        path: SourceEditor/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-        restore-keys: ${{ runner.os }}-gradle
-    - name: Grant execute permission for SourceEditor gradlew
-      run: chmod +x SourceEditor/gradlew
-    - name: clean SourceEditor
-      run: |
-        cd SourceEditor
-        ./gradlew clean --info
-    - name: assemble debug SourceEditor
-      run: |
-        cd SourceEditor
-        ./gradlew assembleDebug
-    - name: unit tests SourceEditor
-      run: |
-        cd SourceEditor
-        ./gradlew testDebugUnitTest
-    - name: lint SourceEditor
-      run: |
-        cd SourceEditor
-        ./gradlew lintDebug
-    - name: ktlint SourceEditor
-      run: |
-        cd SourceEditor
-        ./gradlew ktlint
-    - name: Cache PhotoEditor Gradle packages
-      uses: actions/cache@v2
-      with:
-        path: PhotoEditor/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-        restore-keys: ${{ runner.os }}-gradle
-    - name: Grant execute permission for PhotoEditor gradlew
-      run: chmod +x PhotoEditor/gradlew
-    - name: clean PhotoEditor
-      run: |
-        cd PhotoEditor
-        ./gradlew clean
-    - name: assemble debug PhotoEditor
-      run: |
-        cd PhotoEditor
-        ./gradlew assembleDebug
-    - name: unit tests PhotoEditor
-      run: |
-        cd PhotoEditor
-        ./gradlew testDebugUnitTest
-    - name: lint PhotoEditor
-      run: |
-        cd PhotoEditor
-        ./gradlew lintDebug
-    - name: ktlint PhotoEditor
-      run: |
-        cd PhotoEditor
-        ./gradlew ktlint
-    - name: Cache Widget Gradle packages
-      uses: actions/cache@v2
-      with:
-        path: Widget/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-        restore-keys: ${{ runner.os }}-gradle
-    - name: Grant execute permission for Widget gradlew
-      run: chmod +x Widget/gradlew
-    - name: clean Widget
-      run: |
-        cd Widget
-        ./gradlew clean
-    - name: assemble debug Widget
-      run: |
-        cd Widget
-        ./gradlew assembleDebug
-    - name: unit tests Widget
-      run: |
-        cd Widget
-        ./gradlew testDebugUnitTest
-    - name: lint Widget
-      run: |
-        cd Widget
-        ./gradlew lintDebug
-    - name: ktlint Widget
-      run: |
-        cd Widget
-        ./gradlew ktlint
-    - name: Cache TwoNote Gradle packages
-      uses: actions/cache@v2
-      with:
-        path: TwoNote/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-        restore-keys: ${{ runner.os }}-gradle
-    - name: Grant execute permission for TwoNote gradlew
-      run: chmod +x TwoNote/gradlew
-    - name: clean TwoNote
-      run: |
-        cd TwoNote
-        ./gradlew clean
-    - name: assemble debug TwoNote
-      run: |
-        cd TwoNote
-        ./gradlew assembleDebug
-    - name: unit tests TwoNote
-      run: |
-        cd TwoNote
-        ./gradlew testDebugUnitTest
-    - name: lint TwoNote
-      run: |
-        cd TwoNote
-        ./gradlew lintDebug
-    - name: ktlint TwoNote
-      run: |
-        cd TwoNote
-        ./gradlew ktlint
-    
 
+    - name: Cache gradle packages
+      uses: actions/cache@v2
+      with:
+        path: ${{matrix.projects}}/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        restore-keys: ${{ runner.os }}-gradle
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x ${{matrix.projects}}/gradlew
+
+    - name: clean
+      run: |
+        cd ${{matrix.projects}}
+        ./gradlew clean --info
+
+    - name: assemble debug
+      run: |
+        cd ${{matrix.projects}}
+        ./gradlew assembleDebug --info
+
+    - name: unit tests
+      run: |
+        cd ${{matrix.projects}}
+        ./gradlew testDebugUnitTest --info
+
+    - name: lint
+      run: |
+        cd ${{matrix.projects}}
+        ./gradlew lintDebug --info
+
+    - name: ktlint
+      run: |
+        cd ${{matrix.projects}}
+        ./gradlew ktlint --info
