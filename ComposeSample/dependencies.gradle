@@ -6,7 +6,7 @@
 
 ext {
     gradlePluginVersion = "4.2.0-alpha07"
-    kotlinVersion = "1.4.0-rc"
+    kotlinVersion = "1.4.0"
     compileSdkVersion = 29
     buildToolsVersion = '29.0.2'
     targetSdkVersion = compileSdkVersion
@@ -36,13 +36,15 @@ ext {
     windowVersion = "1.0.0-alpha01"
 
     androidxDependencies = [
-            appCompat       : "androidx.appcompat:appcompat:$appCompatVersion",
-            ktxCore         : "androidx.core:core-ktx:$ktxCoreVersion",
-            window          : "androidx.window:window:$windowVersion",
-            compose         : "androidx.compose.ui:ui:$composeVersion",
-            composeRuntime  : "androidx.compose.runtime:runtime-livedata:$composeVersion",
-            composeMaterial : "androidx.compose.material:material:$composeVersion",
-            composeUI       : "androidx.ui:ui-tooling:$composeVersion"
+            appCompat        : "androidx.appcompat:appcompat:$appCompatVersion",
+            ktxCore           : "androidx.core:core-ktx:$ktxCoreVersion",
+            window            : "androidx.window:window:$windowVersion",
+            compose           : "androidx.compose.ui:ui:$composeVersion",
+            composeRuntime    : "androidx.compose.runtime:runtime-livedata:$composeVersion",
+            composeMaterial   : "androidx.compose.material:material:$composeVersion",
+            composeUITooling  : "androidx.ui:ui-tooling:$composeVersion",
+            composeUILayout   : "androidx.ui:ui-layout:$composeVersion",
+            composeUIMaterial : "androidx.ui:ui-material:$composeVersion"
     ]
 
     //Google dependencies

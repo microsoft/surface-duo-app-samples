@@ -50,7 +50,6 @@ android {
 }
 
 dependencies {
-
     implementation kotlinDependencies.kotlinStdlib
     implementation androidxDependencies.ktxCore
     implementation androidxDependencies.appCompat
@@ -58,7 +57,8 @@ dependencies {
     implementation androidxDependencies.compose
     implementation androidxDependencies.composeRuntime
     implementation androidxDependencies.composeMaterial
-    implementation androidxDependencies.composeUI
+    implementation androidxDependencies.composeUITooling
+
     implementation googleDependencies.material
 
     testImplementation testDependencies.junit

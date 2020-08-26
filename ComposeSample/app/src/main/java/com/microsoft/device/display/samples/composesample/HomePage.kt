@@ -9,9 +9,7 @@ package com.microsoft.device.display.samples.composesample
 
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.Text
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +18,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.preferredHeight
 import androidx.compose.foundation.layout.preferredWidth
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumnForIndexed
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -66,45 +66,50 @@ fun SetupUI() {
 
 @Composable
 private fun ShowList(models: List<ImageModel>) {
-    Log.i("ComposeSample", "show list")
-
     ShowListColumn(models, Modifier.fillMaxHeight() then Modifier.fillMaxWidth())
 }
 
 @Composable
 private fun ShowListColumn(models: List<ImageModel>, modifier: Modifier) {
-    ScrollableColumn(modifier) {
-        models.forEachIndexed { index, model ->
-            Row(
-                modifier = Modifier.clickable(
-                    onClick = {
-                        appStateViewModel.setImageSelectionLiveData(index)
-                    }
-                ) then Modifier.fillMaxWidth(),
-                verticalGravity = Alignment.CenterVertically
-            ) {
-                Image(asset = imageResource(model.image), modifier = Modifier.preferredHeight(100.dp).preferredWidth(150.dp))
-                Spacer(Modifier.preferredWidth(16.dp))
-                Text(model.id, modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center))
-                Spacer(Modifier.preferredWidth(16.dp))
-                Text(model.title, modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center))
-            }
-            Divider(color = Color.LightGray)
+    val imageSelectionLiveData = appStateViewModel.getImageSelectionLiveData()
+    val selectedIndex = imageSelectionLiveData.observeAsState(initial = 0).value
+
+//    ScrollableColumn(modifier) {
+//        models.forEachIndexed { index, model ->
+
+    LazyColumnForIndexed(items = models,
+        modifier = modifier
+    ) { index, item ->
+        Row(
+            modifier = Modifier.selectable(
+                selected = (index == selectedIndex),
+                onClick = {
+                    appStateViewModel.setImageSelectionLiveData(index)
+                }
+            ) then Modifier.fillMaxWidth(),
+            verticalGravity = Alignment.CenterVertically
+        ) {
+            Image(asset = imageResource(item.image), modifier = Modifier.preferredHeight(100.dp).preferredWidth(150.dp))
+            Spacer(Modifier.preferredWidth(16.dp))
+            Text(item.id, modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center))
+            Spacer(Modifier.preferredWidth(16.dp))
+            Text(item.title, modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center))
         }
+        Divider(color = Color.LightGray)
     }
 }
 
 @Composable
 fun ShowDetailWithList(models: List<ImageModel>) {
-    Log.i("ComposeSample", "show detail")
-
     val imageSelectionLiveData = appStateViewModel.getImageSelectionLiveData()
     val selectedIndex = imageSelectionLiveData.observeAsState(initial = 0).value
     val selectedImageModel = models[selectedIndex]
 
-    Row(modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center) then Modifier.fillMaxWidth().wrapContentSize(Alignment.Center)) {
+    Row(modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center)
+        then Modifier.fillMaxWidth().wrapContentSize(Alignment.Center)) {
         ShowListColumn(models, Modifier.fillMaxHeight().wrapContentSize(Alignment.Center).weight(1f))
-        Column(modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center).weight(1f), horizontalGravity = Alignment.CenterHorizontally) {
+        Column(modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center).weight(1f),
+               horizontalGravity = Alignment.CenterHorizontally) {
             Text(text = selectedImageModel.id, fontSize = 60.sp)
             Image(asset = imageResource(selectedImageModel.image))
         }
