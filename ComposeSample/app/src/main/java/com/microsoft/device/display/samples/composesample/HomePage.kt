@@ -77,8 +77,8 @@ private fun ShowListColumn(models: List<ImageModel>, modifier: Modifier) {
 
 //    ScrollableColumn(modifier) {
 //        models.forEachIndexed { index, model ->
-
-    LazyColumnForIndexed(items = models,
+    LazyColumnForIndexed(
+        items = models,
         modifier = modifier
     ) { index, item ->
         Row(
@@ -106,11 +106,17 @@ fun ShowDetailWithList(models: List<ImageModel>) {
     val selectedIndex = imageSelectionLiveData.observeAsState(initial = 0).value
     val selectedImageModel = models[selectedIndex]
 
-    Row(modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center)
-        then Modifier.fillMaxWidth().wrapContentSize(Alignment.Center)) {
-        ShowListColumn(models, Modifier.fillMaxHeight().wrapContentSize(Alignment.Center).weight(1f))
-        Column(modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center).weight(1f),
-               horizontalGravity = Alignment.CenterHorizontally) {
+    Row(
+        modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center)
+            then Modifier.fillMaxWidth().wrapContentSize(Alignment.Center)
+    ) {
+        ShowListColumn(
+            models, Modifier.fillMaxHeight().wrapContentSize(Alignment.Center).weight(1f)
+        )
+        Column(
+            modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center).weight(1f),
+            horizontalGravity = Alignment.CenterHorizontally
+        ) {
             Text(text = selectedImageModel.id, fontSize = 60.sp)
             Image(asset = imageResource(selectedImageModel.image))
         }
