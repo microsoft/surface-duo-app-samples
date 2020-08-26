@@ -35,6 +35,7 @@ import com.microsoft.device.display.samples.composesample.models.ImageModel
 import com.microsoft.device.display.samples.composesample.viewModels.AppStateViewModel
 
 private lateinit var appStateViewModel: AppStateViewModel
+private val DEBUG_TAG = "ComposeSample"
 
 @Preview
 @Composable
@@ -55,7 +56,7 @@ fun SetupUI() {
     val isScreenSpannedLiveData = appStateViewModel.getIsScreenSpannedLiveData()
     val isScreenSpanned = isScreenSpannedLiveData.observeAsState(initial = false).value
 
-    Log.i("ComposeSample", "SetupUI isScreenSpanned: $isScreenSpanned")
+    Log.i(DEBUG_TAG, "SetupUI isScreenSpanned: $isScreenSpanned")
 
     if (isScreenSpanned) {
         ShowDetailWithList(models)
