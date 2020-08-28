@@ -5,7 +5,7 @@
  */
 
 ext {
-    gradlePluginVersion = "4.2.0-alpha07"
+    gradlePluginVersion = "4.2.0-alpha08"
     kotlinVersion = "1.4.0"
     compileSdkVersion = 29
     buildToolsVersion = '29.0.2'
@@ -32,7 +32,7 @@ ext {
     viewPager2Version = "1.0.0"
     localBroadcastManagerVersion = "1.0.0"
     preferenceVersion = "1.1.1"
-    composeVersion = "0.1.0-dev17"
+    composeVersion = "1.0.0-alpha01"
     windowVersion = "1.0.0-alpha01"
 
     androidxDependencies = [
