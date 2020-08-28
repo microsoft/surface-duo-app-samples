@@ -5,7 +5,7 @@ name: App samples CI
 
 on:
   push:
-    branches: [ main, improve-ci ] # remove improve-ci before merging into main
+    branches: [ main ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
