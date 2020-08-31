@@ -6,7 +6,7 @@ languages:
 - kotlin
 products:
 - surface-duo
-urlFragment: composeSample
+urlFragment: compose-sample
 ---
 
 # ComposeSample
