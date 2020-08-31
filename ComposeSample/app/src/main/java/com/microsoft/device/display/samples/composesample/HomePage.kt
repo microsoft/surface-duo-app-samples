@@ -10,11 +10,13 @@ package com.microsoft.device.display.samples.composesample
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredHeight
 import androidx.compose.foundation.layout.preferredWidth
 import androidx.compose.foundation.layout.wrapContentSize
@@ -27,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.ui.tooling.preview.Preview
@@ -92,9 +95,10 @@ private fun ShowListColumn(models: List<ImageModel>, modifier: Modifier) {
         ) {
             Image(asset = imageResource(item.image), modifier = Modifier.preferredHeight(100.dp).preferredWidth(150.dp))
             Spacer(Modifier.preferredWidth(16.dp))
-            Text(item.id, modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center))
-            Spacer(Modifier.preferredWidth(16.dp))
-            Text(item.title, modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center))
+            Column(modifier = Modifier.fillMaxHeight() then Modifier.padding(16.dp)) {
+                Text(item.id, modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center), fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text(item.title, modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center))
+            }
         }
         Divider(color = Color.LightGray)
     }
@@ -115,7 +119,8 @@ fun ShowDetailWithList(models: List<ImageModel>) {
         )
         Column(
             modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center).weight(1f),
-            horizontalGravity = Alignment.CenterHorizontally
+            horizontalGravity = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(space = 40.dp)
         ) {
             Text(text = selectedImageModel.id, fontSize = 60.sp)
             Image(asset = imageResource(selectedImageModel.image))
