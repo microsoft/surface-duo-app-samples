@@ -22,7 +22,7 @@ jobs:
 
     strategy:
       matrix:
-        projects: [SourceEditor, PhotoEditor, Widget, TwoNote] # add ComposeSample once merged
+        projects: [SourceEditor, PhotoEditor, Widget, TwoNote, ComposeSample]
       fail-fast: false
 
     steps:
