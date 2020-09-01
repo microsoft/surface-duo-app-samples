@@ -13,15 +13,19 @@ urlFragment: compose-sample
 
 This sample is built with Jetpack Compose, the new UI framework in Android.
 
-Here are the requirements for the sample.  
+## Prerequisites
 
-- Jetpack Compose version: `0.1.0-dev17`
+- Jetpack Compose version: `1.0.0-alpha01`
 
-- Kotlin version: `1.4.0-rc`
+- Kotlin version: `1.4.0`
 
-- Gradle plugin version: `4.2.0-alpha07`
+- Gradle version: `6.6-rc-6`
 
-- Android Studio version: `4.2 Canary 7`
+- Android Gradle plugin version: `4.2.0-alpha08`
+
+- Android Studio version: `4.2 Canary 8`
+
+- AndroidX WindowManager version: `1.0.0-alpha01`
 
 ## Getting Started
 
