@@ -11,7 +11,11 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/ListDetail" />
+            <option value="$PROJECT_DIR$/companionpane" />
+            <option value="$PROJECT_DIR$/dualview" />
+            <option value="$PROJECT_DIR$/extendedcanvas" />
+            <option value="$PROJECT_DIR$/twopage" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
