@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
@@ -11,11 +12,11 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/CompanionPane" />
+            <option value="$PROJECT_DIR$/DualView" />
+            <option value="$PROJECT_DIR$/ExtendedCanvas" />
             <option value="$PROJECT_DIR$/ListDetail" />
-            <option value="$PROJECT_DIR$/companionpane" />
-            <option value="$PROJECT_DIR$/dualview" />
-            <option value="$PROJECT_DIR$/extendedcanvas" />
-            <option value="$PROJECT_DIR$/twopage" />
+            <option value="$PROJECT_DIR$/TwoPage" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
