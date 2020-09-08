@@ -13,6 +13,7 @@ import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import com.microsoft.device.display.samples.widget.feed.RssFeed
 import com.microsoft.device.display.samples.widget.feed.RssItem
+import com.microsoft.device.display.samples.widget.feed.RssSimpleApi
 
 class WidgetFactory(private val context: Context, private val intent: Intent) :
     RemoteViewsService.RemoteViewsFactory {
@@ -25,7 +26,7 @@ class WidgetFactory(private val context: Context, private val intent: Intent) :
     override fun onCreate() { }
 
     override fun onDataSetChanged() {
-        RssFeed.fetchRssFeed(context)
+        RssFeed.fetchRssFeed(context, RssSimpleApi::class.java)
     }
 
     override fun onDestroy() {

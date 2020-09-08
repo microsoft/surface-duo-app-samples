@@ -31,6 +31,9 @@ dependencies {
     implementation networkDependencies.okhttpLoggingInterceptor
 
     testImplementation testDependencies.junit
+    testImplementation testDependencies.mockKotlin
+    testImplementation testDependencies.mockWebServer
     androidTestImplementation instrumentationTestDependencies.junit
     androidTestImplementation instrumentationTestDependencies.espressoCore
+    androidTestImplementation instrumentationTestDependencies.testRules
 }
