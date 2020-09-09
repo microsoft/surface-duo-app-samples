@@ -13,11 +13,10 @@ import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Text
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
 import androidx.compose.material.TopAppBar
 import androidx.compose.ui.platform.setContent
+import androidx.compose.ui.res.stringResource
 import androidx.core.util.Consumer
 import androidx.lifecycle.ViewModelProvider
 import androidx.window.WindowLayoutInfo
@@ -41,17 +40,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DuoComposeSampleAppsTheme {
-                // A surface container using the 'background' color from the theme
                 Scaffold (
-                    topBar = { TopAppBar { title = "test"
+                    topBar = { TopAppBar(
+                        title = { Text(stringResource(R.string.app_name)) }
+                        )
+                    },
                     bodyContent = { SetupUI(viewModel = appStateViewModel)}
                 )
-//                Surface(color = MaterialTheme.colors.background) {
-//                    TopAppBar {
-//                        title = "test"
-//                    }
-//                    SetupUI(viewModel = appStateViewModel)
-//                }
             }
         }
     }
