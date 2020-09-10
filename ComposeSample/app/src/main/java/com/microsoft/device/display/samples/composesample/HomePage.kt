@@ -93,11 +93,24 @@ private fun ShowListColumn(models: List<ImageModel>, modifier: Modifier) {
             ) then Modifier.fillMaxWidth(),
             verticalGravity = Alignment.CenterVertically
         ) {
-            Image(asset = imageResource(item.image), modifier = Modifier.preferredHeight(100.dp).preferredWidth(150.dp))
-            Spacer(Modifier.preferredWidth(16.dp))
+            Image(
+                asset = imageResource(item.image),
+                modifier = Modifier.preferredHeight(100.dp).preferredWidth(150.dp)
+            )
+            Spacer(
+                Modifier.preferredWidth(16.dp)
+            )
             Column(modifier = Modifier.fillMaxHeight() then Modifier.padding(16.dp)) {
-                Text(item.id, modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center), fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                Text(item.title, modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center))
+                Text(
+                    text = item.id,
+                    modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = item.title,
+                    modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center)
+                )
             }
         }
         Divider(color = Color.LightGray)

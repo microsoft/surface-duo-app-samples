@@ -44,6 +44,7 @@ android {
 
 dependencies {
     implementation kotlinDependencies.kotlinStdlib
+
     implementation androidxDependencies.ktxCore
     implementation androidxDependencies.appCompat
     implementation androidxDependencies.window
@@ -57,4 +58,7 @@ dependencies {
     testImplementation testDependencies.junit
     androidTestImplementation instrumentationTestDependencies.junit
     androidTestImplementation instrumentationTestDependencies.espressoCore
+}
+repositories {
+    mavenCentral()
 }
