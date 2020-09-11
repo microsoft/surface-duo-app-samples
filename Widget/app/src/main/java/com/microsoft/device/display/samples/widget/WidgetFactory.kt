@@ -13,7 +13,6 @@ import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import com.microsoft.device.display.samples.widget.feed.RssFeed
 import com.microsoft.device.display.samples.widget.feed.RssItem
-import com.microsoft.device.display.samples.widget.feed.RssSimpleApi
 
 class WidgetFactory(private val context: Context, private val intent: Intent) :
     RemoteViewsService.RemoteViewsFactory {
@@ -23,53 +22,60 @@ class WidgetFactory(private val context: Context, private val intent: Intent) :
         const val ACTION_INTENT_VIEW_HREF_TAG = "action_intent_view_href_tag"
     }
 
+    private val rssItems: MutableList<RssItem?> = ArrayList()
+
     override fun onCreate() { }
 
     override fun onDataSetChanged() {
-        RssFeed.fetchRssFeed(context, RssSimpleApi::class.java)
+        RssFeed.refreshItems(context)?.let { newData ->
+            rssItems.clear()
+            rssItems.addAll(newData)
+        }
     }
 
     override fun onDestroy() {
-        RssFeed.clearRssItems()
+        rssItems.clear()
     }
 
     override fun getCount(): Int {
-        return RssFeed.rssItemsSize
+        return rssItems.size
     }
 
     override fun getViewAt(position: Int): RemoteViews? {
-
         val rv = RemoteViews(
             context.packageName,
             R.layout.collection_widget_list_item
         )
 
-        // Widget title
-        rv.setTextViewText(
-            R.id.widget_item_title,
-            RssFeed.getRssItemsItemAt(position)?.title
-        )
+        rssItems[position]?.let { item ->
+            // Widget title
+            rv.setTextViewText(
+                R.id.widget_item_title,
+                item.title
+            )
 
-        // Widget Creator
-        rv.setTextViewText(
-            R.id.widget_item_creator,
-            RssFeed.getRssItemsItemAt(position)?.creator
-        )
+            // Widget Creator
+            rv.setTextViewText(
+                R.id.widget_item_creator,
+                item.creator
+            )
 
-        // Widget date
-        rv.setTextViewText(
-            R.id.widget_item_date,
-            RssFeed.getRssItemsItemAt(position)?.date
-        )
+            // Widget date
+            rv.setTextViewText(
+                R.id.widget_item_date,
+                item.date
+            )
 
-        // Widget text body
-        rv.setTextViewText(
-            R.id.widget_item_content,
-            RssFeed.getRssItemsItemAt(position)?.body
-        )
+            // Widget text body
+            rv.setTextViewText(
+                R.id.widget_item_content,
+                item.body
+            )
 
-        // Intent for each list element where we add http link for each post
-        addIntentForWidgetItem(rv, RssFeed.getRssItemsItemAt(position)!!)
+            // Intent for each list element where we add http link for each post
+            addIntentForWidgetItem(rv, item)
+        }
+
         return rv
     }
 

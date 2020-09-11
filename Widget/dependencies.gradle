@@ -76,12 +76,10 @@ ext {
 
     //Test dependencies version
     junitVersion = "4.13"
-    mockKVersion = "1.10.0"
     mockWebServerVersion = "4.7.2"
 
     testDependencies = [
             junit        : "junit:junit:$junitVersion",
-            mockKotlin   : "io.mockk:mockk:$mockKVersion",
             mockWebServer: "com.squareup.okhttp3:mockwebserver:$mockWebServerVersion",
     ]
 

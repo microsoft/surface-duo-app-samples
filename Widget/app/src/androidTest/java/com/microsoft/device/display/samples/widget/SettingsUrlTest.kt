@@ -1,3 +1,10 @@
+/*
+ *
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License.
+ *
+ */
+
 package com.microsoft.device.display.samples.widget
 
 import androidx.preference.PreferenceManager
@@ -10,7 +17,6 @@ import androidx.test.filters.MediumTest
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
-import com.microsoft.device.display.samples.widget.feed.RssFeed
 import com.microsoft.device.display.samples.widget.feed.RssFeed.DEFAULT_FEED_URL
 import com.microsoft.device.display.samples.widget.settings.SettingsActivity
 import org.junit.Assert.assertEquals
@@ -36,14 +42,9 @@ class SettingsUrlTest {
     @Test
     fun shouldBeDefaultFeedUrl_whenGettingRequestUrlFromPreferences() {
         assertEquals(
-            "Base Url from Retrofit should be Default Feed Url",
-            DEFAULT_FEED_URL,
-            RssFeed.configureNetworkCall(appContext).baseUrl().toString()
-        )
-        assertEquals(
             "Preferences Feed Url should be Default Feed Url",
             DEFAULT_FEED_URL,
-            RssFeed.getFeedUrlFromPreferences(appContext)
+            getUrlFromPreferences()
         )
     }
 
@@ -59,14 +60,17 @@ class SettingsUrlTest {
         onView(withText(secondKey)).perform(click())
 
         assertEquals(
-            "Base Url from Retrofit should be second value url",
-            secondValue,
-            RssFeed.configureNetworkCall(appContext).baseUrl().toString()
-        )
-        assertEquals(
             "Preferences Feed Url should be second value url",
             secondValue,
-            RssFeed.getFeedUrlFromPreferences(appContext)
+            getUrlFromPreferences()
+        )
+    }
+
+    private fun getUrlFromPreferences(): String? {
+        val preferences = PreferenceManager.getDefaultSharedPreferences(appContext)
+        return preferences.getString(
+            appContext.resources.getString(R.string.widget_settings_predefined_key),
+            DEFAULT_FEED_URL
         )
     }
 }
