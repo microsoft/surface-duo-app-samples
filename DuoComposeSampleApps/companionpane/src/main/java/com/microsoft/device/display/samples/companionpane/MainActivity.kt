@@ -8,6 +8,7 @@
 
 package com.microsoft.device.display.samples.companionpane
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -36,6 +37,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         windowManager = WindowManager(this, null)
         appStateViewModel = ViewModelProvider(this).get(AppStateViewModel::class.java)
+        val isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        appStateViewModel.setIsScreenPortraitLiveData(isPortrait)
 
         super.onCreate(savedInstanceState)
         setContent {
@@ -48,6 +51,16 @@ class MainActivity : AppCompatActivity() {
                     bodyContent = { SetupUI(viewModel = appStateViewModel)}
                 )
             }
+        }
+    }
+
+    // Checks the orientation of the screen
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (newConfig.orientation === Configuration.ORIENTATION_LANDSCAPE) {
+            appStateViewModel.setIsScreenPortraitLiveData(false)
+        } else if (newConfig.orientation === Configuration.ORIENTATION_PORTRAIT) {
+            appStateViewModel.setIsScreenPortraitLiveData(true)
         }
     }
 

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,7 +39,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.microsoft.device.display.samples.companionpane.model.DataProvider
 import com.microsoft.device.display.samples.companionpane.ui.Gray
 import com.microsoft.device.display.samples.companionpane.ui.blueTint
 import com.microsoft.device.display.samples.companionpane.viewmodel.AppStateViewModel
@@ -48,20 +48,46 @@ private lateinit var appStateViewModel: AppStateViewModel
 @Composable
 fun SetupUI(viewModel: AppStateViewModel) {
     appStateViewModel = viewModel
-    val models = DataProvider.slides
     val isScreenSpannedLiveData = appStateViewModel.getIsScreenSpannedLiveData()
     val isScreenSpanned = isScreenSpannedLiveData.observeAsState(initial = false).value
 
+    val isScreenPortraitLiveData = appStateViewModel.getIsScreenPortraitLiveData()
+    val isScreenPortrait = isScreenPortraitLiveData.observeAsState(initial = true).value
+
     if (isScreenSpanned) {
-//        ShowDetailWithList(models)
+        if (isScreenPortrait) {
+            PortraitSpannedLayout()
+        } else {
+            LandscapeSpannedLayout()
+        }
     } else {
-        PortraitLayout()
+        if (isScreenPortrait) {
+            PortraitLayout()
+        } else {
+            LandscapeLayout()
+        }
+    }
+}
+
+@Composable
+fun LandscapeSpannedLayout() {
+    Row(Modifier.fillMaxSize()) {
+        ImagePanel(modifier = Modifier.fillMaxSize().weight(1f))
+        CropRotatePanel(modifier = Modifier.fillMaxSize().weight(1f))
+    }
+}
+
+@Composable
+fun PortraitSpannedLayout() {
+    Column(Modifier.fillMaxSize()) {
+        ImagePanel(modifier = Modifier.fillMaxSize().weight(1f))
+        CropRotatePanel(modifier = Modifier.fillMaxSize().weight(1f))
     }
 }
 
 @Composable
 fun PortraitLayout() {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
         ImagePanel(Modifier.height(400.dp))
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(space = 10.dp)) {
@@ -74,11 +100,21 @@ fun PortraitLayout() {
 }
 
 @Composable
+fun LandscapeLayout() {
+    Row() {
+        ImagePanel(Modifier.height(400.dp).weight(0.6f))
+        AdjustmentsExtendPanel(Modifier.weight(0.4f))
+        Spacer(Modifier.preferredWidth(8.dp))
+    }
+}
+
+@Composable
 fun ImagePanel(modifier: Modifier) {
     Image(asset = vectorResource(R.drawable.ic_photo_blue_24dp),
           modifier = Modifier.fillMaxWidth().then(modifier),
           contentScale = ContentScale.Fit,
-          colorFilter = ColorFilter.tint(blueTint))
+          colorFilter = ColorFilter.tint(blueTint),
+          alignment = Alignment.Center)
 }
 
 @Composable
@@ -103,7 +139,7 @@ fun CropRotatePanel(modifier: Modifier) {
                 Text("Rotate", color = Color.White, fontSize = 12.sp)
             }
             Button(modifier = Modifier.fillMaxWidth().weight(1f).height(40.dp),
-                   onClick = { print("test") },
+                   onClick = {},
                    backgroundColor = Gray) {
                 Image(asset = imageResource(id = R.drawable.ic_flip),
                       contentScale = ContentScale.Fit,
@@ -112,7 +148,7 @@ fun CropRotatePanel(modifier: Modifier) {
                 Text("Flip", color = Color.White, fontSize = 12.sp)
             }
         }
-        Button(onClick = { print("test") },
+        Button(onClick = {},
                backgroundColor = Gray,
                modifier = Modifier.fillMaxWidth().weight(1f).height(40.dp)) {
             Image(asset = imageResource(id = R.drawable.ic_aspect_ratio),
@@ -152,6 +188,15 @@ fun CropRotatePanel(modifier: Modifier) {
             inactiveTrackColor = Color.White,
             modifier = Modifier.fillMaxWidth()
         )
+    }
+}
+
+@Composable fun AdjustmentsExtendPanel(modifier: Modifier) {
+    Column(modifier = Modifier.fillMaxHeight().then(modifier),
+           verticalArrangement = Arrangement.SpaceEvenly) {
+        AdjustmentsPanel(Modifier.fillMaxWidth())
+        SliderControl("Clarity")
+        SliderControl("Saturation")
     }
 }
 
