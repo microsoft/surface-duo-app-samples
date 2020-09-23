@@ -35,7 +35,8 @@ import com.microsoft.device.display.samples.companionpane.R
 @Composable
 fun AdjustmentsSpannedExtendPanel(modifier: Modifier) {
     Column(modifier = Modifier.fillMaxHeight().then(modifier),
-           verticalArrangement = Arrangement.SpaceEvenly) {
+           verticalArrangement = Arrangement.spacedBy(5.dp)) {
+        Spacer(Modifier.preferredWidth(10.dp))
         AdjustmentsExtendPanel(Modifier.fillMaxWidth())
         ImageButton("Red eyd", R.drawable.ic_eye, Modifier.fillMaxWidth())
         ImageButton("Spot fix", R.drawable.ic_tap, Modifier.fillMaxWidth())

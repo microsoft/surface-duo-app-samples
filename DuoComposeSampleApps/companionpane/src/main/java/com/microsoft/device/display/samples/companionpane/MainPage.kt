@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope.weight
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,8 +30,10 @@ import com.microsoft.device.display.samples.companionpane.ui.blueTint
 import com.microsoft.device.display.samples.companionpane.uicomponent.AdjustmentsExtendPanel
 import com.microsoft.device.display.samples.companionpane.uicomponent.AdjustmentsPanel
 import com.microsoft.device.display.samples.companionpane.uicomponent.AdjustmentsSpannedExtendPanel
-import com.microsoft.device.display.samples.companionpane.uicomponent.CropRotateExtendPanel
 import com.microsoft.device.display.samples.companionpane.uicomponent.CropRotatePanel
+import com.microsoft.device.display.samples.companionpane.uicomponent.CropRotateSpannedLandscapePanel
+import com.microsoft.device.display.samples.companionpane.uicomponent.CropRotateSpannedPortraitPanel
+import com.microsoft.device.display.samples.companionpane.uicomponent.FilterBottomPanel
 import com.microsoft.device.display.samples.companionpane.uicomponent.FilterPanel
 import com.microsoft.device.display.samples.companionpane.viewmodel.AppStateViewModel
 
@@ -67,13 +68,16 @@ fun LandscapeSpannedLayout() {
     Row(Modifier.fillMaxSize()) {
         ImagePanel(modifier = Modifier.fillMaxSize().weight(1f))
         Row(modifier = Modifier.fillMaxSize().weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(5.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalGravity = Alignment.Top) {
             Spacer(Modifier.preferredWidth(10.dp))
-            CropRotateExtendPanel(modifier = Modifier.fillMaxWidth().weight(1/3f))
-            AdjustmentsSpannedExtendPanel(modifier = Modifier.fillMaxWidth().weight(1/3f))
-            FilterPanel(modifier = Modifier.fillMaxWidth().weight(1/3f))
-            Spacer(Modifier.preferredWidth(5.dp))
+            Column(modifier = Modifier.fillMaxSize().weight(0.7f),
+                   verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                CropRotateSpannedLandscapePanel(modifier = Modifier.fillMaxWidth().weight(1f))
+                AdjustmentsSpannedExtendPanel(modifier = Modifier.fillMaxWidth().weight(1f))
+            }
+            FilterBottomPanel(modifier = Modifier.fillMaxWidth().weight(0.3f))
+            Spacer(Modifier.preferredWidth(10.dp))
         }
     }
 }
@@ -82,7 +86,14 @@ fun LandscapeSpannedLayout() {
 fun PortraitSpannedLayout() {
     Column(Modifier.fillMaxSize()) {
         ImagePanel(modifier = Modifier.fillMaxSize().weight(1f))
-        CropRotatePanel(modifier = Modifier.fillMaxSize().weight(1f))
+        Row(modifier = Modifier.fillMaxSize().weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Spacer(Modifier.preferredWidth(10.dp))
+            CropRotateSpannedPortraitPanel(modifier = Modifier.fillMaxSize().weight(1f))
+            AdjustmentsSpannedExtendPanel(modifier = Modifier.fillMaxSize().weight(1f))
+            FilterPanel(modifier = Modifier.fillMaxSize().weight(1f))
+            Spacer(Modifier.preferredWidth(10.dp))
+        }
     }
 }
 

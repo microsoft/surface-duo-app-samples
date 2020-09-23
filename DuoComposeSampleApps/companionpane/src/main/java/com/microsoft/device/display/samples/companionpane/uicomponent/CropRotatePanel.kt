@@ -33,7 +33,18 @@ import androidx.compose.ui.unit.sp
 import com.microsoft.device.display.samples.companionpane.ui.Gray
 
 @Composable
-fun CropRotateExtendPanel(modifier: Modifier) {
+fun CropRotateSpannedLandscapePanel(modifier: Modifier) {
+    Column(modifier = modifier,
+           verticalArrangement = Arrangement.spacedBy(5.dp)) {
+        Spacer(Modifier.preferredWidth(10.dp))
+        CropRotatePanel(Modifier.fillMaxWidth())
+        ImageButton("Reset", R.drawable.ic_menu_revert, Modifier.fillMaxWidth())
+        FilterTopPanel()
+    }
+}
+
+@Composable
+fun CropRotateSpannedPortraitPanel(modifier: Modifier) {
     Column(modifier = modifier,
            verticalArrangement = Arrangement.spacedBy(5.dp)) {
         Spacer(Modifier.preferredWidth(10.dp))
@@ -66,7 +77,9 @@ fun CropRotatePanel(modifier: Modifier) {
                   contentScale = ContentScale.Fit,
                   modifier = Modifier.size(20.dp, 20.dp))
             Spacer(Modifier.preferredWidth(8.dp))
-            Text("Aspect ratio: Custom", color = Color.White, fontSize = 12.sp)
+            Text("Aspect ratio: Custom",
+                 color = Color.White,
+                 fontSize = 12.sp)
             Spacer(Modifier.preferredWidth(8.dp))
             Image(asset = imageResource(id = com.microsoft.device.display.samples.companionpane.R.drawable.arrow_down),
                   contentScale = ContentScale.Fit,

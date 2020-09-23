@@ -12,7 +12,9 @@ import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope.weight
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.preferredWidth
 import androidx.compose.material.Divider
@@ -27,40 +29,68 @@ import com.microsoft.device.display.samples.companionpane.ImagePanel
 
 @Composable
 fun FilterPanel(modifier: Modifier) {
-    Column(
-        modifier = modifier,
+    Column(modifier = modifier,
         horizontalGravity = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(space = 5.dp)
     ) {
-        Text(text = "Filter", textAlign = TextAlign.Center, color = Color.White, fontSize = 12.sp)
+        FilterTopPanel()
+        FilterBottomPanel(Modifier.fillMaxWidth())
+    }
+}
+
+@Composable
+fun FilterTopPanel() {
+    Column(horizontalGravity = Alignment.CenterHorizontally,
+           verticalArrangement = Arrangement.spacedBy(space = 5.dp)
+    ) {
+        Spacer(Modifier.preferredWidth(10.dp))
+        Text(
+            text = "Filter",
+            textAlign = TextAlign.Center,
+            color = Color.White,
+            fontSize = 12.sp
+        )
         Divider(color = Color.White, thickness = 1.dp)
         Spacer(Modifier.preferredWidth(5.dp))
-        Text(text = "Straightening", textAlign = TextAlign.Left, color = Color.White, fontSize = 12.sp)
+        LeftAlignText("Straightening")
         ImagePanel(Modifier.height(40.dp))
         Spacer(Modifier.preferredWidth(5.dp))
         SliderControl(title = "Filter intensity")
-        Text(text = "Choose a filter", textAlign = TextAlign.Left, color = Color.White, fontSize = 12.sp)
-        Row(
-            modifier = Modifier.height(100.dp),
-            horizontalArrangement = Arrangement.spacedBy(5.dp)
-        ) {
-            ImagePanel(Modifier.height(40.dp))
-            ImagePanel(Modifier.height(40.dp))
-            ImagePanel(Modifier.height(40.dp))
-            ImagePanel(Modifier.height(40.dp))
-            ImagePanel(Modifier.height(40.dp))
-            ImagePanel(Modifier.height(40.dp))
-        }
-        Row(
-            modifier = Modifier.height(100.dp),
-            horizontalArrangement = Arrangement.spacedBy(5.dp)
-        ) {
-            ImagePanel(Modifier.height(40.dp))
-            ImagePanel(Modifier.height(40.dp))
-            ImagePanel(Modifier.height(40.dp))
-            ImagePanel(Modifier.height(40.dp))
-            ImagePanel(Modifier.height(40.dp))
-            ImagePanel(Modifier.height(40.dp))
-        }
     }
+}
+
+@Composable
+fun FilterBottomPanel(modifier: Modifier) {
+    LeftAlignText("Choose a filter")
+    ImageRow()
+    ImageRow()
+}
+
+@Composable
+fun LeftAlignText(title: String) {
+    Row(modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start) {
+        Text(text = title, color = Color.White, fontSize = 12.sp)
+    }
+}
+
+@Composable
+fun ImageRow() {
+    Row(
+        modifier = Modifier.height(120.dp).fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(1.dp),
+        verticalGravity = Alignment.CenterVertically
+    ) {
+        SmallEvenImage(1/6f)
+        SmallEvenImage(1/6f)
+        SmallEvenImage(1/6f)
+        SmallEvenImage(1/6f)
+        SmallEvenImage(1/6f)
+        SmallEvenImage(1/6f)
+    }
+}
+
+@Composable
+fun SmallEvenImage(weightPercent: Float) {
+    ImagePanel(Modifier.height(15.dp).fillMaxWidth().weight(weightPercent))
 }
