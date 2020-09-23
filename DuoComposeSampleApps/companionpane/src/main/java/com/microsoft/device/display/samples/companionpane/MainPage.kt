@@ -9,38 +9,31 @@
 package com.microsoft.device.display.samples.companionpane
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope.weight
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.preferredWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.Button
-import androidx.compose.material.Divider
-import androidx.compose.material.Slider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.microsoft.device.display.samples.companionpane.ui.Gray
 import com.microsoft.device.display.samples.companionpane.ui.blueTint
+import com.microsoft.device.display.samples.companionpane.uicomponent.AdjustmentsExtendPanel
+import com.microsoft.device.display.samples.companionpane.uicomponent.AdjustmentsPanel
+import com.microsoft.device.display.samples.companionpane.uicomponent.AdjustmentsSpannedExtendPanel
+import com.microsoft.device.display.samples.companionpane.uicomponent.CropRotateExtendPanel
+import com.microsoft.device.display.samples.companionpane.uicomponent.CropRotatePanel
+import com.microsoft.device.display.samples.companionpane.uicomponent.FilterPanel
 import com.microsoft.device.display.samples.companionpane.viewmodel.AppStateViewModel
 
 private lateinit var appStateViewModel: AppStateViewModel
@@ -73,7 +66,15 @@ fun SetupUI(viewModel: AppStateViewModel) {
 fun LandscapeSpannedLayout() {
     Row(Modifier.fillMaxSize()) {
         ImagePanel(modifier = Modifier.fillMaxSize().weight(1f))
-        CropRotatePanel(modifier = Modifier.fillMaxSize().weight(1f))
+        Row(modifier = Modifier.fillMaxSize().weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
+            verticalGravity = Alignment.Top) {
+            Spacer(Modifier.preferredWidth(10.dp))
+            CropRotateExtendPanel(modifier = Modifier.fillMaxWidth().weight(1/3f))
+            AdjustmentsSpannedExtendPanel(modifier = Modifier.fillMaxWidth().weight(1/3f))
+            FilterPanel(modifier = Modifier.fillMaxWidth().weight(1/3f))
+            Spacer(Modifier.preferredWidth(5.dp))
+        }
     }
 }
 
@@ -117,111 +118,3 @@ fun ImagePanel(modifier: Modifier) {
           alignment = Alignment.Center)
 }
 
-@Composable
-fun CropRotatePanel(modifier: Modifier) {
-    Column(modifier = modifier,
-           horizontalGravity = Alignment.CenterHorizontally,
-           verticalArrangement = Arrangement.spacedBy(space = 5.dp)) {
-        Text(text = "Crop & Rotate",
-             textAlign = TextAlign.Center,
-             color = Color.White,
-             fontSize = 12.sp)
-        Divider(color = Color.White, thickness = 1.dp)
-        Spacer(Modifier.preferredWidth(5.dp))
-        SliderControl("Straightening")
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(space = 5.dp)) {
-            Button(modifier = Modifier.fillMaxWidth().weight(1f).height(40.dp),
-                   onClick = { print("test") },
-                   backgroundColor = Gray) {
-                Image(asset = imageResource(id = android.R.drawable.ic_menu_rotate), contentScale = ContentScale.Fit)
-                Spacer(Modifier.preferredWidth(8.dp))
-                Text("Rotate", color = Color.White, fontSize = 12.sp)
-            }
-            Button(modifier = Modifier.fillMaxWidth().weight(1f).height(40.dp),
-                   onClick = {},
-                   backgroundColor = Gray) {
-                Image(asset = imageResource(id = R.drawable.ic_flip),
-                      contentScale = ContentScale.Fit,
-                      modifier = Modifier.size(20.dp, 20.dp))
-                Spacer(Modifier.preferredWidth(8.dp))
-                Text("Flip", color = Color.White, fontSize = 12.sp)
-            }
-        }
-        Button(onClick = {},
-               backgroundColor = Gray,
-               modifier = Modifier.fillMaxWidth().weight(1f).height(40.dp)) {
-            Image(asset = imageResource(id = R.drawable.ic_aspect_ratio),
-                  contentScale = ContentScale.Fit,
-                  modifier = Modifier.size(20.dp, 20.dp))
-            Spacer(Modifier.preferredWidth(8.dp))
-            Text("Aspect ratio: Custom", color = Color.White, fontSize = 12.sp)
-            Spacer(Modifier.preferredWidth(8.dp))
-            Image(asset = imageResource(id = R.drawable.arrow_down),
-                  contentScale = ContentScale.Fit,
-                  modifier = Modifier.size(16.dp, 16.dp)
-            )
-        }
-    }
-}
-
-@Composable fun SliderControl(title: String) {
-    var sliderPosition by remember { mutableStateOf(0f) }
-    Column() {
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(text = title,
-                 textAlign = TextAlign.Left,
-                 color = Color.White,
-                 fontSize = 12.sp)
-            Text(text = sliderPosition.toString(),
-                 textAlign = TextAlign.Right,
-                 color = Color.White,
-                 fontSize = 12.sp)
-        }
-        Slider(
-            value = sliderPosition,
-            onValueChange = { sliderPosition = it },
-            valueRange = 0f..100f,
-            thumbColor = Gray,
-            activeTrackColor = Gray,
-            inactiveTrackColor = Color.White,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Composable fun AdjustmentsExtendPanel(modifier: Modifier) {
-    Column(modifier = Modifier.fillMaxHeight().then(modifier),
-           verticalArrangement = Arrangement.SpaceEvenly) {
-        AdjustmentsPanel(Modifier.fillMaxWidth())
-        SliderControl("Clarity")
-        SliderControl("Saturation")
-    }
-}
-
-@Composable
-fun AdjustmentsPanel(modifier: Modifier) {
-    Column(modifier = modifier,
-           horizontalGravity = Alignment.CenterHorizontally,
-           verticalArrangement = Arrangement.spacedBy(space = 5.dp)) {
-        Text(text = "Adjustments", textAlign = TextAlign.Center, color = Color.White, fontSize = 12.sp)
-        Divider(color = Color.White, thickness = 1.dp)
-        Spacer(Modifier.preferredWidth(5.dp))
-        AdjustmentControl("Light")
-        ImagePanel(Modifier.height(40.dp))
-        AdjustmentControl("Color")
-        ImagePanel(Modifier.height(40.dp))
-    }
-}
-
-@Composable fun AdjustmentControl(title: String) {
-    Row(modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Start) {
-        Image(asset = imageResource(id = R.drawable.arrow_right),
-              contentScale = ContentScale.Fit,
-              modifier = Modifier.size(16.dp, 16.dp))
-        Spacer(Modifier.preferredWidth(5.dp))
-        Text(text = title, textAlign = TextAlign.Left, color = Color.White, fontSize = 12.sp)
-    }
-}
