@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope.weight
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.preferredWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,7 +36,9 @@ fun FilterPanel(modifier: Modifier) {
         verticalArrangement = Arrangement.spacedBy(space = 5.dp)
     ) {
         FilterTopPanel()
-        FilterBottomPanel(Modifier.fillMaxWidth())
+        FilterBottomPanel(modifier = Modifier.fillMaxWidth(),
+                          imageWidth = 20.dp,
+                          imageHeight = 120.dp)
     }
 }
 
@@ -43,7 +47,6 @@ fun FilterTopPanel() {
     Column(horizontalGravity = Alignment.CenterHorizontally,
            verticalArrangement = Arrangement.spacedBy(space = 5.dp)
     ) {
-        Spacer(Modifier.preferredWidth(10.dp))
         Text(
             text = "Filter",
             textAlign = TextAlign.Center,
@@ -60,10 +63,12 @@ fun FilterTopPanel() {
 }
 
 @Composable
-fun FilterBottomPanel(modifier: Modifier) {
-    LeftAlignText("Choose a filter")
-    ImageRow()
-    ImageRow()
+fun FilterBottomPanel(modifier: Modifier, imageWidth: androidx.compose.ui.unit.Dp, imageHeight: androidx.compose.ui.unit.Dp) {
+    Column(modifier = modifier) {
+        LeftAlignText("Choose a filter")
+        ImageRow(imageWidth, imageHeight)
+        ImageRow(imageWidth, imageHeight)
+    }
 }
 
 @Composable
@@ -75,22 +80,22 @@ fun LeftAlignText(title: String) {
 }
 
 @Composable
-fun ImageRow() {
+fun ImageRow(width: androidx.compose.ui.unit.Dp, height: androidx.compose.ui.unit.Dp) {
     Row(
-        modifier = Modifier.height(120.dp).fillMaxWidth(),
+        modifier = Modifier.height(height).fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(1.dp),
         verticalGravity = Alignment.CenterVertically
     ) {
-        SmallEvenImage(1/6f)
-        SmallEvenImage(1/6f)
-        SmallEvenImage(1/6f)
-        SmallEvenImage(1/6f)
-        SmallEvenImage(1/6f)
-        SmallEvenImage(1/6f)
+        SmallEvenImage(1f, width)
+        SmallEvenImage(1f, width)
+        SmallEvenImage(1f, width)
+        SmallEvenImage(1f, width)
+        SmallEvenImage(1f, width)
+        SmallEvenImage(1f, width)
     }
 }
 
 @Composable
-fun SmallEvenImage(weightPercent: Float) {
-    ImagePanel(Modifier.height(15.dp).fillMaxWidth().weight(weightPercent))
+fun SmallEvenImage(weightPercent: Float, width: androidx.compose.ui.unit.Dp) {
+    ImagePanel(Modifier.width(width).fillMaxHeight().weight(weightPercent))
 }

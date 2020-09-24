@@ -12,12 +12,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope.weight
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.preferredHeight
 import androidx.compose.foundation.layout.preferredWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -65,44 +67,47 @@ fun SetupUI(viewModel: AppStateViewModel) {
 
 @Composable
 fun LandscapeSpannedLayout() {
-    Row(Modifier.fillMaxSize()) {
-        ImagePanel(modifier = Modifier.fillMaxSize().weight(1f))
-        Row(modifier = Modifier.fillMaxSize().weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalGravity = Alignment.Top) {
-            Spacer(Modifier.preferredWidth(10.dp))
-            Column(modifier = Modifier.fillMaxSize().weight(0.7f),
-                   verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                CropRotateSpannedLandscapePanel(modifier = Modifier.fillMaxWidth().weight(1f))
-                AdjustmentsSpannedExtendPanel(modifier = Modifier.fillMaxWidth().weight(1f))
+    Row(modifier = Modifier.fillMaxSize(),
+        horizontalArrangement = Arrangement.spacedBy(50.dp)) {
+        ImagePanel(modifier = Modifier.fillMaxHeight().weight(1f))
+        Column(modifier = Modifier.fillMaxHeight().weight(1f)) {
+            Spacer(Modifier.preferredHeight(8.dp))
+            Row(modifier = Modifier.fillMaxWidth().weight(0.7f),
+                horizontalArrangement= Arrangement.spacedBy(8.dp)) {
+                CropRotateSpannedLandscapePanel(modifier = Modifier.fillMaxHeight().weight(1f))
+                AdjustmentsSpannedExtendPanel(modifier = Modifier.fillMaxHeight().weight(1f))
+                Spacer(Modifier.preferredWidth(5.dp))
             }
-            FilterBottomPanel(modifier = Modifier.fillMaxWidth().weight(0.3f))
-            Spacer(Modifier.preferredWidth(10.dp))
+            FilterBottomPanel(modifier = Modifier.fillMaxWidth().weight(0.3f),
+                              imageWidth = 70.dp,
+                              imageHeight = 80.dp)
         }
     }
 }
 
 @Composable
 fun PortraitSpannedLayout() {
-    Column(Modifier.fillMaxSize()) {
-        ImagePanel(modifier = Modifier.fillMaxSize().weight(1f))
-        Row(modifier = Modifier.fillMaxSize().weight(1f),
+    Column(Modifier.fillMaxSize(),
+           verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        ImagePanel(modifier = Modifier.fillMaxWidth().weight(1f))
+        Row(modifier = Modifier.fillMaxWidth().weight(1f),
             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Spacer(Modifier.preferredWidth(10.dp))
-            CropRotateSpannedPortraitPanel(modifier = Modifier.fillMaxSize().weight(1f))
-            AdjustmentsSpannedExtendPanel(modifier = Modifier.fillMaxSize().weight(1f))
-            FilterPanel(modifier = Modifier.fillMaxSize().weight(1f))
-            Spacer(Modifier.preferredWidth(10.dp))
+            Spacer(Modifier.preferredWidth(8.dp))
+            CropRotateSpannedPortraitPanel(modifier = Modifier.fillMaxHeight().weight(1f))
+            AdjustmentsSpannedExtendPanel(modifier = Modifier.fillMaxHeight().weight(1f))
+            FilterPanel(modifier = Modifier.fillMaxHeight().weight(1f))
+            Spacer(Modifier.preferredWidth(8.dp))
         }
     }
 }
 
 @Composable
 fun PortraitLayout() {
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-        ImagePanel(Modifier.height(400.dp))
+    Column(modifier = Modifier.fillMaxSize(),
+           verticalArrangement = Arrangement.Center) {
+        ImagePanel(Modifier.height(420.dp).fillMaxWidth())
         Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(space = 10.dp)) {
+            horizontalArrangement = Arrangement.spacedBy(space = 8.dp)) {
             Spacer(Modifier.preferredWidth(5.dp))
             CropRotatePanel(Modifier.weight(1f))
             AdjustmentsPanel(Modifier.weight(1f))
@@ -113,9 +118,12 @@ fun PortraitLayout() {
 
 @Composable
 fun LandscapeLayout() {
-    Row() {
-        ImagePanel(Modifier.height(400.dp).weight(0.6f))
-        AdjustmentsExtendPanel(Modifier.weight(0.4f))
+    Row(modifier = Modifier.fillMaxSize()) {
+        ImagePanel(Modifier.width(420.dp).fillMaxHeight().weight(0.65f))
+        Column(Modifier.fillMaxHeight().weight(0.35f)) {
+            Spacer(Modifier.preferredHeight(10.dp))
+            AdjustmentsExtendPanel(Modifier.fillMaxSize())
+        }
         Spacer(Modifier.preferredWidth(8.dp))
     }
 }
@@ -123,7 +131,7 @@ fun LandscapeLayout() {
 @Composable
 fun ImagePanel(modifier: Modifier) {
     Image(asset = vectorResource(R.drawable.ic_photo_blue_24dp),
-          modifier = Modifier.fillMaxWidth().then(modifier),
+          modifier = modifier,
           contentScale = ContentScale.Fit,
           colorFilter = ColorFilter.tint(blueTint),
           alignment = Alignment.Center)

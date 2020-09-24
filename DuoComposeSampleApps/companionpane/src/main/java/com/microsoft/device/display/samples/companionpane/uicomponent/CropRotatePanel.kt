@@ -36,7 +36,6 @@ import com.microsoft.device.display.samples.companionpane.ui.Gray
 fun CropRotateSpannedLandscapePanel(modifier: Modifier) {
     Column(modifier = modifier,
            verticalArrangement = Arrangement.spacedBy(5.dp)) {
-        Spacer(Modifier.preferredWidth(10.dp))
         CropRotatePanel(Modifier.fillMaxWidth())
         ImageButton("Reset", R.drawable.ic_menu_revert, Modifier.fillMaxWidth())
         FilterTopPanel()
@@ -47,7 +46,6 @@ fun CropRotateSpannedLandscapePanel(modifier: Modifier) {
 fun CropRotateSpannedPortraitPanel(modifier: Modifier) {
     Column(modifier = modifier,
            verticalArrangement = Arrangement.spacedBy(5.dp)) {
-        Spacer(Modifier.preferredWidth(10.dp))
         CropRotatePanel(Modifier.fillMaxWidth())
         ImageButton("Reset", R.drawable.ic_menu_revert, Modifier.fillMaxWidth())
     }
@@ -66,7 +64,7 @@ fun CropRotatePanel(modifier: Modifier) {
         Spacer(Modifier.preferredWidth(5.dp))
         SliderControl("Straightening")
         Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(space = 5.dp)) {
+            horizontalArrangement = Arrangement.spacedBy(space = 8.dp)) {
             ImageButton("Rotate", R.drawable.ic_menu_rotate, Modifier.weight(1f))
             ImageButton("Flip", com.microsoft.device.display.samples.companionpane.R.drawable.ic_flip, Modifier.weight(1f))
         }
