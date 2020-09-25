@@ -22,7 +22,7 @@ import androidx.core.util.Consumer
 import androidx.lifecycle.ViewModelProvider
 import androidx.window.WindowLayoutInfo
 import androidx.window.WindowManager
-import com.microsoft.device.display.samples.companionpane.ui.DuoComposeSampleAppsTheme
+import com.microsoft.device.display.samples.companionpane.ui.CompanionPaneAppsTheme
 import com.microsoft.device.display.samples.companionpane.viewmodel.AppStateViewModel
 import java.util.concurrent.Executor
 
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
-            DuoComposeSampleAppsTheme {
+            CompanionPaneAppsTheme {
                 Scaffold (
                     topBar = { TopAppBar(
                         title = { Text(stringResource(R.string.app_name)) }
