@@ -57,9 +57,9 @@ class MainActivity : AppCompatActivity() {
     // Checks the orientation of the screen
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        if (newConfig.orientation === Configuration.ORIENTATION_LANDSCAPE) {
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             appStateViewModel.setIsScreenPortraitLiveData(false)
-        } else if (newConfig.orientation === Configuration.ORIENTATION_PORTRAIT) {
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             appStateViewModel.setIsScreenPortraitLiveData(true)
         }
     }
