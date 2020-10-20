@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.preferredHeight
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -39,10 +38,7 @@ fun EffectPanel() {
 fun ShortFilterControl() {
     Column(modifier = Modifier.wrapContentHeight(),
            verticalArrangement = Arrangement.spacedBy(5.dp)) {
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center) {
-            ShortIconsPanel()
-        }
+        ShortIconsPanel()
         AdjustScale()
     }
 }
@@ -60,11 +56,11 @@ fun FullFilterControl() {
 fun AdjustScale() {
     Column(modifier = Modifier.fillMaxWidth().wrapContentHeight(),
            verticalArrangement = Arrangement.spacedBy(5.dp)) {
-        Image(bitmap = imageResource(R.drawable.dot),
+        Image(asset = imageResource(R.drawable.dot),
               modifier = Modifier.fillMaxWidth().height(5.dp),
               contentScale = ContentScale.Inside,
               alignment = Alignment.Center)
-        Image(bitmap = imageResource(R.drawable.scale_icon),
+        Image(asset = imageResource(R.drawable.scale_icon),
               modifier = Modifier.fillMaxWidth().height(25.dp),
               contentScale = ContentScale.Inside,
               alignment = Alignment.Center)
@@ -75,22 +71,22 @@ fun AdjustScale() {
 fun FullIconsPanel() {
     Row(modifier = Modifier.fillMaxWidth().height(25.dp),
         horizontalArrangement = Arrangement.SpaceEvenly) {
-        Image(bitmap = imageResource(id = R.drawable.filter_icon))
-        Image(bitmap = imageResource(id = R.drawable.hdr_icon))
-        Image(bitmap = imageResource(id = R.drawable.ecllipse_icon))
-        Image(bitmap = imageResource(id = R.drawable.vertical_icon))
-        Image(bitmap = imageResource(id = R.drawable.horizontal_icon))
-        Image(bitmap = imageResource(id = R.drawable.zoom_icon))
-        Image(bitmap = imageResource(id = R.drawable.brightness_icon))
+        Image(asset = imageResource(id = R.drawable.filter_icon))
+        Image(asset = imageResource(id = R.drawable.hdr_icon))
+        Image(asset = imageResource(id = R.drawable.ecllipse_icon))
+        Image(asset = imageResource(id = R.drawable.vertical_icon))
+        Image(asset = imageResource(id = R.drawable.horizontal_icon))
+        Image(asset = imageResource(id = R.drawable.zoom_icon))
+        Image(asset = imageResource(id = R.drawable.brightness_icon))
     }
 }
 
 @Composable
 fun ShortIconsPanel() {
-    Row(modifier = Modifier.width(200.dp).height(25.dp),
+    Row(modifier = Modifier.fillMaxWidth().height(25.dp),
         horizontalArrangement = Arrangement.SpaceEvenly) {
-        Image(bitmap = imageResource(id = R.drawable.ecllipse_icon))
-        Image(bitmap = imageResource(id = R.drawable.vertical_icon))
-        Image(bitmap = imageResource(id = R.drawable.horizontal_icon))
+        Image(asset = imageResource(id = R.drawable.ecllipse_icon))
+        Image(asset = imageResource(id = R.drawable.vertical_icon))
+        Image(asset = imageResource(id = R.drawable.horizontal_icon))
     }
 }

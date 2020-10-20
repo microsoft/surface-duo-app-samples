@@ -13,20 +13,18 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.Text
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TopAppBar
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import androidx.core.util.Consumer
 import androidx.lifecycle.ViewModelProvider
 import androidx.window.WindowLayoutInfo
 import androidx.window.WindowManager
 import com.microsoft.device.display.samples.companionpane.ui.CompanionPaneAppsTheme
-import com.microsoft.device.display.samples.companionpane.viewModels.AppStateViewModel
+import com.microsoft.device.display.samples.companionpane.viewmodel.AppStateViewModel
 import java.util.concurrent.Executor
 
 class MainActivity : AppCompatActivity() {
@@ -48,10 +46,7 @@ class MainActivity : AppCompatActivity() {
             CompanionPaneAppsTheme {
                 Scaffold (
                     topBar = { TopAppBar(
-                        title = { BasicText(text = stringResource(R.string.app_name),
-                                            style = TextStyle(fontSize = 18.sp,
-                                                              fontWeight = FontWeight.Bold)
-                                ) },
+                            title = { Text(stringResource(R.string.app_name)) },
                         )
                     },
                     bodyContent = { SetupUI(viewModel = appStateViewModel)}
@@ -63,9 +58,11 @@ class MainActivity : AppCompatActivity() {
     // Checks the orientation of the screen
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-
-        val isPortrait = newConfig.orientation == Configuration.ORIENTATION_PORTRAIT
-        appStateViewModel.setIsScreenPortraitLiveData(isPortrait)
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            appStateViewModel.setIsScreenPortraitLiveData(false)
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            appStateViewModel.setIsScreenPortraitLiveData(true)
+        }
     }
 
     override fun onAttachedToWindow() {
