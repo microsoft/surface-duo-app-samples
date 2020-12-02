@@ -17,18 +17,18 @@ import android.webkit.WebView
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
-
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-
 import com.microsoft.device.display.samples.sourceeditor.includes.DragHandler
 import com.microsoft.device.display.samples.sourceeditor.viewmodel.ScrollViewModel
 import com.microsoft.device.display.samples.sourceeditor.viewmodel.WebViewModel
-import com.microsoft.device.dualscreen.layout.ScreenHelper
+import com.microsoft.device.dualscreen.ScreenInfo
+import com.microsoft.device.dualscreen.ScreenInfoListener
+import com.microsoft.device.dualscreen.ScreenManagerProvider
 
 /* Fragment that defines functionality for the source code previewer */
-class PreviewFragment : Fragment() {
+class PreviewFragment : Fragment(), ScreenInfoListener {
     private lateinit var buttonToolbar: LinearLayout
     private lateinit var scrollView: ScrollView
 
@@ -61,11 +61,23 @@ class PreviewFragment : Fragment() {
 
             val str: String? = (webVM.getText().value)
             webView.loadData(str, Defines.HTML_TYPE, Defines.ENCODING)
-
-            handleSpannedModeSelection(view, webView)
         }
 
         return view
+    }
+
+    override fun onScreenInfoChanged(screenInfo: ScreenInfo) {
+        handleSpannedModeSelection(requireView(), webView, screenInfo)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        ScreenManagerProvider.getScreenManager().addScreenInfoListener(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ScreenManagerProvider.getScreenManager().removeScreenInfoListener(this)
     }
 
     // mirror scrolling logic
@@ -83,7 +95,7 @@ class PreviewFragment : Fragment() {
     }
 
     // single screen vs. dual screen logic
-    private fun handleSpannedModeSelection(view: View, webView: WebView) {
+    private fun handleSpannedModeSelection(view: View, webView: WebView, screenInfo: ScreenInfo) {
         activity?.let { activity ->
             editorBtn = view.findViewById(R.id.btn_switch_to_editor)
             buttonToolbar = view.findViewById(R.id.button_toolbar)
@@ -93,7 +105,7 @@ class PreviewFragment : Fragment() {
                 webView.loadData(str, Defines.HTML_TYPE, Defines.ENCODING)
             })
 
-            if (ScreenHelper.isDualMode(activity)) {
+            if (screenInfo.isDualMode()) {
                 initializeDualScreen(view)
             } else {
                 initializeSingleScreen()
@@ -136,10 +148,10 @@ class PreviewFragment : Fragment() {
     private fun startCodeFragment() {
         parentFragmentManager.beginTransaction()
             .replace(
-                R.id.single_screen_container_id,
+                R.id.first_container_id,
                 CodeFragment(),
                 null
-            ).addToBackStack(null)
+            ).addToBackStack("CodeFragment")
             .commit()
     }
 

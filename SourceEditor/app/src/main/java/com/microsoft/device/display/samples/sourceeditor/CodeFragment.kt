@@ -27,13 +27,15 @@ import com.google.android.material.textfield.TextInputEditText
 import com.microsoft.device.display.samples.sourceeditor.includes.DragHandler
 import com.microsoft.device.display.samples.sourceeditor.viewmodel.ScrollViewModel
 import com.microsoft.device.display.samples.sourceeditor.viewmodel.WebViewModel
-import com.microsoft.device.dualscreen.layout.ScreenHelper
+import com.microsoft.device.dualscreen.ScreenInfo
+import com.microsoft.device.dualscreen.ScreenInfoListener
+import com.microsoft.device.dualscreen.ScreenManagerProvider
 
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
 /* Fragment that defines functionality for source code editor */
-class CodeFragment : Fragment() {
+class CodeFragment : Fragment(), ScreenInfoListener {
     private lateinit var buttonToolbar: LinearLayout
     private lateinit var codeLayout: LinearLayout
     private lateinit var scrollView: ScrollView
@@ -76,10 +78,23 @@ class CodeFragment : Fragment() {
             textField.setText(webVM.getText().value)
 
             setOnChangeListenerForTextInput(textField)
-            handleSpannedModeSelection(view)
         }
 
         return view
+    }
+
+    override fun onScreenInfoChanged(screenInfo: ScreenInfo) {
+        handleSpannedModeSelection(requireView(), screenInfo)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        ScreenManagerProvider.getScreenManager().addScreenInfoListener(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ScreenManagerProvider.getScreenManager().removeScreenInfoListener(this)
     }
 
     // read from a base file in the assets folder
@@ -105,13 +120,13 @@ class CodeFragment : Fragment() {
     }
 
     // single screen vs. dual screen logic
-    private fun handleSpannedModeSelection(view: View) {
+    private fun handleSpannedModeSelection(view: View, screenInfo: ScreenInfo) {
         activity?.let {
             codeLayout = view.findViewById(R.id.code_layout)
             previewBtn = view.findViewById(R.id.btn_switch_to_preview)
             buttonToolbar = view.findViewById(R.id.button_toolbar)
 
-            if (ScreenHelper.isDualMode(it)) {
+            if (screenInfo.isDualMode()) {
                 initializeDualScreen()
             } else {
                 initializeSingleScreen()
@@ -153,10 +168,10 @@ class CodeFragment : Fragment() {
     private fun startPreviewFragment() {
         parentFragmentManager.beginTransaction()
             .replace(
-                R.id.single_screen_container_id,
+                R.id.first_container_id,
                 PreviewFragment(),
                 null
-            ).addToBackStack(null)
+            ).addToBackStack("PreviewFragment")
             .commit()
     }
 
