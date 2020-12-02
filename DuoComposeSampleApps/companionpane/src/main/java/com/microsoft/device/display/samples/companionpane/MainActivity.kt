@@ -13,10 +13,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.Text
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TopAppBar
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.res.stringResource
 import androidx.core.util.Consumer
@@ -24,7 +23,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.window.WindowLayoutInfo
 import androidx.window.WindowManager
 import com.microsoft.device.display.samples.companionpane.ui.CompanionPaneAppsTheme
-import com.microsoft.device.display.samples.companionpane.viewmodel.AppStateViewModel
+import com.microsoft.device.display.samples.companionpane.viewModels.AppStateViewModel
 import java.util.concurrent.Executor
 
 class MainActivity : AppCompatActivity() {
@@ -46,7 +45,7 @@ class MainActivity : AppCompatActivity() {
             CompanionPaneAppsTheme {
                 Scaffold (
                     topBar = { TopAppBar(
-                            title = { Text(stringResource(R.string.app_name)) },
+                            title = { BasicText(stringResource(R.string.app_name)) },
                         )
                     },
                     bodyContent = { SetupUI(viewModel = appStateViewModel)}

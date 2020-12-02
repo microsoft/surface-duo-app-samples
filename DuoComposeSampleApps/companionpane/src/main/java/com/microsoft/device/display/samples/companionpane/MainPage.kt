@@ -34,7 +34,7 @@ import com.microsoft.device.display.samples.companionpane.uicomponent.ImagePanel
 import com.microsoft.device.display.samples.companionpane.uicomponent.MagicDefinitionPanel
 import com.microsoft.device.display.samples.companionpane.uicomponent.ShortFilterControl
 import com.microsoft.device.display.samples.companionpane.uicomponent.VignetteBrightnessPanel
-import com.microsoft.device.display.samples.companionpane.viewmodel.AppStateViewModel
+import com.microsoft.device.display.samples.companionpane.viewModels.AppStateViewModel
 
 private lateinit var appStateViewModel: AppStateViewModel
 

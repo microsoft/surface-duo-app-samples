@@ -9,7 +9,6 @@
 package com.microsoft.device.display.samples.companionpane.uicomponent
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.preferredWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.Button
 import androidx.compose.material.Slider
 import androidx.compose.runtime.Composable
@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -54,13 +55,15 @@ fun SliderControl() {
 @Composable
 fun ImageButton(title: String, imageId: Int, modifier: Modifier) {
     Button(modifier = Modifier.fillMaxWidth().height(40.dp).then(modifier),
-           onClick = {},
-           backgroundColor = Gray) {
-        Image(asset = imageResource(id = imageId),
+           onClick = {}){
+           //colors = Gray) {
+        Image(bitmap = imageResource(id = imageId),
               contentScale = ContentScale.Fit,
               modifier = Modifier.size(20.dp, 20.dp))
         Spacer(Modifier.preferredWidth(8.dp))
-        Text(title, color = Color.White, fontSize = 12.sp)
+        BasicText(text = title,
+                  style = TextStyle(color = Color.White, fontSize = 12.sp)
+        )
     }
 }
 
@@ -69,10 +72,10 @@ fun LeftAlignText(title: String) {
     Row(modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start) {
         Spacer(Modifier.preferredWidth(30.dp))
-        Text(text = title,
-             color = Color.White,
-             fontSize = 16.sp,
-             fontWeight = FontWeight.Bold,
+        BasicText(text = title,
+                  style = TextStyle(color = Color.White,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold)
         )
     }
 }
@@ -82,14 +85,14 @@ fun ImageWithText(id: Int, text: String, imageWidth: Dp, width: Dp) {
     Column(modifier = Modifier.preferredWidth(width),
            verticalArrangement = Arrangement.spacedBy(5.dp),
            horizontalAlignment = Alignment.CenterHorizontally) {
-        Image(asset = imageResource(id = id),
+        Image(bitmap = imageResource(id = id),
               modifier = Modifier.preferredWidth(imageWidth),
               alignment = Alignment.Center)
-        Text(text = text,
-             textAlign = TextAlign.Center,
-             color = Color.White,
-             fontSize = 12.sp,
-             modifier = Modifier.fillMaxWidth()
+        BasicText(text = text,
+                  modifier = Modifier.fillMaxWidth(),
+                  style = TextStyle(textAlign = TextAlign.Center,
+                                                 color = Color.White,
+                                                 fontSize = 12.sp)
         )
     }
 }

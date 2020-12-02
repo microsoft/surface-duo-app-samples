@@ -18,7 +18,7 @@ import com.microsoft.device.display.samples.companionpane.R
 
 @Composable
 fun ImagePanel(modifier: Modifier) {
-    Image(asset = imageResource(R.drawable.full_image),
+    Image(bitmap = imageResource(R.drawable.full_image),
           modifier = modifier,
           contentScale = ContentScale.Inside,
           alignment = Alignment.Center)

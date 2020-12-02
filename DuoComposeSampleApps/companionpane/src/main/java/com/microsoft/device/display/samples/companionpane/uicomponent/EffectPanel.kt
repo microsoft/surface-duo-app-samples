@@ -56,11 +56,11 @@ fun FullFilterControl() {
 fun AdjustScale() {
     Column(modifier = Modifier.fillMaxWidth().wrapContentHeight(),
            verticalArrangement = Arrangement.spacedBy(5.dp)) {
-        Image(asset = imageResource(R.drawable.dot),
+        Image(bitmap = imageResource(R.drawable.dot),
               modifier = Modifier.fillMaxWidth().height(5.dp),
               contentScale = ContentScale.Inside,
               alignment = Alignment.Center)
-        Image(asset = imageResource(R.drawable.scale_icon),
+        Image(bitmap = imageResource(R.drawable.scale_icon),
               modifier = Modifier.fillMaxWidth().height(25.dp),
               contentScale = ContentScale.Inside,
               alignment = Alignment.Center)
@@ -71,13 +71,13 @@ fun AdjustScale() {
 fun FullIconsPanel() {
     Row(modifier = Modifier.fillMaxWidth().height(25.dp),
         horizontalArrangement = Arrangement.SpaceEvenly) {
-        Image(asset = imageResource(id = R.drawable.filter_icon))
-        Image(asset = imageResource(id = R.drawable.hdr_icon))
-        Image(asset = imageResource(id = R.drawable.ecllipse_icon))
-        Image(asset = imageResource(id = R.drawable.vertical_icon))
-        Image(asset = imageResource(id = R.drawable.horizontal_icon))
-        Image(asset = imageResource(id = R.drawable.zoom_icon))
-        Image(asset = imageResource(id = R.drawable.brightness_icon))
+        Image(bitmap = imageResource(id = R.drawable.filter_icon))
+        Image(bitmap = imageResource(id = R.drawable.hdr_icon))
+        Image(bitmap = imageResource(id = R.drawable.ecllipse_icon))
+        Image(bitmap = imageResource(id = R.drawable.vertical_icon))
+        Image(bitmap = imageResource(id = R.drawable.horizontal_icon))
+        Image(bitmap = imageResource(id = R.drawable.zoom_icon))
+        Image(bitmap = imageResource(id = R.drawable.brightness_icon))
     }
 }
 
@@ -85,8 +85,8 @@ fun FullIconsPanel() {
 fun ShortIconsPanel() {
     Row(modifier = Modifier.fillMaxWidth().height(25.dp),
         horizontalArrangement = Arrangement.SpaceEvenly) {
-        Image(asset = imageResource(id = R.drawable.ecllipse_icon))
-        Image(asset = imageResource(id = R.drawable.vertical_icon))
-        Image(asset = imageResource(id = R.drawable.horizontal_icon))
+        Image(bitmap = imageResource(id = R.drawable.ecllipse_icon))
+        Image(bitmap = imageResource(id = R.drawable.vertical_icon))
+        Image(bitmap = imageResource(id = R.drawable.horizontal_icon))
     }
 }
