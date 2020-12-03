@@ -11,6 +11,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.ui.platform.setContent
 import androidx.core.util.Consumer
 import androidx.lifecycle.ViewModelProvider
@@ -36,7 +38,9 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             ComposeSampleTheme {
-                Home(appStateViewModel)
+                Surface(color = MaterialTheme.colors.background) {
+                    Home(appStateViewModel)
+                }
             }
         }
     }
