@@ -12,14 +12,9 @@ ext {
     targetSdkVersion = compileSdkVersion
     minSdkVersion = compileSdkVersion
 
-    //Surface Duo
-    duo_url = "https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1"
-
     config = [
             gradlePlugin             : "com.android.tools.build:gradle:$gradlePluginVersion",
             kotlinGradlePlugin       : "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion",
-            duoSdkUrl                :
-                    "https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1",
             testInstrumentationRunner: "androidx.test.runner.AndroidJUnitRunner"
     ]
 
@@ -55,13 +50,6 @@ ext {
 
     googleDependencies = [
             material: "com.google.android.material:material:$materialVersion"
-    ]
-
-    //Microsoft dependencies version
-    dualScreenLayoutVersion = "1.0.0-alpha01"
-
-    microsoftDependencies = [
-            dualScreenLayout: "com.microsoft.device:dualscreen-layout:$dualScreenLayoutVersion"
     ]
 
     //Network dependencies version
