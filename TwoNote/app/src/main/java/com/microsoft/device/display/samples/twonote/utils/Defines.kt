@@ -12,8 +12,12 @@ import android.graphics.Matrix
  */
 object Defines {
     // Fragment name constants //
-    const val DETAIL_FRAGMENT = "detail fragment"
-    const val LIST_FRAGMENT = "list fragment"
+    const val DETAIL_FRAGMENT = "detail"
+    const val TAG_DELIMITER = "_"
+    const val FIRST_CONTAINER = "first"
+    const val SECOND_CONTAINER = "second"
+    const val LIST_FRAGMENT = "list"
+    const val GET_STARTED_FRAGMENT = "started"
     const val INODE = "inode"
     const val NOTE = "note"
 

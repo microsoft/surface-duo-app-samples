@@ -46,10 +46,9 @@ import com.microsoft.device.display.samples.twonote.utils.DataProvider
 import com.microsoft.device.display.samples.twonote.utils.DragHandler
 import com.microsoft.device.display.samples.twonote.utils.FileSystem
 import com.microsoft.device.display.samples.twonote.utils.PenDrawView
-import com.microsoft.device.dualscreen.core.ScreenHelper
+import com.microsoft.device.dualscreen.ScreenInfoProvider
 import java.io.File
 import java.io.FileOutputStream
-import java.lang.ClassCastException
 import java.time.LocalDateTime
 
 /**
@@ -731,7 +730,8 @@ class NoteDetailFragment : Fragment() {
      */
     fun closeFragment() {
         activity?.let { activity ->
-            if (ScreenHelper.isDualMode(activity) && !MainActivity.isRotated(activity)) {
+            if (ScreenInfoProvider.getScreenInfo(activity).isDualMode() &&
+                !MainActivity.isRotated(activity)) {
                 // Tell NoteListFragment that list data has changed
                 (parentFragmentManager.findFragmentByTag(LIST_FRAGMENT) as? NoteListFragment)
                     ?.updateNotesList()

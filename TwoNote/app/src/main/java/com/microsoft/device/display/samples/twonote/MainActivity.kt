@@ -7,7 +7,7 @@
 
 package com.microsoft.device.display.samples.twonote
 
-import Defines.DETAIL_FRAGMENT
+import Defines.GET_STARTED_FRAGMENT
 import Defines.INODE
 import Defines.LIST_FRAGMENT
 import Defines.NOTE
@@ -23,13 +23,19 @@ import com.microsoft.device.display.samples.twonote.models.INode
 import com.microsoft.device.display.samples.twonote.models.Note
 import com.microsoft.device.display.samples.twonote.utils.DataProvider
 import com.microsoft.device.display.samples.twonote.utils.FileSystem
-import com.microsoft.device.dualscreen.core.ScreenHelper
-import com.microsoft.device.dualscreen.core.ScreenMode
+import com.microsoft.device.display.samples.twonote.utils.buildDetailTag
+import com.microsoft.device.dualscreen.ScreenInfo
+import com.microsoft.device.dualscreen.ScreenInfoListener
+import com.microsoft.device.dualscreen.ScreenInfoProvider
+import com.microsoft.device.dualscreen.ScreenManagerProvider
 
 /**
  * Activity that manages fragments and preservation of data through the app's lifecycle
  */
-class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteractionListener {
+class MainActivity : AppCompatActivity(),
+    NoteDetailFragment.OnFragmentInteractionListener,
+    ScreenInfoListener {
+
     companion object {
         /**
          * Returns whether device is rotated (to the left or right) or not
@@ -38,28 +44,43 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
          * @return true if rotated, false otherwise
          */
         fun isRotated(context: Context): Boolean {
-            return ScreenHelper.getCurrentRotation(context) == Surface.ROTATION_90 ||
-                ScreenHelper.getCurrentRotation(context) == Surface.ROTATION_270
+            return ScreenInfoProvider.getScreenInfo(context).getScreenRotation() == Surface.ROTATION_90 ||
+                ScreenInfoProvider.getScreenInfo(context).getScreenRotation() == Surface.ROTATION_270
         }
     }
+
+    private var savedNote: Note? = null
+    private var savedINode: INode? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         // Get data from previously selected note (if available)
-        val note = savedInstanceState?.getSerializable(NOTE) as? Note
-        val inode = savedInstanceState?.getSerializable(INODE) as? INode
-        val noteSelected = note != null && inode != null
+        savedNote = savedInstanceState?.getSerializable(NOTE) as? Note
+        savedINode = savedInstanceState?.getSerializable(INODE) as? INode
+    }
 
-        when ((application as TwoNote).surfaceDuoScreenManager.screenMode) {
-            ScreenMode.SINGLE_SCREEN -> {
-                selectSingleScreenFragment(noteSelected, note, inode)
-            }
-            ScreenMode.DUAL_SCREEN -> {
-                selectDualScreenFragments(noteSelected, note, inode)
-            }
+    override fun onScreenInfoChanged(screenInfo: ScreenInfo) {
+        val noteSelected = savedNote != null && savedINode != null
+
+        if (screenInfo.isDualMode()) {
+            selectDualScreenFragments(noteSelected, savedNote, savedINode)
+        } else {
+            selectSingleScreenFragment(noteSelected, savedNote, savedINode)
         }
+        savedNote = null
+        savedINode = null
+    }
+
+    override fun onStart() {
+        super.onStart()
+        ScreenManagerProvider.getScreenManager().addScreenInfoListener(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ScreenManagerProvider.getScreenManager().removeScreenInfoListener(this)
     }
 
     /**
@@ -89,7 +110,7 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
      */
     private fun selectDualScreenFragments(noteSelected: Boolean, note: Note?, inode: INode?) {
         // If rotated, use extended canvas pattern, otherwise use list-detail pattern
-        if (isRotated(applicationContext)) {
+        if (isRotated(this)) {
             // Remove fragment from second container if it exists
             removeSecondFragment()
 
@@ -121,9 +142,11 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
      * Start note list view fragment in first container
      */
     private fun startNoteListFragment() {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.first_container_id, NoteListFragment(), LIST_FRAGMENT)
-            .commit()
+        if (supportFragmentManager.findFragmentByTag(LIST_FRAGMENT) == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.first_container_id, NoteListFragment(), LIST_FRAGMENT)
+                .commit()
+        }
     }
 
     /**
@@ -134,18 +157,23 @@ class MainActivity : AppCompatActivity(), NoteDetailFragment.OnFragmentInteracti
      * @param inode: inode associated with note to display in fragment
      */
     private fun startNoteDetailFragment(container: Int, note: Note, inode: INode) {
-        supportFragmentManager.beginTransaction()
-            .replace(container, NoteDetailFragment.newInstance(inode, note), DETAIL_FRAGMENT)
-            .commit()
+        val tag = buildDetailTag(container, inode.id, note.id)
+        if (supportFragmentManager.findFragmentByTag(tag) == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(container, NoteDetailFragment.newInstance(inode, note), tag)
+                .commit()
+        }
     }
 
     /**
      * Start welcome fragment in second container
      */
     private fun startGetStartedFragment() {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.second_container_id, GetStartedFragment(), null)
-            .commit()
+        if (supportFragmentManager.findFragmentByTag(GET_STARTED_FRAGMENT) == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.second_container_id, GetStartedFragment(), GET_STARTED_FRAGMENT)
+                .commit()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
