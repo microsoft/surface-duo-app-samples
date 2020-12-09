@@ -34,13 +34,15 @@ dependencies {
 
     implementation googleDependencies.material
 
-    implementation microsoftDependencies.dualScreenLayouts
-    implementation microsoftDependencies.core
     implementation microsoftDependencies.fluent
     implementation microsoftDependencies.fragmentsHandler
+    implementation microsoftDependencies.screenManager
+    implementation microsoftDependencies.layouts
 
     testImplementation testDependencies.junit
     androidTestImplementation instrumentationTestDependencies.junit
     androidTestImplementation instrumentationTestDependencies.espressoCore
     androidTestImplementation instrumentationTestDependencies.testRunner
+    androidTestImplementation instrumentationTestDependencies.testRules
+    androidTestImplementation instrumentationTestDependencies.uiAutomator
 }
