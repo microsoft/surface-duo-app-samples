@@ -1,7 +1,6 @@
 /*
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
- *
  */
 
 package com.microsoft.device.display.samples.photoeditor
@@ -339,8 +338,7 @@ class MainActivity : AppCompatActivity(), ScreenInfoListener {
             vm.warmth = image.warmth
         }
 
-        warmth.setOnSeekBarChangeListener(object :
-            SeekBar.OnSeekBarChangeListener {
+        warmth.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
                 // warmth from 0.5 (cold) to 1 (original) to 2 (warm), progress from 0 to 100
                 image.warmth = progress.toFloat() / DEFAULT_PROGRESS
@@ -364,8 +362,7 @@ class MainActivity : AppCompatActivity(), ScreenInfoListener {
             vm.brightness = image.brightness
         }
 
-        brightness.setOnSeekBarChangeListener(object :
-            SeekBar.OnSeekBarChangeListener {
+        brightness.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
                 // brightness from 0 (black) to 1 (original) to 2 (twice as bright), progress from 0 to 100
                 image.brightness = progress.toFloat() / DEFAULT_PROGRESS
@@ -389,8 +386,7 @@ class MainActivity : AppCompatActivity(), ScreenInfoListener {
             vm.saturation = image.saturation
         }
 
-        saturation.setOnSeekBarChangeListener(object :
-            SeekBar.OnSeekBarChangeListener {
+        saturation.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
                 // saturation from 0 (grayscale) to 1 (original) to 2 (hyper-saturated), progress from 0 to 100
                 image.saturation = progress.toFloat() / DEFAULT_PROGRESS
