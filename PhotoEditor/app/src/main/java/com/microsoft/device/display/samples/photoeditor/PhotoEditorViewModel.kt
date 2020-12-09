@@ -9,7 +9,7 @@ import android.graphics.drawable.Drawable
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class PhotoEditorVM : ViewModel() {
+class PhotoEditorViewModel : ViewModel() {
     companion object {
         // Default property value for ImageFilterView attributes (state of original image)
         const val DEFAULT_ATTRIBUTE_VALUE = 1f
@@ -37,10 +37,7 @@ class PhotoEditorVM : ViewModel() {
             _saturation.value = value
         }
         get() {
-            return _saturation.value
-                ?: kotlin.run {
-                    DEFAULT_ATTRIBUTE_VALUE
-                }
+            return _saturation.value ?: DEFAULT_ATTRIBUTE_VALUE
         }
 
     var brightness: Float
@@ -48,10 +45,7 @@ class PhotoEditorVM : ViewModel() {
             _brightness.value = value
         }
         get() {
-            return _brightness.value
-                ?: kotlin.run {
-                    DEFAULT_ATTRIBUTE_VALUE
-                }
+            return _brightness.value ?: DEFAULT_ATTRIBUTE_VALUE
         }
 
     var warmth: Float
@@ -59,20 +53,14 @@ class PhotoEditorVM : ViewModel() {
             _warmth.value = value
         }
         get() {
-            return _warmth.value
-                ?: kotlin.run {
-                    DEFAULT_ATTRIBUTE_VALUE
-                }
+            return _warmth.value ?: DEFAULT_ATTRIBUTE_VALUE
         }
     var selectedControl: Int
         set(value) {
             _selectedControl.value = value
         }
         get() {
-            return _selectedControl.value
-                ?: kotlin.run {
-                    DEFAULT_SELECTED_CONTROL
-                }
+            return _selectedControl.value ?: DEFAULT_SELECTED_CONTROL
         }
 
     fun resetValues() {
