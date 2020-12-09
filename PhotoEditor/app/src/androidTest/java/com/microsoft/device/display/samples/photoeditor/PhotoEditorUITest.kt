@@ -49,7 +49,6 @@ class PhotoEditorUITest {
     fun setup() {
         val screenManager = ScreenManagerProvider.getScreenManager()
         screenManager.addScreenInfoListener(screenInfoListener)
-//        activityRule.launchActivity(null)
     }
 
     @After
@@ -58,7 +57,6 @@ class PhotoEditorUITest {
         screenManager.removeScreenInfoListener(screenInfoListener)
         screenInfoListener.resetScreenInfo()
         screenInfoListener.resetScreenInfoCounter()
-//        activityRule.finishActivity()
     }
 
     /**
