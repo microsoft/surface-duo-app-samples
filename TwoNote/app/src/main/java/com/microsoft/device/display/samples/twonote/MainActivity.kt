@@ -32,7 +32,8 @@ import com.microsoft.device.dualscreen.ScreenManagerProvider
 /**
  * Activity that manages fragments and preservation of data through the app's lifecycle
  */
-class MainActivity : AppCompatActivity(),
+class MainActivity :
+    AppCompatActivity(),
     NoteDetailFragment.OnFragmentInteractionListener,
     ScreenInfoListener {
 

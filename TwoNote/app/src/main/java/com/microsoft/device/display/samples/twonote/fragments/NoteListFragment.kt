@@ -228,7 +228,8 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                 note = Note(inode.id, resources.getString(R.string.default_note_name))
 
             if (ScreenInfoProvider.getScreenInfo(requireActivity()).isDualMode() &&
-                !MainActivity.isRotated(requireActivity())) {
+                !MainActivity.isRotated(requireActivity())
+            ) {
                 // If spanned and not rotated (list view), open NoteDetailFragment in second container
                 parentFragmentManager.beginTransaction()
                     .replace(

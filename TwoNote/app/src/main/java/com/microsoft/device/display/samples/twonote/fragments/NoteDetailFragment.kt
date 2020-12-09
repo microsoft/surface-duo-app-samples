@@ -731,7 +731,8 @@ class NoteDetailFragment : Fragment() {
     fun closeFragment() {
         activity?.let { activity ->
             if (ScreenInfoProvider.getScreenInfo(activity).isDualMode() &&
-                !MainActivity.isRotated(activity)) {
+                !MainActivity.isRotated(activity)
+            ) {
                 // Tell NoteListFragment that list data has changed
                 (parentFragmentManager.findFragmentByTag(LIST_FRAGMENT) as? NoteListFragment)
                     ?.updateNotesList()
