@@ -78,7 +78,7 @@ class WidgetApp : AppWidgetProvider() {
 
     override fun onReceive(context: Context, intent: Intent) {
         // Handling intent for list item click
-        if (WidgetFactory.ACTION_INTENT_VIEW_TAG.equals(intent.action)) {
+        if (WidgetFactory.ACTION_INTENT_VIEW_TAG == intent.action) {
             val url =
                 intent.getStringExtra(WidgetFactory.ACTION_INTENT_VIEW_HREF_TAG)
             val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))

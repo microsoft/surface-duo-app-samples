@@ -1,3 +1,10 @@
+/*
+ *
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License.
+ *
+ */
+
 package com.microsoft.device.display.samples.widget.feed
 
 import android.content.Context
@@ -5,93 +12,40 @@ import android.text.Html
 import android.util.Log
 import androidx.preference.PreferenceManager
 import com.microsoft.device.display.samples.widget.R
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Response
+import com.microsoft.device.display.samples.widget.network.NetworkFeed
+import com.microsoft.device.display.samples.widget.network.RssSimpleApi
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import org.xmlpull.v1.XmlPullParserFactory
-import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.io.IOException
 import java.io.StringReader
-
-/*
-*
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the MIT License.
-*
-*/
+import kotlin.math.min
 
 object RssFeed {
 
     const val DEFAULT_FEED_URL = "https://devblogs.microsoft.com/surface-duo/feed/"
     val TAG = RssFeed::class.java.simpleName
     const val DESCRIPTION_MAX_CHARS = 200
-    const val URL_FEED_PREFERED_INDEX = 2
-    private const val TITLE = "title"
-    private const val DESCRIPTION = "description"
-    private const val LINK = "link"
-    private const val PUB_DATE = "pubDate"
-    private const val CREATOR = "dc:creator"
-    private const val CHANNEL = "channel"
-    private const val ITEM = "item"
-    private val RSS_ITEMS: MutableList<RssItem?> = ArrayList()
+    private const val URL_FEED_PREFERRED_INDEX = 2
+    const val TITLE = "title"
+    const val DESCRIPTION = "description"
+    const val LINK = "link"
+    const val PUB_DATE = "pubDate"
+    const val CREATOR = "dc:creator"
+    const val CHANNEL = "channel"
+    const val ITEM = "item"
+    const val REQUEST_HEADER_VALUE = "application/rss+xml"
 
-    fun clearRssItems() {
-        RSS_ITEMS.clear()
-    }
-
-    val rssItemsSize: Int
-        get() = RSS_ITEMS.size
-
-    fun getRssItemsItemAt(position: Int): RssItem? {
-        return RSS_ITEMS[position]
-    }
-
-    fun fetchRssFeed(context: Context) {
-        val retrofit = configureNetworkCall(context)
-        val rssSimpleApi = retrofit.create(RssSimpleApi::class.java)
-
-        // Making surface duo blog data request syncrhonous since this call is done
-        // from onDataSetChanged in the widget
-        val request: Call<String> = rssSimpleApi.rssFeed
-        try {
-            val response = request.execute()
-            if (response.isSuccessful) {
-                RSS_ITEMS.clear()
-                RSS_ITEMS.addAll(parseXml(response.body()!!))
-            }
-        } catch (e: IOException) {
-            Log.e(TAG, e.toString())
+    fun refreshItems(context: Context): List<RssItem?>? {
+        val baseUrl = getFeedUrlFromPreferences(context)
+        val response = NetworkFeed.fetchRssFeed(baseUrl, RssSimpleApi::class.java)
+        if (response != null) {
+            return parseXml(response)
         }
+        return null
     }
 
-    private fun configureNetworkCall(context: Context): Retrofit {
-        val httpClientBuilder = OkHttpClient.Builder()
-
-        // HttpClient interceptor to add specific rss feeds headers
-        // Some of the rss sources require these or else will fetch html instead of rss
-        httpClientBuilder.addInterceptor(object : Interceptor {
-            @Throws(IOException::class)
-            override fun intercept(chain: Interceptor.Chain): Response {
-                val requestBuilder = chain.request().newBuilder()
-                requestBuilder.header("Content-Type", "application/rss+xml")
-                requestBuilder.header("Accept", "application/rss+xml")
-                return chain.proceed(requestBuilder.build())
-            }
-        })
-        val okHttpClient = httpClientBuilder.build()
-
-        // Retrofit constructor for surface duo blog data request
-        return Retrofit.Builder()
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .baseUrl(getFeedUrlFromPreferences(context))
-            .client(okHttpClient).build()
-    }
-
-    private fun parseXml(xmlString: String): List<RssItem?> {
+    fun parseXml(xmlString: String): List<RssItem?> {
         val rssItems: MutableList<RssItem?> = ArrayList()
         try {
             val xmlFactoryObject = XmlPullParserFactory.newInstance()
@@ -164,7 +118,7 @@ object RssFeed {
     private fun parseDescription(description: String): String {
         val descriptionWithEnding = description.substring(
             0,
-            Math.min(description.length, DESCRIPTION_MAX_CHARS)
+            min(description.length, DESCRIPTION_MAX_CHARS)
         ) + "..."
         return stripHtml(descriptionWithEnding)
     }
@@ -177,7 +131,7 @@ object RssFeed {
         return Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT)
             .toString()
             .replace(
-                "&.*?;".toRegex(),
+                "[&*?;]".toRegex(),
                 ""
             )
     }
@@ -196,7 +150,7 @@ object RssFeed {
         // If custom enabled, take custom feed
         // Else fallback to preferred feed
         val returnFeed: String?
-        returnFeed = if (customPreferredFeed == customPreferredFeedValuesArray[URL_FEED_PREFERED_INDEX]) {
+        returnFeed = if (customPreferredFeed == customPreferredFeedValuesArray[URL_FEED_PREFERRED_INDEX]) {
             getPreference(
                 context.resources.getString(R.string.widget_settings_custom_key),
                 context

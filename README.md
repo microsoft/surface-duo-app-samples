@@ -26,6 +26,11 @@ Includes examples of the [list-detail](https://docs.microsoft.com/dual-screen/in
 
 Includes example of how to create widgets that display RSS feed data.
 
+### [ComposeSample](https://github.com/microsoft/surface-duo-app-samples/tree/main/ComposeSample)
+
+Includes example built with Jetpack Compose, the new UI framework in Android.
+
+
 ## Related links
 
 - [SDK samples (Java)](https://github.com/microsoft/surface-duo-sdk-samples)

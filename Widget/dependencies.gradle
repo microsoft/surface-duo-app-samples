@@ -12,14 +12,9 @@ ext {
     targetSdkVersion = compileSdkVersion
     minSdkVersion = compileSdkVersion
 
-    //Surface Duo
-    duo_url = "https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1"
-
     config = [
             gradlePlugin             : "com.android.tools.build:gradle:$gradlePluginVersion",
             kotlinGradlePlugin       : "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion",
-            duoSdkUrl                :
-                    "https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1",
             testInstrumentationRunner: "androidx.test.runner.AndroidJUnitRunner"
     ]
 
@@ -57,13 +52,6 @@ ext {
             material: "com.google.android.material:material:$materialVersion"
     ]
 
-    //Microsoft dependencies version
-    dualScreenLayoutVersion = "1.0.0-alpha01"
-
-    microsoftDependencies = [
-            dualScreenLayout: "com.microsoft.device:dualscreen-layout:$dualScreenLayoutVersion"
-    ]
-
     //Network dependencies version
     retrofitVersion = "2.9.0"
     retrofitConverterScalarsVersion = "2.9.0"
@@ -76,19 +64,23 @@ ext {
 
     //Test dependencies version
     junitVersion = "4.13"
+    mockWebServerVersion = "4.7.2"
 
     testDependencies = [
-            junit: "junit:junit:$junitVersion"
+            junit        : "junit:junit:$junitVersion",
+            mockWebServer: "com.squareup.okhttp3:mockwebserver:$mockWebServerVersion",
     ]
 
     //Android test dependencies version
     junitInstrumentationVersion = "1.1.1"
     espressoCoreVersion = "3.2.0"
     testRunnerVersion = "1.2.0"
+    testRulesVersion = "1.2.0"
 
     instrumentationTestDependencies = [
             junit       : "androidx.test.ext:junit:$junitInstrumentationVersion",
             espressoCore: "androidx.test.espresso:espresso-core:$espressoCoreVersion",
-            testRunner  : "androidx.test:runner:$testRunnerVersion"
+            testRunner  : "androidx.test:runner:$testRunnerVersion",
+            testRules   : "androidx.test:rules:$testRulesVersion",
     ]
 }

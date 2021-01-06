@@ -7,7 +7,6 @@
 
 package com.microsoft.device.display.samples.twonote.fragments
 
-import Defines.DETAIL_FRAGMENT
 import Defines.LIST_VIEW
 import android.graphics.Typeface
 import android.os.Bundle
@@ -34,7 +33,8 @@ import com.microsoft.device.display.samples.twonote.models.Note
 import com.microsoft.device.display.samples.twonote.utils.DataProvider
 import com.microsoft.device.display.samples.twonote.utils.FileSystem
 import com.microsoft.device.display.samples.twonote.utils.NoteSelectionListener
-import com.microsoft.device.dualscreen.core.ScreenHelper
+import com.microsoft.device.display.samples.twonote.utils.buildDetailTag
+import com.microsoft.device.dualscreen.ScreenInfoProvider
 
 /**
  * Fragment that shows a list view of the user's notes and lets the user add, delete, and rename
@@ -227,13 +227,15 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
             if (note == null)
                 note = Note(inode.id, resources.getString(R.string.default_note_name))
 
-            if (ScreenHelper.isDualMode(requireActivity()) && !MainActivity.isRotated(requireActivity())) {
+            if (ScreenInfoProvider.getScreenInfo(requireActivity()).isDualMode() &&
+                !MainActivity.isRotated(requireActivity())
+            ) {
                 // If spanned and not rotated (list view), open NoteDetailFragment in second container
                 parentFragmentManager.beginTransaction()
                     .replace(
                         R.id.second_container_id,
                         NoteDetailFragment.newInstance(inode, note),
-                        DETAIL_FRAGMENT
+                        buildDetailTag(R.id.second_container_id, inode.id, note.id)
                     ).commit()
             } else {
                 // If unspanned or spanned and rotated (extended canvas), open NoteDetailFragment in first container
@@ -241,7 +243,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
                     .replace(
                         R.id.first_container_id,
                         NoteDetailFragment.newInstance(inode, note),
-                        DETAIL_FRAGMENT
+                        buildDetailTag(R.id.first_container_id, inode.id, note.id)
                     ).addToBackStack(null)
                     .commit()
             }
@@ -256,7 +258,7 @@ class NoteListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVie
      */
     fun exitDetailFragment(deleting: Boolean) {
         activity?.let {
-            if (ScreenHelper.isDualMode(it) && !MainActivity.isRotated(it)) {
+            if (ScreenInfoProvider.getScreenInfo(it).isDualMode() && !MainActivity.isRotated(it)) {
                 val fragment = parentFragmentManager.findFragmentById(R.id.second_container_id) as? NoteDetailFragment
 
                 fragment?.let { detail ->

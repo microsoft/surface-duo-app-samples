@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License.
+ */
+
 package com.microsoft.device.display.samples.photoeditor
 
 import android.content.Intent
@@ -18,8 +23,12 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
-import com.microsoft.device.dualscreen.layout.ScreenHelper
+import com.microsoft.device.display.samples.photoeditor.utils.ScreenInfoListenerImpl
+import com.microsoft.device.dualscreen.ScreenManagerProvider
 import org.hamcrest.CoreMatchers.not
+import org.junit.After
+import org.junit.Assert
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,6 +43,21 @@ import org.hamcrest.CoreMatchers.`is` as iz
 class PhotoEditorUITest {
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
+    private var screenInfoListener = ScreenInfoListenerImpl()
+
+    @Before
+    fun setup() {
+        val screenManager = ScreenManagerProvider.getScreenManager()
+        screenManager.addScreenInfoListener(screenInfoListener)
+    }
+
+    @After
+    fun tearDown() {
+        val screenManager = ScreenManagerProvider.getScreenManager()
+        screenManager.removeScreenInfoListener(screenInfoListener)
+        screenInfoListener.resetScreenInfo()
+        screenInfoListener.resetScreenInfoCounter()
+    }
 
     /**
      * Tests visibility of controls when app spanned vs. unspanned
@@ -53,7 +77,7 @@ class PhotoEditorUITest {
         onView(withId(R.id.warmth)).check(matches(withEffectiveVisibility(Visibility.INVISIBLE)))
 
         spanFromLeft()
-        assertThat(isSpanned(), iz(true))
+        waitForScreenInfoAndAssert { Assert.assertTrue(isSpanned()) }
 
         // Switched to dual-screen mode, so dropdown should not exist and all sliders should be visible
         onView(withId(R.id.controls)).check(doesNotExist())
@@ -100,7 +124,10 @@ class PhotoEditorUITest {
         device.wait(Until.hasObject(By.pkg(filesPackage).depth(0)), 3000) // timeout at 3 seconds
 
         // Before import, drawable is equal to prev
-        assertThat(prev, iz(activityRule.activity.findViewById<ImageFilterView>(R.id.image).drawable))
+        assertThat(
+            prev,
+            iz(activityRule.activity.findViewById<ImageFilterView>(R.id.image).drawable)
+        )
 
         // Hardcoded to select most recently saved file in Files app - must be an image file
         device.swipe(1550, 1230, 1550, 1230, 100)
@@ -207,8 +234,13 @@ class PhotoEditorUITest {
         device.swipe(rightX, bottomY, rightX, middleY, closeSteps)
     }
 
+    private fun waitForScreenInfoAndAssert(assert: () -> Unit) {
+        screenInfoListener.waitForScreenInfoChanges()
+        assert()
+        screenInfoListener.resetScreenInfo()
+    }
+
     private fun isSpanned(): Boolean {
-        onIdle() // wait until layout changes have been fully processed before checking
-        return ScreenHelper.isDualMode(activityRule.activity)
+        return screenInfoListener.screenInfo?.isDualMode() == true
     }
 }

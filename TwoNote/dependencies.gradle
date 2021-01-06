@@ -13,15 +13,11 @@ ext {
     targetSdkVersion = compileSdkVersion
     minSdkVersion = compileSdkVersion
 
-    //Surface Duo
-    duo_url = "https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1"
-
     config = [
             gradlePlugin             : "com.android.tools.build:gradle:$gradlePluginVersion",
             kotlinGradlePlugin       : "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion",
-            duoSdkUrl                :
-                    "https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1",
-            testInstrumentationRunner: "androidx.test.runner.AndroidJUnitRunner"
+            testInstrumentationRunner: "androidx.test.runner.AndroidJUnitRunner",
+            dualScreenSdkVersion     : "1.0.0-beta1"
     ]
 
     kotlinDependencies = [
@@ -49,17 +45,20 @@ ext {
     ]
 
     //Microsoft dependencies version
-    dualScreenLayoutsVersion = "1.0.0-alpha02"
-    coreVersion = "1.0.0-alpha01"
     fluentVersion = "1.1.33"
-    fragmentsHandlerVersion = "1.0.0-alpha02"
+    screenManagerWindowManagerVersion = config.dualScreenSdkVersion
+    screenManagerDisplayMaskVersion = config.dualScreenSdkVersion
+    fragmentsHandlerVersion = config.dualScreenSdkVersion
+    layoutsVersion = config.dualScreenSdkVersion
 
     microsoftDependencies = [
-            dualScreenLayouts: "com.microsoft.device.dualscreen:layouts:$dualScreenLayoutsVersion",
-            core             : "com.microsoft.device.dualscreen:core:$coreVersion",
-            fluent           : "com.microsoft.design:fluent-system-icons:$fluentVersion",
-            fragmentsHandler : "com.microsoft.device.dualscreen:fragmentshandler:$fragmentsHandlerVersion",
+            screenManagerWindowManager: "com.microsoft.device.dualscreen:screenmanager-windowmanager:$screenManagerWindowManagerVersion",
+            screenManagerDisplayMask  : "com.microsoft.device.dualscreen:screenmanager-displaymask:$screenManagerDisplayMaskVersion",
+            fragmentsHandler          : "com.microsoft.device.dualscreen:fragmentshandler:$fragmentsHandlerVersion",
+            layouts                   : "com.microsoft.device.dualscreen:layouts:$layoutsVersion",
+            fluent                    : "com.microsoft.design:fluent-system-icons:$fluentVersion",
     ]
+    microsoftDependencies["screenManager"] = microsoftDependencies.screenManagerWindowManager
 
     //Test dependencies version
     junitVersion = "4.13"
@@ -71,11 +70,15 @@ ext {
     //Android test dependencies version
     junitInstrumentationVersion = "1.1.1"
     espressoCoreVersion = "3.2.0"
+    testRulesVersion = "1.2.0"
     testRunnerVersion = "1.2.0"
+    uiAutomatorVersion = "2.2.0"
 
     instrumentationTestDependencies = [
             junit       : "androidx.test.ext:junit:$junitInstrumentationVersion",
             espressoCore: "androidx.test.espresso:espresso-core:$espressoCoreVersion",
-            testRunner  : "androidx.test:runner:$testRunnerVersion"
+            testRunner  : "androidx.test:runner:$testRunnerVersion",
+            testRules   : "androidx.test:rules:$testRulesVersion",
+            uiAutomator : "androidx.test.uiautomator:uiautomator:$uiAutomatorVersion",
     ]
 }
