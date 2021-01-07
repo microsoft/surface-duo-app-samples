@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Source Editor</string>
+    <string name="btn_switch_to_editor">ÉDITEUR SOURCE</string>
+    <string name="btn_switch_to_preview">APERÇU</string>
+</resources>
