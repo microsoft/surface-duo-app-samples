@@ -8,7 +8,6 @@
 
 package com.microsoft.device.display.samples.companionpane.uicomponent
 
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,11 +17,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.preferredWidth
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -46,18 +47,18 @@ fun FilterTopPanel() {
     Column(horizontalAlignment = Alignment.CenterHorizontally,
            verticalArrangement = Arrangement.spacedBy(space = 5.dp)
     ) {
-        Text(
-            text = "Filter",
-            textAlign = TextAlign.Center,
-            color = Color.White,
-            fontSize = 12.sp
+        BasicText(text = "Filter",
+                  style = TextStyle(textAlign = TextAlign.Center,
+                                    color = Color.White,
+                                    fontSize = 12.sp
+                  )
         )
         Divider(color = Color.White, thickness = 1.dp)
         Spacer(Modifier.preferredWidth(5.dp))
         LeftAlignText("Straightening")
         ImagePanel(Modifier.height(40.dp))
         Spacer(Modifier.preferredWidth(5.dp))
-        SliderControl()
+//        SliderControl()
     }
 }
 

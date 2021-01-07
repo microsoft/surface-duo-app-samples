@@ -36,19 +36,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.microsoft.device.display.samples.companionpane.R
 import com.microsoft.device.display.samples.companionpane.ui.Gray
 
 @Composable
-fun SliderControl() {
+fun SliderControl(modifier: Modifier) {
     var sliderPosition by remember { mutableStateOf(0f) }
     Slider(
         value = sliderPosition,
         onValueChange = { sliderPosition = it },
         valueRange = 0f..100f,
-        thumbColor = Gray,
-        activeTrackColor = Gray,
-        inactiveTrackColor = Color.White,
-        modifier = Modifier.fillMaxWidth()
+        thumbColor = Color.White,
+        activeTrackColor = Color.White,
+        inactiveTrackColor = Gray,
+        modifier = modifier
     )
 }
 
@@ -91,8 +92,16 @@ fun ImageWithText(id: Int, text: String, imageWidth: Dp, width: Dp) {
         BasicText(text = text,
                   modifier = Modifier.fillMaxWidth(),
                   style = TextStyle(textAlign = TextAlign.Center,
-                                                 color = Color.White,
-                                                 fontSize = 12.sp)
+                                    color = Color.White,
+                                    fontSize = 12.sp)
         )
     }
+}
+
+@Composable
+fun ImagePanel(modifier: Modifier) {
+    Image(bitmap = imageResource(R.drawable.full_image),
+          modifier = modifier,
+          contentScale = ContentScale.Inside,
+          alignment = Alignment.Center)
 }

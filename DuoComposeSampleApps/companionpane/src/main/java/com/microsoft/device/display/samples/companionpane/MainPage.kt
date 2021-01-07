@@ -22,21 +22,25 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.microsoft.device.display.samples.companionpane.uicomponent.CropRotateSpannedLandscapePanel
+import com.microsoft.device.display.samples.companionpane.uicomponent.BrightnessPanel
 import com.microsoft.device.display.samples.companionpane.uicomponent.CropRotateSpannedPortraitPanel
+import com.microsoft.device.display.samples.companionpane.uicomponent.DefinitionPanel
 import com.microsoft.device.display.samples.companionpane.uicomponent.EffectPanel
-import com.microsoft.device.display.samples.companionpane.uicomponent.FilterBottomPanel
 import com.microsoft.device.display.samples.companionpane.uicomponent.FilterPanel
 import com.microsoft.device.display.samples.companionpane.uicomponent.FullFilterControl
 import com.microsoft.device.display.samples.companionpane.uicomponent.ImagePanel
-import com.microsoft.device.display.samples.companionpane.uicomponent.MagicDefinitionPanel
+import com.microsoft.device.display.samples.companionpane.uicomponent.MagicWandPanel
 import com.microsoft.device.display.samples.companionpane.uicomponent.ShortFilterControl
-import com.microsoft.device.display.samples.companionpane.uicomponent.VignetteBrightnessPanel
+import com.microsoft.device.display.samples.companionpane.uicomponent.VignettePanel
 import com.microsoft.device.display.samples.companionpane.viewModels.AppStateViewModel
 
 private lateinit var appStateViewModel: AppStateViewModel
+private val shortSlideWidth = 200.dp
+private val longSlideWidth = 350.dp
+
 
 @Composable
 fun SetupUI(viewModel: AppStateViewModel) {
@@ -56,6 +60,7 @@ fun SetupUI(viewModel: AppStateViewModel) {
     } else {
         if (isScreenPortrait) {
             PortraitLayout()
+
         } else {
             LandscapeLayout()
         }
@@ -63,35 +68,56 @@ fun SetupUI(viewModel: AppStateViewModel) {
 }
 
 @Composable
-fun LandscapeSpannedLayout() {
+fun LandscapeSpannedLayout() { // dual portrait mode
     Row(modifier = Modifier.fillMaxSize(),
         horizontalArrangement = Arrangement.spacedBy(50.dp)) {
-        ImagePanel(modifier = Modifier.fillMaxHeight().weight(1f))
-        Column(modifier = Modifier.fillMaxHeight().weight(1f)) {
-            Spacer(Modifier.preferredHeight(8.dp))
-            Row(modifier = Modifier.fillMaxWidth().weight(0.7f),
-                horizontalArrangement= Arrangement.spacedBy(8.dp)) {
-                CropRotateSpannedLandscapePanel(modifier = Modifier.fillMaxHeight().weight(1f))
-                Spacer(Modifier.preferredWidth(5.dp))
+        Column(modifier = Modifier.fillMaxHeight().weight(1f),
+               verticalArrangement = Arrangement.Center) {
+            Spacer(Modifier.preferredHeight(20.dp))
+            ImagePanel(Modifier.height(380.dp).fillMaxWidth())
+            Spacer(Modifier.preferredHeight(25.dp))
+            EffectPanel()
+        }
+        Column(modifier = Modifier.fillMaxHeight().weight(1f),
+               verticalArrangement = Arrangement.Center,
+               horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(verticalArrangement = Arrangement.spacedBy(35.dp)) {
+                MagicWandPanel(modifier = Modifier.width(longSlideWidth))
+                DefinitionPanel(modifier = Modifier.width(longSlideWidth))
+                VignettePanel(modifier = Modifier.width(longSlideWidth))
+                BrightnessPanel(modifier = Modifier.width(longSlideWidth))
             }
-            FilterBottomPanel(modifier = Modifier.fillMaxWidth().weight(0.3f),
-                              imageWidth = 70.dp,
-                              imageHeight = 80.dp)
+            Spacer(Modifier.preferredHeight(80.dp))
+            ShortFilterControl()
         }
     }
 }
 
 @Composable
-fun PortraitSpannedLayout() {
-    Column(Modifier.fillMaxSize(),
-           verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        ImagePanel(modifier = Modifier.fillMaxWidth().weight(1f))
+fun PortraitSpannedLayout() { // dual landscape mode
+    Column(modifier = Modifier.fillMaxSize(),
+           verticalArrangement = Arrangement.spacedBy(60.dp)) {
         Row(modifier = Modifier.fillMaxWidth().weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Spacer(Modifier.preferredWidth(8.dp))
-            CropRotateSpannedPortraitPanel(modifier = Modifier.fillMaxHeight().weight(1f))
-            FilterPanel(modifier = Modifier.fillMaxHeight().weight(1f))
-            Spacer(Modifier.preferredWidth(8.dp))
+            horizontalArrangement = Arrangement.Center) {
+            ImagePanel(modifier = Modifier.fillMaxHeight().width(500.dp))
+        }
+        Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
+            EffectPanel()
+            Spacer(Modifier.preferredHeight(60.dp))
+            Row(horizontalArrangement = Arrangement.Center) {
+                Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                    MagicWandPanel(modifier = Modifier.width(shortSlideWidth))
+                    Spacer(Modifier.preferredHeight(20.dp))
+                    DefinitionPanel(modifier = Modifier.width(shortSlideWidth))
+                }
+                Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                    VignettePanel(modifier = Modifier.width(shortSlideWidth))
+                    Spacer(Modifier.preferredHeight(20.dp))
+                    BrightnessPanel(modifier = Modifier.width(shortSlideWidth))
+                }
+            }
+            Spacer(Modifier.preferredHeight(60.dp))
+            ShortFilterControl()
         }
     }
 }
@@ -115,12 +141,13 @@ fun LandscapeLayout() {
             Spacer(Modifier.preferredWidth(20.dp))
             ImagePanel(Modifier.width(360.dp))
             Spacer(Modifier.preferredWidth(20.dp))
-            Column(modifier = Modifier.wrapContentWidth()
+            Column(modifier = Modifier.wrapContentWidth(),
+                   verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                Spacer(Modifier.preferredHeight(10.dp))
-                MagicDefinitionPanel()
-                Spacer(Modifier.preferredHeight(20.dp))
-                VignetteBrightnessPanel()
+                MagicWandPanel(modifier = Modifier.width(shortSlideWidth))
+                DefinitionPanel(modifier = Modifier.width(shortSlideWidth))
+                VignettePanel(modifier = Modifier.width(shortSlideWidth))
+                BrightnessPanel(modifier = Modifier.width(shortSlideWidth))
             }
             Spacer(Modifier.preferredWidth(20.dp))
         }

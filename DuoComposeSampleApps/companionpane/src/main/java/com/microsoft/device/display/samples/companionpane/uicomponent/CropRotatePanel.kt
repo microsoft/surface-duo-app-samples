@@ -64,7 +64,7 @@ fun CropRotatePanel(modifier: Modifier) {
              )
         Divider(color = Color.White, thickness = 1.dp)
         Spacer(Modifier.preferredWidth(5.dp))
-        SliderControl()
+//        SliderControl()
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(space = 8.dp)) {
             ImageButton("Rotate", R.drawable.ic_menu_rotate, Modifier.weight(1f))

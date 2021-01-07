@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.preferredHeight
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,7 +39,10 @@ fun EffectPanel() {
 fun ShortFilterControl() {
     Column(modifier = Modifier.wrapContentHeight(),
            verticalArrangement = Arrangement.spacedBy(5.dp)) {
-        ShortIconsPanel()
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center) {
+            ShortIconsPanel()
+        }
         AdjustScale()
     }
 }
@@ -83,7 +87,7 @@ fun FullIconsPanel() {
 
 @Composable
 fun ShortIconsPanel() {
-    Row(modifier = Modifier.fillMaxWidth().height(25.dp),
+    Row(modifier = Modifier.width(200.dp).height(25.dp),
         horizontalArrangement = Arrangement.SpaceEvenly) {
         Image(bitmap = imageResource(id = R.drawable.ecllipse_icon))
         Image(bitmap = imageResource(id = R.drawable.vertical_icon))

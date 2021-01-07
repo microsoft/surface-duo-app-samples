@@ -18,6 +18,9 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.TopAppBar
 import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.core.util.Consumer
 import androidx.lifecycle.ViewModelProvider
 import androidx.window.WindowLayoutInfo
@@ -45,7 +48,10 @@ class MainActivity : AppCompatActivity() {
             CompanionPaneAppsTheme {
                 Scaffold (
                     topBar = { TopAppBar(
-                            title = { BasicText(stringResource(R.string.app_name)) },
+                        title = { BasicText(text = stringResource(R.string.app_name),
+                                            style = TextStyle(fontSize = 18.sp,
+                                                              fontWeight = FontWeight.Bold)
+                                ) },
                         )
                     },
                     bodyContent = { SetupUI(viewModel = appStateViewModel)}
@@ -57,11 +63,9 @@ class MainActivity : AppCompatActivity() {
     // Checks the orientation of the screen
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            appStateViewModel.setIsScreenPortraitLiveData(false)
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            appStateViewModel.setIsScreenPortraitLiveData(true)
-        }
+
+        val isPortrait = newConfig.orientation == Configuration.ORIENTATION_PORTRAIT
+        appStateViewModel.setIsScreenPortraitLiveData(isPortrait)
     }
 
     override fun onAttachedToWindow() {
