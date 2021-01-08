@@ -10,16 +10,16 @@
     <string name="widget_settings_screen_title">Widget Settings</string>
     <string name="widget_settings_predefined_title">Predefined Feed URLs</string>
     <string name="widget_settings_predefined_summary">Select your preferred feed</string>
-    <string name="widget_settings_predefined_key">appwidget_predefined_feed_key</string>
+    <string name="widget_settings_predefined_key" translatable="false">appwidget_predefined_feed_key</string>
     <string name="widget_settings_custom_title">Custom Feed URL</string>
     <string name="widget_settings_custom_summary">Select your custom preferred feed</string>
-    <string name="widget_settings_custom_key">appwidget_custom_feed_key</string>
+    <string name="widget_settings_custom_key" translatable="false">appwidget_custom_feed_key</string>
     <string-array name="appwidget_feeds">
         <item>Surface Duo Blog</item>
         <item>TechCrunch</item>
         <item>Use Custom</item>
     </string-array>
-    <string name="app_widget_feeds_default_value">https://devblogs.microsoft.com/surface-duo/feed/</string>
+    <string name="app_widget_feeds_default_value" translatable="false">https://devblogs.microsoft.com/surface-duo/feed/</string>
     <string-array name="appwidget_feeds_value">
         <item>https://devblogs.microsoft.com/surface-duo/feed/</item>
         <item>https://techcrunch.com/feed/</item>
