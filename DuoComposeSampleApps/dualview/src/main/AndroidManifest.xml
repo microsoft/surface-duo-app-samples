@@ -8,11 +8,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.DuoComposeSampleApps">
+        android:theme="@style/Theme.DualViewApps">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.DuoComposeSampleApps.NoActionBar">
+            android:theme="@style/Theme.DualViewApps.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
