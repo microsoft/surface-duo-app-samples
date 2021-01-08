@@ -100,13 +100,18 @@ private fun ShowListColumn(models: List<ImageModel>, modifier: Modifier) {
                 }
                 Spacer(Modifier.preferredWidth(16.dp))
                 Column(modifier = Modifier.fillMaxHeight() then Modifier.padding(16.dp)) {
-                    BasicText(text = item.id,
-                              modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center),
-                              style = TextStyle(fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold)
+                    BasicText(
+                        text = item.id,
+                        modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center),
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     )
-                    BasicText(text = item.title,
-                              modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center))
+                    BasicText(
+                        text = item.title,
+                        modifier = Modifier.fillMaxHeight().wrapContentSize(Alignment.Center)
+                    )
                 }
             }
             Divider(color = Color.LightGray)
@@ -132,8 +137,9 @@ fun ShowDetailWithList(models: List<ImageModel>) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(space = 20.dp)
         ) {
-            BasicText(text = selectedImageModel.id,
-                      style = TextStyle(fontSize = 50.sp)
+            BasicText(
+                text = selectedImageModel.id,
+                style = TextStyle(fontSize = 50.sp)
             )
             val image = loadImageResource(id = selectedImageModel.image)
             image.resource.resource?.let {
