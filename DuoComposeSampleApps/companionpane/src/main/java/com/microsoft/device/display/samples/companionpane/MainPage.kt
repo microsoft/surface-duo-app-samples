@@ -26,10 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.microsoft.device.display.samples.companionpane.uicomponent.BrightnessPanel
-import com.microsoft.device.display.samples.companionpane.uicomponent.CropRotateSpannedPortraitPanel
 import com.microsoft.device.display.samples.companionpane.uicomponent.DefinitionPanel
 import com.microsoft.device.display.samples.companionpane.uicomponent.EffectPanel
-import com.microsoft.device.display.samples.companionpane.uicomponent.FilterPanel
 import com.microsoft.device.display.samples.companionpane.uicomponent.FullFilterControl
 import com.microsoft.device.display.samples.companionpane.uicomponent.ImagePanel
 import com.microsoft.device.display.samples.companionpane.uicomponent.MagicWandPanel
@@ -40,7 +38,6 @@ import com.microsoft.device.display.samples.companionpane.viewModels.AppStateVie
 private lateinit var appStateViewModel: AppStateViewModel
 private val shortSlideWidth = 200.dp
 private val longSlideWidth = 350.dp
-
 
 @Composable
 fun SetupUI(viewModel: AppStateViewModel) {
@@ -71,14 +68,21 @@ fun SetupUI(viewModel: AppStateViewModel) {
 fun LandscapeSpannedLayout() { // dual portrait mode
     Row(modifier = Modifier.fillMaxSize(),
         horizontalArrangement = Arrangement.spacedBy(50.dp)) {
-        Column(modifier = Modifier.fillMaxHeight().weight(1f),
+        Column(modifier = Modifier
+            .fillMaxHeight()
+            .weight(1f),
                verticalArrangement = Arrangement.Center) {
             Spacer(Modifier.preferredHeight(20.dp))
-            ImagePanel(Modifier.height(380.dp).fillMaxWidth())
+            ImagePanel(
+                Modifier
+                    .height(380.dp)
+                    .fillMaxWidth())
             Spacer(Modifier.preferredHeight(25.dp))
             EffectPanel()
         }
-        Column(modifier = Modifier.fillMaxHeight().weight(1f),
+        Column(modifier = Modifier
+            .fillMaxHeight()
+            .weight(1f),
                verticalArrangement = Arrangement.Center,
                horizontalAlignment = Alignment.CenterHorizontally) {
             Column(verticalArrangement = Arrangement.spacedBy(35.dp)) {
@@ -95,22 +99,27 @@ fun LandscapeSpannedLayout() { // dual portrait mode
 
 @Composable
 fun PortraitSpannedLayout() { // dual landscape mode
-    Column(modifier = Modifier.fillMaxSize(),
-           verticalArrangement = Arrangement.spacedBy(60.dp)) {
-        Row(modifier = Modifier.fillMaxWidth().weight(1f),
+    Column(modifier = Modifier.fillMaxSize()) {
+        Spacer(Modifier.preferredHeight(40.dp))
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
             horizontalArrangement = Arrangement.Center) {
-            ImagePanel(modifier = Modifier.fillMaxHeight().width(500.dp))
+            ImagePanel(modifier = Modifier.width(500.dp))
         }
-        Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f)) {
             EffectPanel()
             Spacer(Modifier.preferredHeight(60.dp))
-            Row(horizontalArrangement = Arrangement.Center) {
-                Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(40.dp)) {
+                Spacer(Modifier.preferredWidth(20.dp))
+                Column(modifier = Modifier.wrapContentWidth()) {
                     MagicWandPanel(modifier = Modifier.width(shortSlideWidth))
                     Spacer(Modifier.preferredHeight(20.dp))
                     DefinitionPanel(modifier = Modifier.width(shortSlideWidth))
                 }
-                Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                Column(modifier = Modifier.wrapContentWidth()) {
                     VignettePanel(modifier = Modifier.width(shortSlideWidth))
                     Spacer(Modifier.preferredHeight(20.dp))
                     BrightnessPanel(modifier = Modifier.width(shortSlideWidth))
@@ -127,7 +136,10 @@ fun PortraitLayout() {
     Column(modifier = Modifier.fillMaxSize(),
            verticalArrangement = Arrangement.spacedBy(15.dp)) {
         Spacer(Modifier.preferredHeight(8.dp))
-        ImagePanel(Modifier.height(350.dp).fillMaxWidth())
+        ImagePanel(
+            Modifier
+                .height(350.dp)
+                .fillMaxWidth())
         EffectPanel()
         FullFilterControl()
     }
