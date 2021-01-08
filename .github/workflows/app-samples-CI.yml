@@ -22,7 +22,7 @@ jobs:
 
     strategy:
       matrix:
-        projects: [SourceEditor, PhotoEditor, Widget, TwoNote, ComposeSample]
+        projects: [SourceEditor, PhotoEditor, Widget, TwoNote, ComposeSample, DuoComposeSampleApps]
       fail-fast: false
 
     steps:
