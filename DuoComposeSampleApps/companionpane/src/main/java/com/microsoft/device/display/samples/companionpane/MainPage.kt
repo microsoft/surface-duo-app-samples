@@ -57,7 +57,6 @@ fun SetupUI(viewModel: AppStateViewModel) {
     } else {
         if (isScreenPortrait) {
             PortraitLayout()
-
         } else {
             LandscapeLayout()
         }
@@ -66,25 +65,24 @@ fun SetupUI(viewModel: AppStateViewModel) {
 
 @Composable
 fun LandscapeSpannedLayout() { // dual portrait mode
-    Row(modifier = Modifier.fillMaxSize(),
-        horizontalArrangement = Arrangement.spacedBy(50.dp)) {
-        Column(modifier = Modifier
-            .fillMaxHeight()
-            .weight(1f),
-               verticalArrangement = Arrangement.Center) {
+    Row(
+        modifier = Modifier.fillMaxSize(),
+        horizontalArrangement = Arrangement.spacedBy(50.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxHeight().weight(1f),
+            verticalArrangement = Arrangement.Center
+        ) {
             Spacer(Modifier.preferredHeight(20.dp))
-            ImagePanel(
-                Modifier
-                    .height(380.dp)
-                    .fillMaxWidth())
+            ImagePanel(Modifier.height(380.dp).fillMaxWidth())
             Spacer(Modifier.preferredHeight(25.dp))
             EffectPanel()
         }
-        Column(modifier = Modifier
-            .fillMaxHeight()
-            .weight(1f),
-               verticalArrangement = Arrangement.Center,
-               horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier.fillMaxHeight().weight(1f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Column(verticalArrangement = Arrangement.spacedBy(35.dp)) {
                 MagicWandPanel(modifier = Modifier.width(longSlideWidth))
                 DefinitionPanel(modifier = Modifier.width(longSlideWidth))
@@ -101,15 +99,15 @@ fun LandscapeSpannedLayout() { // dual portrait mode
 fun PortraitSpannedLayout() { // dual landscape mode
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(Modifier.preferredHeight(40.dp))
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f),
-            horizontalArrangement = Arrangement.Center) {
+        Row(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            horizontalArrangement = Arrangement.Center
+        ) {
             ImagePanel(modifier = Modifier.width(500.dp))
         }
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)) {
+        Column(
+            modifier = Modifier.fillMaxWidth().weight(1f)
+        ) {
             EffectPanel()
             Spacer(Modifier.preferredHeight(60.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(40.dp)) {
@@ -133,13 +131,12 @@ fun PortraitSpannedLayout() { // dual landscape mode
 
 @Composable
 fun PortraitLayout() {
-    Column(modifier = Modifier.fillMaxSize(),
-           verticalArrangement = Arrangement.spacedBy(15.dp)) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(15.dp)
+    ) {
         Spacer(Modifier.preferredHeight(8.dp))
-        ImagePanel(
-            Modifier
-                .height(350.dp)
-                .fillMaxWidth())
+        ImagePanel(Modifier.height(350.dp).fillMaxWidth())
         EffectPanel()
         FullFilterControl()
     }
@@ -153,8 +150,9 @@ fun LandscapeLayout() {
             Spacer(Modifier.preferredWidth(20.dp))
             ImagePanel(Modifier.width(360.dp))
             Spacer(Modifier.preferredWidth(20.dp))
-            Column(modifier = Modifier.wrapContentWidth(),
-                   verticalArrangement = Arrangement.spacedBy(20.dp)
+            Column(
+                modifier = Modifier.wrapContentWidth(),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 MagicWandPanel(modifier = Modifier.width(shortSlideWidth))
                 DefinitionPanel(modifier = Modifier.width(shortSlideWidth))
@@ -167,4 +165,3 @@ fun LandscapeLayout() {
         ShortFilterControl()
     }
 }
-

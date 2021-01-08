@@ -46,15 +46,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             CompanionPaneAppsTheme {
-                Scaffold (
-                    topBar = { TopAppBar(
-                        title = { BasicText(text = stringResource(R.string.app_name),
-                                            style = TextStyle(fontSize = 18.sp,
-                                                              fontWeight = FontWeight.Bold)
-                                ) },
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = {
+                                BasicText(
+                                    text = stringResource(R.string.app_name),
+                                    style = TextStyle(
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                )
+                            },
                         )
                     },
-                    bodyContent = { SetupUI(viewModel = appStateViewModel)}
+                    bodyContent = {
+                        SetupUI(viewModel = appStateViewModel)
+                    }
                 )
             }
         }

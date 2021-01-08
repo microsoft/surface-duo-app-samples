@@ -14,11 +14,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.preferredWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.material.Button
 import androidx.compose.material.Slider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -54,54 +51,53 @@ fun SliderControl(modifier: Modifier) {
 }
 
 @Composable
-fun ImageButton(title: String, imageId: Int, modifier: Modifier) {
-    Button(modifier = Modifier.fillMaxWidth().height(40.dp).then(modifier),
-           onClick = {}){
-           //colors = Gray) {
-        Image(bitmap = imageResource(id = imageId),
-              contentScale = ContentScale.Fit,
-              modifier = Modifier.size(20.dp, 20.dp))
-        Spacer(Modifier.preferredWidth(8.dp))
-        BasicText(text = title,
-                  style = TextStyle(color = Color.White, fontSize = 12.sp)
-        )
-    }
-}
-
-@Composable
 fun LeftAlignText(title: String) {
-    Row(modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Start) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start
+    ) {
         Spacer(Modifier.preferredWidth(30.dp))
-        BasicText(text = title,
-                  style = TextStyle(color = Color.White,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold)
+        BasicText(
+            text = title,
+            style = TextStyle(
+                color = Color.White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
         )
     }
 }
 
 @Composable
 fun ImageWithText(id: Int, text: String, imageWidth: Dp, width: Dp) {
-    Column(modifier = Modifier.preferredWidth(width),
-           verticalArrangement = Arrangement.spacedBy(5.dp),
-           horizontalAlignment = Alignment.CenterHorizontally) {
-        Image(bitmap = imageResource(id = id),
-              modifier = Modifier.preferredWidth(imageWidth),
-              alignment = Alignment.Center)
-        BasicText(text = text,
-                  modifier = Modifier.fillMaxWidth(),
-                  style = TextStyle(textAlign = TextAlign.Center,
-                                    color = Color.White,
-                                    fontSize = 12.sp)
+    Column(
+        modifier = Modifier.preferredWidth(width),
+        verticalArrangement = Arrangement.spacedBy(5.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            bitmap = imageResource(id = id),
+            modifier = Modifier.preferredWidth(imageWidth),
+            alignment = Alignment.Center
+        )
+        BasicText(
+            text = text,
+            modifier = Modifier.fillMaxWidth(),
+            style = TextStyle(
+                textAlign = TextAlign.Center,
+                color = Color.White,
+                fontSize = 12.sp
+            )
         )
     }
 }
 
 @Composable
 fun ImagePanel(modifier: Modifier) {
-    Image(bitmap = imageResource(R.drawable.full_image),
-          modifier = modifier,
-          contentScale = ContentScale.Inside,
-          alignment = Alignment.Center)
+    Image(
+        bitmap = imageResource(R.drawable.full_image),
+        modifier = modifier,
+        contentScale = ContentScale.Inside,
+        alignment = Alignment.Center
+    )
 }

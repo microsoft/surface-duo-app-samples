@@ -37,10 +37,14 @@ fun EffectPanel() {
 
 @Composable
 fun ShortFilterControl() {
-    Column(modifier = Modifier.wrapContentHeight(),
-           verticalArrangement = Arrangement.spacedBy(5.dp)) {
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center) {
+    Column(
+        modifier = Modifier.wrapContentHeight(),
+        verticalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
             ShortIconsPanel()
         }
         AdjustScale()
@@ -49,8 +53,10 @@ fun ShortFilterControl() {
 
 @Composable
 fun FullFilterControl() {
-    Column(modifier = Modifier.wrapContentHeight(),
-           verticalArrangement = Arrangement.spacedBy(5.dp)) {
+    Column(
+        modifier = Modifier.wrapContentHeight(),
+        verticalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
         FullIconsPanel()
         AdjustScale()
     }
@@ -58,23 +64,31 @@ fun FullFilterControl() {
 
 @Composable
 fun AdjustScale() {
-    Column(modifier = Modifier.fillMaxWidth().wrapContentHeight(),
-           verticalArrangement = Arrangement.spacedBy(5.dp)) {
-        Image(bitmap = imageResource(R.drawable.dot),
-              modifier = Modifier.fillMaxWidth().height(5.dp),
-              contentScale = ContentScale.Inside,
-              alignment = Alignment.Center)
-        Image(bitmap = imageResource(R.drawable.scale_icon),
-              modifier = Modifier.fillMaxWidth().height(25.dp),
-              contentScale = ContentScale.Inside,
-              alignment = Alignment.Center)
+    Column(
+        modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+        verticalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
+        Image(
+            bitmap = imageResource(R.drawable.dot),
+            modifier = Modifier.fillMaxWidth().height(5.dp),
+            contentScale = ContentScale.Inside,
+            alignment = Alignment.Center
+        )
+        Image(
+            bitmap = imageResource(R.drawable.scale_icon),
+            modifier = Modifier.fillMaxWidth().height(25.dp),
+            contentScale = ContentScale.Inside,
+            alignment = Alignment.Center
+        )
     }
 }
 
 @Composable
 fun FullIconsPanel() {
-    Row(modifier = Modifier.fillMaxWidth().height(25.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly) {
+    Row(
+        modifier = Modifier.fillMaxWidth().height(25.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
         Image(bitmap = imageResource(id = R.drawable.filter_icon))
         Image(bitmap = imageResource(id = R.drawable.hdr_icon))
         Image(bitmap = imageResource(id = R.drawable.ecllipse_icon))
@@ -87,8 +101,10 @@ fun FullIconsPanel() {
 
 @Composable
 fun ShortIconsPanel() {
-    Row(modifier = Modifier.width(200.dp).height(25.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly) {
+    Row(
+        modifier = Modifier.width(200.dp).height(25.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
         Image(bitmap = imageResource(id = R.drawable.ecllipse_icon))
         Image(bitmap = imageResource(id = R.drawable.vertical_icon))
         Image(bitmap = imageResource(id = R.drawable.horizontal_icon))

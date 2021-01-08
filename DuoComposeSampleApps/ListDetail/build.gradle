@@ -51,8 +51,4 @@ dependencies {
     implementation androidxDependencies.composeUITooling
 
     implementation googleDependencies.material
-
-    testImplementation testDependencies.junit
-    androidTestImplementation instrumentationTestDependencies.junit
-    androidTestImplementation instrumentationTestDependencies.espressoCore
 }

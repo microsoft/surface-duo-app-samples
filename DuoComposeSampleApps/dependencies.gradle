@@ -51,20 +51,4 @@ ext {
     googleDependencies = [
             material: "com.google.android.material:material:$materialVersion"
     ]
-
-    //Test dependencies version
-    junitVersion = "4.13"
-
-    testDependencies = [
-            junit: "junit:junit:$junitVersion"
-    ]
-
-    //Android test dependencies version
-    junitInstrumentationVersion = "1.1.1"
-    espressoCoreVersion = "3.2.0"
-
-    instrumentationTestDependencies = [
-            junit       : "androidx.test.ext:junit:$junitInstrumentationVersion",
-            espressoCore: "androidx.test.espresso:espresso-core:$espressoCoreVersion",
-    ]
 }
