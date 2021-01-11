@@ -4,7 +4,7 @@
     <string name="exception_message">muss OnFragmentListener implementieren</string>
     <string name="action_delete">Löschen</string>
     <string name="action_share">Teilen</string>
-    <string name="action_select">Wählen Sie alle Notizen aus</string>
+    <string name="action_select">Alles auswählen</string>
     <string name="selected">ausgewählt</string>
     <string name="default_category_name">Kategorie</string>
     <string name="default_note_name">Notiz</string>
@@ -34,6 +34,6 @@
     <string name="action_erase_on">Löschen aktivieren</string>
     <string name="action_erase_off">Löschen deaktivieren</string>
     <string name="confirm_clear_message">Möchten Sie wirklich die gesamte Tinte löschen?</string>
-    <string name="confirm_clear">Bestätigen Sie klar</string>
+    <string name="confirm_clear">Bestätigen Sie löschen</string>
     <string name="remove_image">Bilder entfernen</string>
 </resources>

@@ -7,5 +7,5 @@
 <resources>
     <string name="app_name">Source Editor</string>
     <string name="btn_switch_to_preview">VORSCHAU</string>
-    <string name="btn_switch_to_editor">QUELL-EDITOR</string>
+    <string name="btn_switch_to_editor">SOURCE EDITOR</string>
 </resources>

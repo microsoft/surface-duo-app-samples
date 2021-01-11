@@ -16,7 +16,7 @@
     <string-array name="appwidget_feeds">
         <item>Surface Duo Blog</item>
         <item>TechCrunch</item>
-        <item>Verwenden Sie Custom</item>
+        <item>Verwenden Sie ihren eigenen Feed</item>
     </string-array>
     <string-array name="appwidget_feeds_value">
         <item>https://devblogs.microsoft.com/surface-duo/feed/</item>
