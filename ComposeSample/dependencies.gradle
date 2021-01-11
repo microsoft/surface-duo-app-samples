@@ -8,14 +8,12 @@ ext {
     gradlePluginVersion = '7.0.0-alpha04'
     kotlinVersion = "1.4.21"
     compileSdkVersion = 29
-    buildToolsVersion = '29.0.2'
     targetSdkVersion = compileSdkVersion
     minSdkVersion = compileSdkVersion
 
     config = [
             gradlePlugin             : "com.android.tools.build:gradle:$gradlePluginVersion",
             kotlinGradlePlugin       : "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion",
-            testInstrumentationRunner: "androidx.test.runner.AndroidJUnitRunner"
     ]
 
     kotlinDependencies = [
@@ -51,21 +49,5 @@ ext {
 
     googleDependencies = [
             material: "com.google.android.material:material:$materialVersion"
-    ]
-
-    //Test dependencies version
-    junitVersion = "4.13"
-
-    testDependencies = [
-            junit: "junit:junit:$junitVersion"
-    ]
-
-    //Android test dependencies version
-    junitInstrumentationVersion = "1.1.1"
-    espressoCoreVersion = "3.2.0"
-
-    instrumentationTestDependencies = [
-            junit       : "androidx.test.ext:junit:$junitInstrumentationVersion",
-            espressoCore: "androidx.test.espresso:espresso-core:$espressoCoreVersion",
     ]
 }
