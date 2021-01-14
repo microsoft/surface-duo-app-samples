@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+~ Copyright (c) Microsoft Corporation. All rights reserved.
+~ Licensed under the MIT License.
+-->
+<resources>
+    <string name="app_name">Widget</string>
+    <string name="appwidget_text">BEISPIEL</string>
+    <string name="widget_title">Blogs Widget</string>
+    <string name="widget_settings_screen_title">Widget-Einstellungen</string>
+    <string name="widget_settings_predefined_title">Vordefinierte Feed-URLs</string>
+    <string name="widget_settings_predefined_summary">Wählen Sie Ihren bevorzugten Feed</string>
+    <string name="widget_settings_custom_title">Benutzerdefinierte Feed-URL</string>
+    <string name="widget_settings_custom_summary">Wählen Sie Ihren benutzerdefinierten bevorzugten Feed</string>
+    <string-array name="appwidget_feeds">
+        <item>Surface Duo Blog</item>
+        <item>TechCrunch</item>
+        <item>Verwenden Sie ihren eigenen Feed</item>
+    </string-array>
+    <string-array name="appwidget_feeds_value">
+        <item>https://devblogs.microsoft.com/surface-duo/feed/</item>
+        <item>https://techcrunch.com/feed/</item>
+        <item>nichts</item>
+    </string-array>
+</resources>

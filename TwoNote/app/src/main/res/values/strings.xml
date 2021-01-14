@@ -8,7 +8,7 @@
     <string name="exception_message">must implement OnFragmentInteractionListener</string>
     <string name="action_delete">Delete</string>
     <string name="action_share">Share</string>
-    <string name="action_select">Select all</string>
+    <string name="action_select">Select all notes</string>
     <string name="selected">selected</string>
     <string name="default_category_name">Category</string>
     <string name="default_note_name">Note</string>
