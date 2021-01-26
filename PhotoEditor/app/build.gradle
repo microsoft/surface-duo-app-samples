@@ -29,14 +29,6 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-
-//    splits {
-//        abi {
-//            enable true
-//            reset()
-//            include "x86"
-//        }
-//    }
 }
 
 dependencies {
