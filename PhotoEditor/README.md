@@ -11,7 +11,7 @@ urlFragment: photo-editor
 
 # PhotoEditor
 
-This Kotlin application implements a simple photo editor that lets users select, edit, and save images. Screenshots of the application and its behavior are available [here](screenshots/).
+This Kotlin application implements a simple photo editor that lets users select, edit, and save images. There is an [updated version](https://github.com/microsoft/surface-duo-window-manager-samples/tree/main/PhotoEditor) that supports all foldable devices.
 
 ## Getting Started
 

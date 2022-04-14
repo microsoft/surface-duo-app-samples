@@ -11,7 +11,7 @@ urlFragment: source-editor
 
 # SourceEditor
 
-This sample contains a Kotlin application designed for Surface Duo. The application is an HTML editor that enables real-time rendering of formatted source code. Making use of the [dual view](https://docs.microsoft.com/dual-screen/introduction#dual-view) app pattern, users are able to edit and preview any changes simultaneously without switching windows.
+This sample contains a Kotlin application designed for Surface Duo. The application is an HTML editor that enables real-time rendering of formatted source code. Making use of the [dual view](https://docs.microsoft.com/dual-screen/introduction#dual-view) app pattern, users are able to edit and preview any changes simultaneously without switching windows. There is an [updated version](https://github.com/microsoft/surface-duo-window-manager-samples/tree/main/SourceEditor) that supports all foldable devices.
 
 ## Getting Started
 

@@ -1,30 +1,26 @@
 ![App samples CI](https://github.com/microsoft/surface-duo-app-samples/workflows/App%20samples%20CI/badge.svg)
 
-# Surface Duo app samples
+# Surface Duo app samples (deprecated)
 
-This repo contains sample Android applications for Microsoft Surface Duo.
+This repo contains sample Android applications that are optimized for Microsoft Surface Duo but not other foldable devices. These samples have been deprecated in favor of more responsive versions here:
 
-## Getting Started
+https://github.com/microsoft/surface-duo-window-manager-samples
 
-To learn how to load apps on the Surface Duo emulator, see the [documentation](https://docs.microsoft.com/dual-screen/android), and follow [the blog](https://devblogs.microsoft.com/surface-duo).
+## Updated versions
 
-## Contents
+Follow these links to the updated versions that work on all foldable devices:
 
-### [PhotoEditor](https://github.com/microsoft/surface-duo-app-samples/tree/main/PhotoEditor)
+### [PhotoEditor](https://github.com/microsoft/surface-duo-window-manager-samples/tree/main/PhotoEditor)
 
 Includes examples of the [companion pane](https://docs.microsoft.com/dual-screen/introduction#dual-view) app pattern, drag and drop import for images, and [UI testing](https://docs.microsoft.com/dual-screen/android/espresso-ui-tests).
 
-### [SourceEditor](https://github.com/microsoft/surface-duo-app-samples/tree/main/SourceEditor)
+### [SourceEditor](https://github.com/microsoft/surface-duo-window-manager-samples/tree/main/SourceEditor)
 
 Includes examples of the [dual view](https://docs.microsoft.com/dual-screen/introduction#dual-view) app pattern, drag and drop import for text, and [UI testing](https://docs.microsoft.com/dual-screen/android/espresso-ui-tests).
 
-### [TwoNote](https://github.com/microsoft/surface-duo-app-samples/tree/main/TwoNote)
+### [TwoNote](https://github.com/microsoft/surface-duo-window-manager-samples/tree/main/TwoNote)
 
 Includes examples of the [list-detail](https://docs.microsoft.com/dual-screen/introduction#master-detail) and [extended canvas](https://docs.microsoft.com/dual-screen/introduction#extended-canvas) app patterns, drag and drop import for text and images, and pen events.
-
-### [Widget](https://github.com/microsoft/surface-duo-app-samples/tree/main/Widget)
-
-Includes example of how to create widgets that display RSS feed data.
 
 ## Related links
 

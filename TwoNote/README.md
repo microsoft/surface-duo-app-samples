@@ -13,6 +13,8 @@ urlFragment: two-note
 
 This sample integrates various dual-screen app features into a note-taking app for the Surface Duo. Users can view and edit notes via the [list-detail](https://docs.microsoft.com/dual-screen/introduction#master-detail) or [extended canvas](https://docs.microsoft.com/dual-screen/introduction#extended-canvas) dual-screen app patterns. Each note may contain text and images, which can both be imported through drag/drop. In addition, users can add drawings and annotations to their notes with pen events.
 
+ There is an [updated version](https://github.com/microsoft/surface-duo-window-manager-samples/tree/main/TwoNote) that supports all foldable devices.
+
 ## Getting Started
 
 To learn how to load apps on the Surface Duo emulator, see the [documentation](https://docs.microsoft.com/dual-screen/android), and follow [the blog](https://devblogs.microsoft.com/surface-duo).
